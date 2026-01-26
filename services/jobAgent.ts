@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo, PlanPhase } from "../types";
 import { JOBRADAR_CONFIG } from '../config';
@@ -377,7 +376,7 @@ export const analyzeCareerMatch = async (
                     category: { type: Type.STRING },
                     title: { type: Type.STRING },
                     advice: { type: Type.STRING },
-                    impact: { type: Type.STRING, enum: ["high", "medium"] },
+                    impact: { type: Type.STRING, description: "The impact of the suggestion, must be one of: 'high' or 'medium'." },
                     implementationExample: {
                       type: Type.OBJECT,
                       properties: {
@@ -439,7 +438,7 @@ export const analyzeCareerMatch = async (
                       type: Type.OBJECT,
                       properties: {
                         risk: { type: Type.STRING },
-                        severity: { type: Type.STRING, enum: ["High", "Medium", "Low"] },
+                        severity: { type: Type.STRING, description: "The severity of the risk, must be one of: 'High', 'Medium', or 'Low'." },
                         defenseScript: { type: Type.STRING }
                       },
                       required: ["risk", "severity", "defenseScript"]
