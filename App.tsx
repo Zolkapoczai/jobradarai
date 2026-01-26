@@ -438,23 +438,15 @@ const App: React.FC = () => {
                    <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">1. {t.profileAssets}</h2>
                    <p className="text-sm font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
                  </div>
-                 <PrimaryButton 
-                    className="w-full md:w-auto px-10 shadow-2xl" 
-                    onClick={() => setCurrentStep(2)} 
-                    disabled={!cvFile}
-                 >
-                    {lang === 'en' ? 'Job Detail' : 'Álláshirdetés'}
-                 </PrimaryButton>
                </div>
 
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
-                    {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
                     <TooltipWrapper text={t.tooltips.cvUpload}>
                       <div 
                         onClick={() => fileInputRef.current?.click()}
-                        className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[350px] cursor-pointer group relative overflow-hidden ${
+                        className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[400px] cursor-pointer group relative overflow-hidden ${
                           fileUploadStatus === 'success' ? 'bg-emerald-50/30 border-emerald-500/30' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
                         }`}
                       >
@@ -489,11 +481,10 @@ const App: React.FC = () => {
                  </div>
                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{t.linkedinLabel}</label>
-                    {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
                     <TooltipWrapper text={t.tooltips.linkedinPaste}>
                       <FormTextarea
                         rows={14}
-                        className="min-h-[350px]"
+                        className="min-h-[400px]"
                         placeholder={t.linkedinInputPlaceholder}
                         value={linkedinText}
                         onChange={(e) => setLinkedinText(e.target.value)}
@@ -515,6 +506,15 @@ const App: React.FC = () => {
                        </div>
                     </div>
                  </div>
+               </div>
+               <div className="mt-12 flex justify-center">
+                <PrimaryButton 
+                    className="w-full md:w-auto px-16 shadow-2xl" 
+                    onClick={() => setCurrentStep(2)} 
+                    disabled={!cvFile}
+                 >
+                    {t.continueToJobDetails}
+                 </PrimaryButton>
                </div>
             </div>
           </div>
@@ -544,7 +544,6 @@ const App: React.FC = () => {
                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">{lang === 'en' ? 'Job Description Text' : 'Álláshirdetés Szövege'}</label>
                          <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">{lang === 'en' ? 'Critical field' : 'Kritikus mező'}</span>
                       </div>
-                      {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
                       <TooltipWrapper text={t.tooltips.jdText}>
                         <FormTextarea rows={12} className="min-h-[300px] leading-relaxed shadow-inner" placeholder={lang === 'en' ? 'Paste the full job description here...' : 'Ide másold be a teljes hirdetés szövegét (feladatok, elvárások, juttatások)...'} value={jdText} onChange={(e) => setJdText(e.target.value)} />
                       </TooltipWrapper>
@@ -900,7 +899,6 @@ const App: React.FC = () => {
 
       {/* BOTTOM DEMO LABEL */}
       <div className="fixed bottom-6 right-6 z-[1000]">
-        {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
         <TooltipWrapper text={t.demoVersionTooltip}>
           <div className="px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-full border-2 border-slate-200 dark:border-slate-800 shadow-md">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
