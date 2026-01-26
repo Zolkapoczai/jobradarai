@@ -1,0 +1,7 @@
+{
+  "name": "JobRadarAI_V1",
+  "description": "Minden funkcióval felturbózott , jól müködő verzió. talán ez lehet az origó4?",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

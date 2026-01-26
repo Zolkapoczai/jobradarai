@@ -1,0 +1,775 @@
+
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
+import { analyzeCareerMatch, searchCompanyWebsite } from './services/jobAgent';
+import { translations } from './translations';
+import { GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo } from './components/UIComponents';
+import JobCoachChat from './components/JobCoachChat';
+import NeuralScoreRadar from './components/NeuralScoreRadar';
+import PricingPage from './components/PricingPage';
+import NetworkingSection from './components/NetworkingSection';
+import LinkedInAuditSection from './components/LinkedInAuditSection';
+import CompetitorSection from './components/CompetitorSection';
+import RedFlagSection from './components/RedFlagSection';
+import CVSuggestionsSection from './components/CVSuggestionsSection';
+import RewriterSection from './components/RewriterSection';
+import SectionWrapper from './components/SectionWrapper';
+import StrategicQuestionsSection from './components/StrategicQuestionsSection';
+import SalaryNegotiationSection from './components/SalaryNegotiationSection';
+import InterviewerProfilerSection from './components/InterviewerProfilerSection';
+import { AboutModal } from './components/AboutModal';
+import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
+import { processPdfFile, validatePdf } from './utils/fileProcessor';
+
+const App: React.FC = () => {
+  // Global App States
+  const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
+  const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('darkMode') === 'true');
+  const [state, setState] = useState<AppState>(AppState.IDLE);
+  
+  // Navigation & View States
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  const [activeTab, setActiveTab] = useState<'overview' | 'preparation' | 'coach'>('overview');
+  const [showPricing, setShowPricing] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [introStep, setIntroStep] = useState<'lang' | 'disclaimer'>(
+    localStorage.getItem('userLang') ? 'disclaimer' : 'lang'
+  );
+
+  // Input States
+  const [jdText, setJdText] = useState('');
+  const [jdUrl, setJdUrl] = useState('');
+  const [companyNameInput, setCompanyNameInput] = useState('');
+  const [interviewerLinkedin, setInterviewerLinkedin] = useState('');
+  const [linkedinText, setLinkedinText] = useState('');
+  const [userNote, setUserNote] = useState('');
+  
+  // File & Verification States
+  const [cvFile, setCvFile] = useState<FileInput | null>(null);
+  const [fileUploadStatus, setFileUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [fileUploadProgress, setFileUploadProgress] = useState(0);
+  const [showConfirmCompany, setshowConfirmCompany] = useState(false);
+  const [allFoundCompanies, setAllFoundCompanies] = useState<{ url: string; title: string }[]>([]);
+  const [foundCompany, setFoundCompany] = useState<{ url: string; title: string } | null>(null);
+  const [showChoiceModal, setShowChoiceModal] = useState(false);
+  const [showInputModal, setShowInputModal] = useState(false);
+
+  // Results & Progress
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [loadingStepIdx, setLoadingStepIdx] = useState(0);
+  const [errorInfo, setErrorInfo] = useState<AnalysisErrorInfo | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const t = translations[lang];
+
+  // Helpers
+  const scoreTheme = useMemo(() => {
+    if (!result) return null;
+    const score = result.matchScore;
+    if (score >= 80) return { text: 'text-emerald-600', bg: 'bg-emerald-50', stroke: '#10b981' };
+    if (score >= 60) return { text: 'text-blue-600', bg: 'bg-blue-50', stroke: '#2563eb' };
+    if (score >= 40) return { text: 'text-amber-600', bg: 'bg-amber-50', stroke: '#f59e0b' };
+    return { text: 'text-rose-600', bg: 'bg-rose-50', stroke: '#e11d48' };
+  }, [result]);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', String(darkMode));
+    if (darkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [darkMode]);
+
+  // Load Session State on Mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('jobradar_state');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        if (parsed.result) {
+          setResult(parsed.result);
+          setState(AppState.RESULT);
+        }
+        if (parsed.currentStep) setCurrentStep(parsed.currentStep);
+        if (parsed.companyNameInput) setCompanyNameInput(parsed.companyNameInput);
+        if (parsed.jdText) setJdText(parsed.jdText);
+        if (parsed.jdUrl) setJdUrl(parsed.jdUrl);
+        if (parsed.userNote) setUserNote(parsed.userNote);
+        if (parsed.activeTab) setActiveTab(parsed.activeTab);
+        if (parsed.interviewerLinkedin) setInterviewerLinkedin(parsed.interviewerLinkedin);
+        if (parsed.linkedinText) setLinkedinText(parsed.linkedinText);
+      } catch (e) {
+        console.error("Failed to load session state:", e);
+      }
+    }
+  }, []);
+
+  // Save Session State on Changes
+  useEffect(() => {
+    const stateToSave = {
+      result,
+      currentStep,
+      companyNameInput,
+      jdText,
+      jdUrl,
+      userNote,
+      activeTab,
+      interviewerLinkedin,
+      linkedinText
+    };
+    localStorage.setItem('jobradar_state', JSON.stringify(stateToSave));
+  }, [result, currentStep, companyNameInput, jdText, jdUrl, userNote, activeTab, interviewerLinkedin, linkedinText]);
+
+  // Handlers
+  const handleLangSelect = (selectedLang: 'hu' | 'en') => {
+    setLang(selectedLang);
+    setIntroStep('disclaimer');
+  };
+
+  const handleAcknowledgeDisclaimer = () => {
+    setShowIntro(false);
+    localStorage.setItem('userLang', lang);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const validation = validatePdf(file);
+    if (!validation.valid) {
+      setFileUploadStatus('error');
+      return;
+    }
+    setFileUploadStatus('uploading');
+    setFileUploadProgress(0);
+    try {
+      const fileData = await processPdfFile(file, (p) => setFileUploadProgress(p));
+      setCvFile(fileData);
+      setFileUploadStatus('success');
+    } catch {
+      setFileUploadStatus('error');
+    }
+  };
+
+  const verifyCompany = async () => {
+    if (!companyNameInput || (!jdText && !jdUrl) || !cvFile) return;
+    setState(AppState.SEARCHING_COMPANY);
+    try {
+      const companies = await searchCompanyWebsite(companyNameInput);
+      if (companies && companies.length > 0) {
+        setAllFoundCompanies(companies);
+        setFoundCompany(companies[0]);
+        setshowConfirmCompany(true);
+      } else {
+        setShowChoiceModal(true);
+      }
+      setState(AppState.IDLE);
+    } catch {
+      setState(AppState.ERROR);
+    }
+  };
+
+  const startAnalysis = async (customNote: string = '') => {
+    setState(AppState.LOADING);
+    setshowConfirmCompany(false);
+    setShowChoiceModal(false);
+    setShowInputModal(false);
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress(prev => Math.min(prev + (prev < 50 ? Math.random() * 5 : Math.random() * 2), 98));
+    }, 800);
+
+    try {
+      const analysis = await analyzeCareerMatch(
+        '', jdText, companyNameInput, foundCompany?.url || '', cvFile || undefined, 
+        customNote, lang, interviewerLinkedin, linkedinText
+      );
+      setResult(analysis);
+      setProgress(100);
+      setState(AppState.RESULT);
+      setCurrentStep(3);
+      setActiveTab('overview');
+      clearInterval(interval);
+    } catch (err: any) {
+      setErrorInfo(err);
+      setState(AppState.ERROR);
+      clearInterval(interval);
+    }
+  };
+
+  const reset = () => {
+    localStorage.removeItem('jobradar_state');
+    setState(AppState.IDLE);
+    setCurrentStep(1);
+    setResult(null);
+    setJdText('');
+    setJdUrl('');
+    setCompanyNameInput('');
+    setInterviewerLinkedin('');
+    setUserNote('');
+  };
+
+  useEffect(() => {
+    if (state === AppState.LOADING) {
+      const stepCount = t.loadingSteps.length;
+      const idx = Math.min(Math.floor((progress / 100) * stepCount), stepCount - 1);
+      setLoadingStepIdx(idx);
+    }
+  }, [progress, state, t.loadingSteps]);
+
+  // Main UI Parts
+  const Header = () => (
+    <header className="px-10 py-6 border-b border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-[1000] shadow-sm">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="flex flex-col cursor-pointer group" onClick={reset}>
+          <JobRadarLogo className="h-12 md:h-16 w-auto transition-all hover:scale-105" />
+        </div>
+        <div className="flex items-center gap-4 md:gap-6 justify-end">
+          <button 
+            onClick={() => setIsAboutOpen(true)} 
+            className="hidden md:block bg-gradient-to-r from-[#0f172a] via-[#1e40af] to-[#3b82f6] text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all active:scale-95"
+          >
+            {t.about || 'Rólunk'}
+          </button>
+          <button onClick={() => setShowPricing(true)} className="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 hover:text-blue-600 transition-all border-2 border-transparent hover:border-blue-100 dark:text-slate-300">
+            {t.pricing}
+          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => {
+                const nextLang = lang === 'hu' ? 'en' : 'hu';
+                setLang(nextLang);
+                localStorage.setItem('userLang', nextLang);
+              }} 
+              className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400 font-black text-[10px]"
+            >
+              {lang === 'hu' ? 'HU' : 'EN'}
+            </button>
+            <button 
+              onClick={() => setDarkMode(!darkMode)} 
+              className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400"
+            >
+              {darkMode ? '☀️' : '🌙'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+
+  const Stepper = () => {
+    const steps = [
+      { id: 1, label: t.profileAssets },
+      { id: 2, label: t.missionParams },
+      { id: 3, label: t.summary }
+    ];
+    return (
+      <div className="flex items-center justify-center gap-4 mb-16 w-full max-w-3xl mx-auto px-4">
+        {steps.map((step, idx) => (
+          <React.Fragment key={step.id}>
+            <div className="flex flex-col items-center gap-2">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black transition-all ${currentStep >= step.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'bg-slate-300 text-slate-500 dark:bg-slate-800'}`}>
+                {currentStep > step.id ? '✓' : step.id}
+              </div>
+              <span className={`text-[10px] font-black uppercase tracking-widest ${currentStep >= step.id ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
+                {step.label}
+              </span>
+            </div>
+            {idx < steps.length - 1 && <div className={`h-[2px] flex-grow mx-2 rounded-full ${currentStep > step.id ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'}`}></div>}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  };
+
+  if (showIntro) {
+    return (
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-100 dark:bg-slate-950 transition-colors duration-500">
+        <div 
+          className={`${introStep === 'lang' ? 'max-w-lg' : 'max-w-3xl'} w-full bg-white dark:bg-slate-900 rounded-[48px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center relative overflow-hidden transition-all duration-500`}
+        >
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          {introStep === 'lang' ? (
+            <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500 py-6">
+              <div className="flex justify-center mb-8">
+                <JobRadarLogo className="h-[67px] w-auto" />
+              </div>
+              <div className="flex flex-col items-center gap-3 pt-4 max-w-[240px] mx-auto">
+                <button 
+                  onClick={() => handleLangSelect('hu')} 
+                  className="w-full py-[14.5px] rounded-xl bg-gradient-to-r from-[#0B1121] to-blue-700 text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[13px]"
+                >
+                  Magyar
+                </button>
+                <button 
+                  onClick={() => handleLangSelect('en')} 
+                  className="w-full py-[14.5px] rounded-xl bg-slate-900 text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-slate-950/20 hover:scale-[1.02] active:scale-95 transition-all text-[13px]"
+                >
+                  English
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-10 animate-in slide-in-from-right-6 duration-500 py-4">
+              <div className="space-y-6">
+                <h2 className="text-[34px] font-black uppercase tracking-tight text-slate-950 dark:text-white">
+                  {t.aiActTitle}
+                </h2>
+                <p className="text-[18px] font-bold text-slate-800 dark:text-slate-200 leading-relaxed italic text-justify px-4">
+                  {t.aiActBody}
+                </p>
+              </div>
+
+              <div className="px-8 py-10 rounded-[32px] bg-[#f8fbff] dark:bg-slate-800/50 text-[14px] font-bold text-slate-600 dark:text-slate-400 leading-relaxed text-justify border border-blue-100 dark:border-slate-700/50">
+                {t.globalDisclaimer}
+              </div>
+
+              <div className="px-12 pt-6">
+                <PrimaryButton 
+                  onClick={handleAcknowledgeDisclaimer} 
+                  className="py-6 text-[16px] rounded-2xl shadow-2xl shadow-blue-500/30"
+                >
+                  {t.aiActConfirm}
+                </PrimaryButton>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f1f5f9] text-slate-950'} font-sans`}>
+      {showPricing && (
+        <div className="fixed inset-0 z-[10500] bg-white dark:bg-slate-950 overflow-y-auto pt-24 pb-12">
+          <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors z-[10600] text-slate-900 dark:text-white">✕</button>
+          <PricingPage t={t} lang={lang} darkMode={darkMode} />
+        </div>
+      )}
+
+      <Header />
+
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <Stepper />
+
+        {currentStep === 1 && (
+          <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
+            <div className="bg-white dark:bg-slate-900 rounded-[40px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-50 dark:border-slate-800 pb-6 gap-6">
+                 <div className="space-y-2">
+                   <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">1. {t.profileAssets}</h2>
+                   <p className="text-sm font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
+                 </div>
+                 <PrimaryButton 
+                    className="w-full md:w-auto px-10 shadow-2xl" 
+                    onClick={() => setCurrentStep(2)} 
+                    disabled={!cvFile}
+                 >
+                    {lang === 'en' ? 'Job Detail' : 'Álláshirdetés'}
+                 </PrimaryButton>
+               </div>
+
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                 <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[350px] cursor-pointer group relative overflow-hidden ${
+                        fileUploadStatus === 'success' ? 'bg-emerald-50/30 border-emerald-500/30' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
+                      }`}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.02] pointer-events-none select-none">
+                        <span className="text-[140px] font-black tracking-tighter">PDF</span>
+                      </div>
+                      <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
+                      {fileUploadStatus === 'success' ? (
+                        <div className="space-y-4 animate-in zoom-in-95 relative z-10">
+                           <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-2xl shadow-xl mx-auto">✓</div>
+                           <p className="text-lg font-black text-slate-900 dark:text-white break-all px-4">{cvFile?.name}</p>
+                           <button onClick={(e) => { e.stopPropagation(); setCvFile(null); setFileUploadStatus('idle'); }} className="text-xs font-black text-rose-600 uppercase border-b border-rose-600 pb-0.5">{lang === 'en' ? 'Replace file' : 'Fájl cseréje'}</button>
+                        </div>
+                      ) : (
+                        <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10">
+                           <div className="w-24 h-24 mx-auto mb-2 relative flex items-center justify-center">
+                              <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                              <svg className="w-16 h-16 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <polyline points="9 15 12 12 15 15"></polyline>
+                                <path d="M4 16v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" opacity="0.3"></path>
+                              </svg>
+                           </div>
+                           <p className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 px-4">{t.dragDropText}</p>
+                           <span className="inline-block px-6 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 group-hover:bg-blue-700 transition-all">{t.browseText}</span>
+                        </div>
+                      )}
+                    </div>
+                 </div>
+                 <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{t.linkedinLabel}</label>
+                    <FormTextarea
+                      rows={14}
+                      className="min-h-[350px]"
+                      placeholder={t.linkedinInputPlaceholder}
+                      value={linkedinText}
+                      onChange={(e) => setLinkedinText(e.target.value)}
+                    />
+                    <div className="flex justify-end">
+                       <div className="group relative">
+                          <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
+                          <div className="absolute right-0 bottom-full mb-4 w-80 p-8 bg-slate-900 text-white text-[11px] rounded-[32px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-700">
+                             <p className="font-black mb-4 uppercase text-blue-400 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
+                             <ul className="space-y-2 font-bold mb-6">
+                                {t.linkedinPdfInstructions.split('\n').map((s: string, i: number) => <li key={i} className="flex gap-2"><span>{i+1}.</span>{s.replace(/^\d+\.\s*/, '')}</li>)}
+                             </ul>
+                             <div className="absolute top-full right-8 border-8 border-transparent border-t-slate-900"></div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+               </div>
+               <p className="text-[11px] font-bold text-slate-700 dark:text-slate-400 px-1 leading-relaxed italic text-justify pt-4 border-t border-slate-50 dark:border-slate-800">
+                 {t.linkedinHelperNote}
+               </p>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
+             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 dark:border-slate-800 pb-8 gap-6">
+                   <div className="space-y-2">
+                      <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 dark:text-white">2. {t.missionParams}</h2>
+                      <p className="text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest">{lang === 'en' ? 'Enter position details for precise domain alignment.' : 'Add meg a pozíció részleteit a pontos domén-illeszkedéshez.'}</p>
+                   </div>
+                   <PrimaryButton className="w-full md:w-auto px-10 shadow-2xl" onClick={verifyCompany} disabled={!companyNameInput || (!jdText && !jdUrl)}>{lang === 'en' ? 'Start Analysis' : 'Elemzés indítása'}</PrimaryButton>
+                </div>
+                <div className="space-y-10">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <FormInput label={lang === 'en' ? 'Company Name' : 'Cégnév'} placeholder={lang === 'en' ? 'e.g. Google, EPAM...' : 'Pl. Google, EPAM, OTP...'} value={companyNameInput} onChange={(e) => setCompanyNameInput(e.target.value)} />
+                      <FormInput label={lang === 'en' ? 'Job Link (Optional)' : 'Hirdetés Linkje (Opcionális)'} placeholder="https://..." value={jdUrl} onChange={(e) => setJdUrl(e.target.value)} />
+                   </div>
+                   <div className="space-y-3 max-w-[70%]">
+                      <div className="flex justify-between items-center px-1">
+                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">{lang === 'en' ? 'Job Description Text' : 'Álláshirdetés Szövege'}</label>
+                         <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">{lang === 'en' ? 'Critical field' : 'Kritikus mező'}</span>
+                      </div>
+                      <FormTextarea rows={12} className="min-h-[300px] leading-relaxed shadow-inner" placeholder={lang === 'en' ? 'Paste the full job description here...' : 'Ide másold be a teljes hirdetés szövegét (feladatok, elvárások, juttatások)...'} value={jdText} onChange={(e) => setJdText(e.target.value)} />
+                   </div>
+                   <div className="space-y-3">
+                      <div className="flex justify-between items-end gap-4">
+                         <div className="flex-grow">
+                            <FormInput label={lang === 'en' ? "Interviewer's LinkedIn Profile (Optional)" : "Interjúztató LinkedIn Profilja (Opcionális)"} placeholder="https://www.linkedin.com/in/..." value={interviewerLinkedin} onChange={(e) => setInterviewerLinkedin(e.target.value)} />
+                         </div>
+                         <button onClick={() => setCurrentStep(1)} className="px-6 py-4 rounded-2xl border-2 border-slate-300 font-black text-[10px] uppercase tracking-widest text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800 transition-all mb-1 shrink-0">{lang === 'en' ? 'Back' : 'Vissza'}</button>
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-700 dark:text-slate-400 px-1 italic">{lang === 'en' ? 'Helps predict interview style and focus points.' : 'Segít megjósolni az interjúztató stílusát és a fókuszpontokat.'}</p>
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
+
+        {currentStep === 3 && result && scoreTheme && (
+          <div className="space-y-12 animate-in fade-in duration-700">
+            <div className="flex items-center justify-center gap-4 mb-12">
+               {['overview', 'preparation', 'coach'].map((tab) => (
+                 <button 
+                  key={tab}
+                  onClick={() => setActiveTab(tab as any)}
+                  className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                    activeTab === tab 
+                    ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
+                  }`}
+                 >
+                   {tab === 'overview' ? (lang === 'en' ? 'DASHBOARD' : 'DASHBOARD') : tab === 'preparation' ? (lang === 'en' ? 'STRATEGY' : 'STRATÉGIA') : (lang === 'en' ? 'INTERVIEW COACH' : 'INTERJÚ COACH')}
+                 </button>
+               ))}
+            </div>
+
+            {activeTab === 'overview' && (
+              <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
+                <div className="bg-white dark:bg-slate-900 rounded-[48px] p-10 md:p-16 border-2 border-slate-300 dark:border-slate-800 shadow-xl">
+                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                      <div className="lg:col-span-5">
+                         <NeuralScoreRadar result={result} scoreTheme={scoreTheme} t={t} />
+                      </div>
+                      <div className="lg:col-span-7 space-y-8">
+                         <div className="flex items-center justify-between">
+                            <h2 className={`text-xs font-black uppercase tracking-[0.4em] ${scoreTheme.text}`}>{t.summary}</h2>
+                            <div className="flex gap-4">
+                               {result.companyWebsite && <a href={result.companyWebsite} target="_blank" className="px-5 py-2.5 rounded-xl text-[9px] font-black uppercase border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2">{t.visitWebsite} 🔗</a>}
+                            </div>
+                         </div>
+                         <p className="text-xl font-semibold leading-relaxed text-justify whitespace-pre-wrap text-slate-950 dark:text-white">{result.executiveSummary}</p>
+                      </div>
+                   </div>
+                </div>
+
+                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon="🔬" darkMode={darkMode}>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                     <div className="bg-white dark:bg-slate-900 rounded-[32px] border-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div className="px-8 py-4 bg-emerald-50 dark:bg-emerald-900/10 border-b-2 border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                           <span className="text-lg">✅</span>
+                           <h4 className="text-[10px] font-black uppercase text-emerald-800 dark:text-emerald-400 tracking-[0.2em]">{t.fits}</h4>
+                        </div>
+                        <div className="p-8 space-y-6">
+                           {result.pros.map((p, i) => (
+                              <div key={i} className="flex gap-4 group">
+                                 <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold transition-transform group-hover:scale-110">✓</div>
+                                 <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-relaxed text-justify">{p}</p>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                     <div className="bg-white dark:bg-slate-900 rounded-[32px] border-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div className="px-8 py-4 bg-rose-50 dark:bg-rose-900/10 border-b-2 border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                           <span className="text-lg">⚠️</span>
+                           <h4 className="text-[10px] font-black uppercase text-rose-800 dark:text-rose-400 tracking-[0.2em]">{t.gaps}</h4>
+                        </div>
+                        <div className="p-8 space-y-6">
+                           {result.cons.map((c, i) => (
+                              <div key={i} className="flex gap-4 group">
+                                 <div className="w-6 h-6 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 text-xs font-bold transition-transform group-hover:scale-110">!</div>
+                                 <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-relaxed text-justify">{c}</p>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+                </SectionWrapper>
+
+                <SectionWrapper title={t.auditTitle} icon="👤" darkMode={darkMode}>
+                  <LinkedInAuditSection audit={result.linkedinAudit!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+
+                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon="📊" darkMode={darkMode}>
+                  <div className="space-y-4 mb-6 px-1">
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed italic">
+                      {lang === 'hu' ? "A valószínűsíthető jelölti kör elemzése és az Ön megkülönböztető előnyeinek (USP) meghatározása a kiemelkedés érdekében." : "Analysis of the likely candidate pool and identifying your Unique Selling Points (USP) to stand out."}
+                    </p>
+                  </div>
+                  <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+
+                <SectionWrapper title={t.preMortemTitle} icon="🚩" darkMode={darkMode}>
+                  <RedFlagSection analysis={result.preMortemAnalysis!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+                <SectionWrapper title={t.cvSuggestionsTitle} icon="✏️" darkMode={darkMode}>
+                  <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+                <SectionWrapper title={t.rewriteTitle} icon="🦎" darkMode={darkMode}>
+                  <RewriterSection rewrite={result.cvRewrite!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+              </div>
+            )}
+
+            {activeTab === 'preparation' && (
+              <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
+                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon="🔥" darkMode={darkMode} defaultOpen>
+                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+
+                <SectionWrapper title={t.salaryTitle} icon="💸" darkMode={darkMode}>
+                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+
+                <SectionWrapper title={t.interviewerTitle} icon="📡" darkMode={darkMode}>
+                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+
+                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon="🏢" darkMode={darkMode}>
+                   <div className="space-y-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon="📈" darkMode={darkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Presence in HU" : "HU Jelenlét"} content={result.hungarianPresence} icon="🇭🇺" darkMode={darkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Culture & SWOT" : "Kultúra & SWOT"} content={result.companyDeepDive} icon="🧬" darkMode={darkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Value Proposition" : "Értékajánlat"} content={result.whyWorkHere} icon="💡" darkMode={darkMode} />
+                      </div>
+                      <div className="pt-8 border-t border-slate-300 dark:border-slate-800">
+                        <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={darkMode} />
+                      </div>
+                   </div>
+                </SectionWrapper>
+
+                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon="📝" darkMode={darkMode}>
+                  <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
+                    <div className="flex justify-between items-center mb-6">
+                       <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
+                       <button onClick={() => exportCoverLetter(companyNameInput, result.coverLetter, t.coverLetterTitle)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
+                    </div>
+                    <div className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed whitespace-pre-wrap">{result.coverLetter}</div>
+                  </div>
+                </SectionWrapper>
+
+                <SectionWrapper title={lang === 'en' ? "Direct Networking" : "Közvetlen Kapcsolatépítés"} icon="🔗" darkMode={darkMode}>
+                  <NetworkingSection strategy={result.networkingStrategy!} t={t} darkMode={darkMode} />
+                </SectionWrapper>
+
+                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon="📅" darkMode={darkMode}>
+                   <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
+                      <div className="flex justify-between items-center mb-6">
+                         <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
+                         <button onClick={() => exportActionPlan(companyNameInput, result.plan30Day, t.attackPlanTitle, t.phaseLabel)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
+                      </div>
+                      <div className="space-y-6">
+                         {result.plan30Day.map((p, i) => (
+                           <div key={i} className="flex gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border-l-4 border-blue-500">
+                             <span className="font-black text-blue-600">0{i+1}</span>
+                             <p className="text-xs font-bold leading-relaxed text-slate-950 dark:text-white">{p}</p>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </SectionWrapper>
+              </div>
+            )}
+
+            {activeTab === 'coach' && (
+              <div className="max-w-4xl mx-auto min-h-[800px] animate-in slide-in-from-bottom-6 duration-500">
+                 <JobCoachChat result={result} t={t} darkMode={darkMode} lang={lang} />
+              </div>
+            )}
+
+            <div className="flex justify-center pt-12">
+               <button onClick={reset} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 dark:text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.reset}</button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {(state === AppState.LOADING || state === AppState.SEARCHING_COMPANY) && (
+        <div className="fixed inset-0 z-[12000] flex items-center justify-center p-6 bg-slate-50/95 dark:bg-slate-950/90 backdrop-blur-xl text-center">
+           <div className="space-y-12 max-w-2xl">
+              <div className="w-64 h-64 mx-auto relative group">
+                 <div className="absolute inset-2 rounded-full border border-blue-500/10"></div>
+                 <div className="absolute inset-6 rounded-full border border-blue-500/5"></div>
+                 <div className="absolute inset-12 rounded-full border border-blue-500/5"></div>
+                 <div className="absolute inset-20 rounded-full border border-blue-500/5"></div>
+                 <div className="absolute inset-0 rounded-full overflow-hidden">
+                    <div className="absolute top-1/2 left-1/2 w-full h-full bg-gradient-to-tr from-blue-600/0 via-blue-500/10 to-blue-400/60 origin-top-left animate-[spin_2.5s_linear_infinite] -ml-[1px] -mt-[1px] shadow-[0_0_20px_rgba(59,130,246,0.3)]"></div>
+                    <div className="absolute top-1/2 left-1/2 w-full h-full bg-gradient-to-tr from-blue-600/0 to-blue-500/10 origin-top-left animate-[spin_2.5s_linear_infinite] -ml-[1px] -mt-[1px] opacity-50 [animation-delay:-0.2s]"></div>
+                 </div>
+                 <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
+                    <div className={`absolute top-1/2 left-1/2 w-full h-[2px] bg-blue-400 origin-left animate-[spin_2.5s_linear_infinite] shadow-[0_0_10px_rgba(96,165,250,0.8)]`}></div>
+                 </div>
+                 <div className="absolute inset-0 rounded-full pointer-events-none opacity-40">
+                    <div className="absolute top-1/2 left-0 w-full h-[1px] bg-blue-500/40"></div>
+                    <div className="absolute top-0 left-1/2 w-[1px] h-full bg-blue-500/40"></div>
+                 </div>
+                 <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" className="text-slate-200 dark:text-slate-900" strokeWidth="1.5" />
+                    <circle 
+                      cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="4" 
+                      strokeDasharray="283" 
+                      strokeDashoffset={state === AppState.SEARCHING_COMPANY ? 70 : 283 - (283 * progress) / 100} 
+                      strokeLinecap="round" 
+                      className={`transition-all duration-700 shadow-[0_0_10px_rgba(59,130,246,0.5)] ${state === AppState.SEARCHING_COMPANY ? 'animate-spin origin-center' : ''}`} 
+                    />
+                 </svg>
+                 <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    {state === AppState.LOADING ? (
+                      <>
+                        <span className="font-black text-5xl text-slate-950 dark:text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] tracking-tighter">{Math.round(progress)}%</span>
+                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)]">SCANNING</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-4xl">🔍</span>
+                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase">Searching</span>
+                      </>
+                    )}
+                 </div>
+              </div>
+              <div className="space-y-4">
+                 <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-500 animate-pulse">
+                   {state === AppState.LOADING ? t.synthesizing : t.companySearch}
+                 </h3>
+                 <p className="text-sm font-bold text-slate-600 dark:text-white/50 uppercase tracking-widest">
+                   {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : t.searchingCompanyStatus}
+                 </p>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {state === AppState.ERROR && (
+        <div className="fixed inset-0 z-[13000] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl">
+           <div className="bg-white dark:bg-slate-900 p-12 rounded-[48px] max-w-lg w-full text-center border-2 border-rose-500/30">
+              <div className="w-20 h-20 bg-rose-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-8 shadow-2xl">!</div>
+              <h2 className="text-2xl font-black uppercase mb-4 text-slate-950 dark:text-white">{t.errorTitle}</h2>
+              <p className="text-slate-800 dark:text-slate-300 font-bold mb-10 leading-relaxed">{errorInfo?.message || t.errorBody}</p>
+              <div className="flex flex-col gap-4">
+                 <PrimaryButton onClick={() => startAnalysis(userNote)}>{t.errorRetry}</PrimaryButton>
+                 <button onClick={reset} className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.reset}</button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {showConfirmCompany && (
+        <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
+          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full text-center shadow-2xl border-2 border-slate-300 dark:border-slate-800">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">{t.companyConfirmTitle}</h2>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mb-8">{t.companyConfirmBody}</p>
+            <div className="mb-8 space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+              {allFoundCompanies.map((comp, idx) => (
+                <div key={idx} onClick={() => setFoundCompany(comp)} className={`p-5 rounded-2xl border-2 transition-all cursor-pointer text-left flex items-center justify-between gap-4 ${foundCompany?.url === comp.url ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-800 hover:border-blue-300'}`}>
+                  <div className="overflow-hidden">
+                    <div className={`text-sm font-black truncate ${foundCompany?.url === comp.url ? 'text-blue-600' : 'text-slate-950 dark:text-white'}`}>{comp.title}</div>
+                    <div className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">{comp.url}</div>
+                  </div>
+                  {foundCompany?.url === comp.url && <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</div>}
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-4">
+              <PrimaryButton onClick={() => { setshowConfirmCompany(false); setShowInputModal(true); }}>{t.companyConfirmYes}</PrimaryButton>
+              <button onClick={() => setshowConfirmCompany(false)} className="w-full bg-slate-100 dark:bg-slate-800 py-5 rounded-full font-black uppercase text-xs tracking-widest text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Back' : 'Vissza'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showChoiceModal && (
+        <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
+          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full text-center border-2 border-slate-300 dark:border-slate-800 shadow-2xl">
+            <h2 className="text-2xl font-black mb-8 uppercase tracking-tight text-slate-950 dark:text-white">{t.strategyTitle}</h2>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mb-10 leading-relaxed">{t.strategyBody}</p>
+            <div className="flex flex-col gap-4">
+              <button onClick={() => { setShowChoiceModal(false); setShowInputModal(true); }} className="w-full py-5 rounded-full font-black uppercase tracking-widest border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all text-xs">{t.strategyOwn}</button>
+              <PrimaryButton onClick={() => startAnalysis('')} className="shadow-2xl shadow-blue-500/40">{t.strategyAi}</PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showInputModal && (
+        <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
+          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full border-2 border-slate-300 dark:border-slate-800 shadow-2xl">
+            <h2 className="text-2xl font-black mb-8 uppercase tracking-tight text-slate-950 dark:text-white">{t.noteTitle}</h2>
+            <textarea 
+              maxLength={200} 
+              placeholder={t.notePlaceholder} 
+              className="w-full rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white h-48 resize-none shadow-inner" 
+              value={userNote} 
+              onChange={(e) => setUserNote(e.target.value)} 
+            />
+            <div className="flex flex-col gap-4 mt-8">
+              <PrimaryButton className="shadow-2xl shadow-blue-500/40" onClick={() => startAnalysis(userNote)}>{t.noteStart}</PrimaryButton>
+              <button onClick={() => { setShowInputModal(false); setshowConfirmCompany(true); }} className="text-xs font-black uppercase text-slate-600 dark:text-slate-400">{lang === 'en' ? 'Back' : 'Vissza'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+    </div>
+  );
+};
+
+export default App;
