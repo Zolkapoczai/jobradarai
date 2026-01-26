@@ -296,8 +296,8 @@ const App: React.FC = () => {
   if (showIntro) {
     return (
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-100 dark:bg-slate-950 transition-colors duration-500">
-        <div 
-          className={`${introStep === 'lang' ? 'max-w-lg' : 'max-w-3xl'} w-full bg-white dark:bg-slate-900 rounded-[48px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center relative overflow-hidden transition-all duration-500`}
+        <div
+          className={`${introStep === 'lang' ? 'max-w-lg' : 'max-w-xl'} w-full bg-white dark:bg-slate-900 rounded-[32px] p-6 md:p-8 border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center relative overflow-hidden transition-all duration-500`}
         >
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
           
@@ -322,24 +322,24 @@ const App: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-10 animate-in slide-in-from-right-6 duration-500 py-4">
-              <div className="space-y-6">
-                <h2 className="text-[34px] font-black uppercase tracking-tight text-slate-950 dark:text-white">
+            <div className="space-y-4 animate-in slide-in-from-right-6 duration-500 py-2">
+              <div className="space-y-3">
+                <h2 className="text-xl font-black uppercase tracking-tight text-slate-950 dark:text-white">
                   {t.aiActTitle}
                 </h2>
-                <p className="text-[18px] font-bold text-slate-800 dark:text-slate-200 leading-relaxed italic text-justify px-4">
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-relaxed italic text-justify px-2">
                   {t.aiActBody}
                 </p>
               </div>
 
-              <div className="px-8 py-10 rounded-[32px] bg-[#f8fbff] dark:bg-slate-800/50 text-[14px] font-bold text-slate-600 dark:text-slate-400 leading-relaxed text-justify border border-blue-100 dark:border-slate-700/50">
+              <div className="px-4 py-4 rounded-[20px] bg-[#f8fbff] dark:bg-slate-800/50 text-xs font-bold text-slate-600 dark:text-slate-400 leading-relaxed text-justify border border-blue-100 dark:border-slate-700/50">
                 {t.globalDisclaimer}
               </div>
 
-              <div className="px-12 pt-6">
+              <div className="px-8 pt-2">
                 <PrimaryButton 
                   onClick={handleAcknowledgeDisclaimer} 
-                  className="py-6 text-[16px] rounded-2xl shadow-2xl shadow-blue-500/30"
+                  className="py-3 text-xs rounded-xl shadow-2xl shadow-blue-500/30"
                 >
                   {t.aiActConfirm}
                 </PrimaryButton>
@@ -435,12 +435,12 @@ const App: React.FC = () => {
                     <div className="flex justify-end">
                        <div className="group relative">
                           <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
-                          <div className="absolute right-0 bottom-full mb-4 w-80 p-8 bg-slate-900 text-white text-[11px] rounded-[32px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-700">
-                             <p className="font-black mb-4 uppercase text-blue-400 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
+                          <div className="absolute right-0 bottom-full mb-4 w-80 p-8 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-[32px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-200 dark:border-slate-700">
+                             <p className="font-black mb-4 uppercase text-blue-600 dark:text-blue-400 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
                              <ul className="space-y-2 font-bold mb-6">
                                 {t.linkedinPdfInstructions.split('\n').map((s: string, i: number) => <li key={i} className="flex gap-2"><span>{i+1}.</span>{s.replace(/^\d+\.\s*/, '')}</li>)}
                              </ul>
-                             <div className="absolute top-full right-8 border-8 border-transparent border-t-slate-900"></div>
+                             <div className="absolute top-full right-8 border-8 border-transparent border-t-white dark:border-t-slate-800"></div>
                           </div>
                        </div>
                     </div>

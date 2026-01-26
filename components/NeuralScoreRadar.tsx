@@ -76,8 +76,8 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
             </div>
             <span className="text-[9px] font-black uppercase text-slate-800 dark:text-white tracking-tighter text-center leading-none px-2 drop-shadow-sm">{f.label}</span>
             {activeFactor === i && (
-              <div className="absolute bottom-full mb-5 w-60 p-5 bg-slate-800/95 backdrop-blur-md text-white text-[11px] rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-top-2 z-[2000] border border-slate-700/50 pointer-events-none">
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-800/95"></div>
+              <div className="absolute bottom-full mb-5 w-60 p-5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 slide-in-from-top-2 z-[2000] border border-slate-200 dark:border-slate-700 pointer-events-none">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-slate-800"></div>
                 <p className="font-bold leading-relaxed text-justify opacity-95">{f.explanation}</p>
               </div>
             )}

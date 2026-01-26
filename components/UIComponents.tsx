@@ -53,8 +53,8 @@ export const GoogleHelloText: React.FC = () => (
 export const InfoTooltip: React.FC<{ text: string; position?: 'top' | 'bottom' }> = ({ text, position = 'top' }) => (
   <div className="group relative inline-block ml-2 align-middle z-[150]">
     <div className="cursor-help w-5 h-5 rounded-full border-2 border-slate-900 dark:border-slate-300 flex items-center justify-center text-[11px] text-slate-950 dark:text-white font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">i</div>
-    <div className={`absolute ${position === 'top' ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 w-72 p-5 bg-slate-900 text-white text-[11px] rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform ${position === 'top' ? 'translate-y-2 group-hover:translate-y-0' : '-translate-y-2 group-hover:translate-y-0'} border border-slate-700/50 ring-1 ring-white/10 z-[3000]`}>
-      <div className={`absolute ${position === 'top' ? 'top-full border-t-slate-900' : 'bottom-full border-b-slate-900'} left-1/2 -translate-x-1/2 border-8 border-transparent`}></div>
+    <div className={`absolute ${position === 'top' ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 w-72 p-5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform ${position === 'top' ? 'translate-y-2 group-hover:translate-y-0' : '-translate-y-2 group-hover:translate-y-0'} border border-slate-200 dark:border-slate-700 z-[3000]`}>
+      <div className={`absolute ${position === 'top' ? 'top-full border-t-white dark:border-t-slate-800' : 'bottom-full border-b-white dark:border-b-slate-800'} left-1/2 -translate-x-1/2 border-8 border-transparent`}></div>
       <p className="font-bold leading-relaxed text-justify">{text}</p>
     </div>
   </div>
@@ -69,15 +69,15 @@ export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode;
     right: 'left-full ml-3 top-1/2 -translate-y-1/2',
   };
   const arrowClasses = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-t-slate-800/95',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-slate-800/95',
-    left: 'left-full top-1/2 -translate-y-1/2 border-l-slate-800/95',
-    right: 'right-full top-1/2 -translate-y-1/2 border-r-slate-800/95',
+    top: 'top-full left-1/2 -translate-x-1/2 border-t-white dark:border-t-slate-800',
+    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-white dark:border-b-slate-800',
+    left: 'left-full top-1/2 -translate-y-1/2 border-l-white dark:border-l-slate-800',
+    right: 'right-full top-1/2 -translate-y-1/2 border-r-white dark:border-r-slate-800',
   };
   return (
     <div className="group relative">
       {children}
-      <div className={`absolute ${positionClasses[position]} w-64 bg-slate-800/95 backdrop-blur-sm text-white text-xs p-4 rounded-xl shadow-2xl z-[2000] opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform group-hover:scale-100 scale-95`}>
+      <div className={`absolute ${positionClasses[position]} w-64 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs p-4 rounded-xl shadow-xl z-[2000] opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform group-hover:scale-100 scale-95`}>
         <div className={`absolute border-8 border-transparent ${arrowClasses[position]}`}></div>
         <p className="font-bold leading-relaxed text-justify">{text}</p>
       </div>
@@ -105,8 +105,8 @@ export const FactorBar: React.FC<{ label: string; value: number; color: string; 
         ></div>
       </div>
       {isHovered && (
-        <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-slate-800/95 backdrop-blur-sm text-white text-[11px] p-5 rounded-2xl shadow-2xl z-[2000] animate-in fade-in zoom-in-95 duration-200 pointer-events-none border border-slate-700/50 ring-1 ring-black/5">
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-800/95"></div>
+        <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] p-5 rounded-2xl shadow-xl z-[2000] animate-in fade-in zoom-in-95 duration-200 pointer-events-none border border-slate-200 dark:border-slate-700">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-slate-800"></div>
           <p className="font-bold leading-relaxed text-justify">{tooltip}</p>
         </div>
       )}
