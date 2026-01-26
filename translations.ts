@@ -207,7 +207,7 @@ export const translations = {
     missingKeys: "Hiányzó Kulcsszavak",
     suggestedAbout: "Javasolt 'About' szekció",
     linkedinLabel: "LinkedIn Profil Szövege",
-    linkedinHelperNote: "Kérlek, másold be ide a profilod adatait a legjobb eredményért.",
+    linkedinHelperNote: "",
     linkedinInputPlaceholder: "Másold be ide a profilodat...",
     linkedinPdfHelp: "Hol tölthető le a PDF?",
     linkedinPdfInstructions: "1. Nyisd meg a profilod.\n2. Kattints a 'Több' gombra.\n3. Válaszd a 'Mentés PDF-ként' opciót.",

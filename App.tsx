@@ -432,6 +432,9 @@ const App: React.FC = () => {
                         onChange={(e) => setLinkedinText(e.target.value)}
                       />
                     </TooltipWrapper>
+                    <p className="text-[11px] font-bold text-slate-700 dark:text-slate-400 px-1 leading-relaxed italic">
+                      {t.linkedinHelperNote}
+                    </p>
                     <div className="flex justify-end">
                        <div className="group relative">
                           <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
@@ -446,9 +449,6 @@ const App: React.FC = () => {
                     </div>
                  </div>
                </div>
-               <p className="text-[11px] font-bold text-slate-700 dark:text-slate-400 px-1 leading-relaxed italic text-justify pt-4 border-t border-slate-50 dark:border-slate-800">
-                 {t.linkedinHelperNote}
-               </p>
             </div>
           </div>
         )}
