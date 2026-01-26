@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { DocumentTextIcon, LinkIcon, TargetIcon, SearchCircleIcon, MicrophoneIcon, TrendingUpIcon } from './UIComponents';
 
 interface HowItWorksModalProps {
   isOpen: boolean;
@@ -10,6 +10,15 @@ interface HowItWorksModalProps {
 export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClose, t }) => {
   if (!isOpen || !t.howItWorksModal) return null;
   const { title, close, slides } = t.howItWorksModal;
+
+  const iconMap: Record<string, React.ReactNode> = {
+    "📄": <DocumentTextIcon className="w-8 h-8 text-blue-500" />,
+    "🔗": <LinkIcon className="w-8 h-8 text-blue-500" />,
+    "🎯": <TargetIcon className="w-8 h-8 text-blue-500" />,
+    "🕵️": <SearchCircleIcon className="w-8 h-8 text-blue-500" />,
+    "🎙️": <MicrophoneIcon className="w-8 h-8 text-blue-500" />,
+    "📈": <TrendingUpIcon className="w-8 h-8 text-blue-500" />,
+  };
 
   return (
     <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
@@ -33,7 +42,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
                 <div className={`grid grid-cols-1 ${slide.columns ? `md:grid-cols-${slide.columns}`: 'md:grid-cols-2'} gap-8`}>
                   {slide.points.map((point: any, pointIdx: number) => (
                     <div key={pointIdx} className="flex items-start gap-4">
-                      <div className="text-3xl mt-1">{point.icon}</div>
+                      <div className="mt-1">{iconMap[point.icon] || point.icon}</div>
                       <div>
                         <h4 className="font-black text-slate-950 dark:text-white">{point.title}</h4>
                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mt-1">{point.text}</p>

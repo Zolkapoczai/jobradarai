@@ -1,13 +1,12 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
+import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, JobAnalysis } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
+import { analyzeJob } from './services/jobAnalysisService';
 import { translations } from './translations';
-import { GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo, TooltipWrapper } from './components/UIComponents';
+import { GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo, TooltipWrapper, ExternalLinkIcon } from './components/UIComponents';
 import JobCoachChat from './components/JobCoachChat';
 import NeuralScoreRadar from './components/NeuralScoreRadar';
 import PricingPage from './components/PricingPage';
-import NetworkingSection from './components/NetworkingSection';
 import LinkedInAuditSection from './components/LinkedInAuditSection';
 import CompetitorSection from './components/CompetitorSection';
 import RedFlagSection from './components/RedFlagSection';
@@ -17,6 +16,8 @@ import SectionWrapper from './components/SectionWrapper';
 import StrategicQuestionsSection from './components/StrategicQuestionsSection';
 import SalaryNegotiationSection from './components/SalaryNegotiationSection';
 import InterviewerProfilerSection from './components/InterviewerProfilerSection';
+import AnalysisConclusion from './components/AnalysisConclusion';
+import Plan90DaySection from './components/Plan90DaySection';
 import { AboutModal } from './components/AboutModal';
 import { TermsOfServiceModal } from './components/TermsOfServiceModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
@@ -26,7 +27,10 @@ import { processPdfFile, validatePdf } from './utils/fileProcessor';
 const App: React.FC = () => {
   // Global App States
   const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
-  const darkMode = false; // Force light mode
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false; // Default to light mode
+  });
   const [state, setState] = useState<AppState>(AppState.IDLE);
   
   // Navigation & View States
@@ -60,6 +64,7 @@ const App: React.FC = () => {
 
   // Results & Progress
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [jobHeuristicsAnalysis, setJobHeuristicsAnalysis] = useState<JobAnalysis | null>(null);
   const [progress, setProgress] = useState(0);
   const [loadingStepIdx, setLoadingStepIdx] = useState(0);
   const [errorInfo, setErrorInfo] = useState<AnalysisErrorInfo | null>(null);
@@ -77,11 +82,25 @@ const App: React.FC = () => {
     return { text: 'text-rose-600', bg: 'bg-rose-50', stroke: '#e11d48' };
   }, [result]);
 
+  const toggleDarkMode = () => {
+    setDarkMode(prev => {
+        const next = !prev;
+        localStorage.setItem('darkMode', JSON.stringify(next));
+        return next;
+    });
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   useEffect(() => {
-    // Always enforce light mode
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('darkMode', 'false');
-  }, []);
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Load Session State on Mount
   useEffect(() => {
@@ -89,9 +108,11 @@ const App: React.FC = () => {
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        if (parsed.result) {
+        if (parsed.result && parsed.jdText) {
           setResult(parsed.result);
           setState(AppState.RESULT);
+          const quickAnalysis = analyzeJob({ description: parsed.jdText });
+          setJobHeuristicsAnalysis(quickAnalysis);
         }
         if (parsed.currentStep) setCurrentStep(parsed.currentStep);
         if (parsed.companyNameInput) setCompanyNameInput(parsed.companyNameInput);
@@ -156,29 +177,44 @@ const App: React.FC = () => {
   const verifyCompany = async () => {
     if (!companyNameInput || (!jdText && !jdUrl) || !cvFile) return;
 
-    // JD Validation Step
-    setState(AppState.VALIDATING_JD);
-    const isJdValid = await validateJdText(jdText);
-    
-    if (!isJdValid) {
-      setShowInvalidJdModal(true);
-      setState(AppState.IDLE);
-      return; // Stop execution
-    }
+    setState(AppState.VALIDATING_JD); // Use one state for both parallel tasks.
 
-    setState(AppState.SEARCHING_COMPANY);
     try {
-      const companies = await searchCompanyWebsite(companyNameInput);
-      if (companies && companies.length > 0) {
-        setAllFoundCompanies(companies);
-        setFoundCompany(companies[0]);
-        setshowConfirmCompany(true);
-      } else {
-        setShowChoiceModal(true);
-      }
-      setState(AppState.IDLE);
-    } catch {
-      setState(AppState.ERROR);
+        const companyCacheKey = `jobradar_company_${companyNameInput.toLowerCase()}`;
+        const cachedCompanies = sessionStorage.getItem(companyCacheKey);
+        
+        const companyPromise = cachedCompanies 
+            ? Promise.resolve(JSON.parse(cachedCompanies))
+            : searchCompanyWebsite(companyNameInput);
+
+        const [isJdValid, companies] = await Promise.all([
+            validateJdText(jdText),
+            companyPromise
+        ]);
+
+        if (!isJdValid) {
+            setShowInvalidJdModal(true);
+            setState(AppState.IDLE);
+            return;
+        }
+
+        if (!cachedCompanies && companies) {
+            sessionStorage.setItem(companyCacheKey, JSON.stringify(companies));
+        }
+
+        if (companies && companies.length > 0) {
+            setAllFoundCompanies(companies);
+            setFoundCompany(companies[0]);
+            setshowConfirmCompany(true);
+        } else {
+            setShowChoiceModal(true);
+        }
+        setState(AppState.IDLE);
+
+    } catch(err: any) {
+        // If one promise fails, Promise.all rejects.
+        setErrorInfo(err);
+        setState(AppState.ERROR);
     }
   };
 
@@ -188,6 +224,10 @@ const App: React.FC = () => {
     setShowChoiceModal(false);
     setShowInputModal(false);
     setProgress(0);
+
+    const quickAnalysis = analyzeJob({ description: jdText });
+    setJobHeuristicsAnalysis(quickAnalysis);
+    
     const interval = setInterval(() => {
       setProgress(prev => Math.min(prev + (prev < 50 ? Math.random() * 5 : Math.random() * 2), 98));
     }, 800);
@@ -216,6 +256,7 @@ const App: React.FC = () => {
     setResult(null);
     setErrorInfo(null);
     setActiveTab('overview');
+    setJobHeuristicsAnalysis(null);
 
     // Clear only job-specific data
     setJdText('');
@@ -250,7 +291,7 @@ const App: React.FC = () => {
 
   // Main UI Parts
   const Header = () => (
-    <header className="px-10 py-6 border-b border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-[1000] shadow-sm">
+    <header className="px-4 sm:px-6 lg:px-10 py-6 border-b border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-[1000] shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex flex-col cursor-pointer group" onClick={reset}>
           <JobRadarLogo className="h-12 md:h-16 w-auto transition-all hover:scale-105" />
@@ -258,7 +299,6 @@ const App: React.FC = () => {
         
         {/* CENTRALT DEMO LABEL */}
         <div className="hidden md:flex flex-grow justify-center">
-            {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
             <TooltipWrapper text={t.demoVersionTooltip}>
               <div className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border-2 border-slate-200 shadow-sm">
                 <span className="text-sm font-black uppercase tracking-widest text-red-800">
@@ -268,26 +308,38 @@ const App: React.FC = () => {
             </TooltipWrapper>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4 justify-end">
+        <div className="flex items-center gap-2 sm:gap-4 justify-end">
           <button 
             onClick={() => setIsHowItWorksOpen(true)} 
-            className="hidden md:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             {t.howItWorks}
           </button>
           <button 
             onClick={() => setIsAboutOpen(true)} 
-            className="hidden md:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             {t.about || 'Rólunk'}
           </button>
           <button 
             onClick={() => setShowPricing(true)} 
-            className="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             {t.pricing}
           </button>
           <div className="flex items-center gap-2">
+            <TooltipWrapper text={t.tooltips.toggleTheme}>
+              <button 
+                onClick={toggleDarkMode}
+                className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400"
+              >
+                {darkMode ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                )}
+              </button>
+            </TooltipWrapper>
             <button 
               onClick={() => {
                 const nextLang = lang === 'hu' ? 'en' : 'hu';
@@ -321,7 +373,7 @@ const App: React.FC = () => {
       { id: 3, label: t.summary }
     ];
     return (
-      <div className="flex items-center justify-center gap-4 mb-16 w-full max-w-3xl mx-auto px-4">
+      <div className="flex items-center justify-center gap-2 sm:gap-4 mb-16 w-full max-w-3xl mx-auto px-4">
         {steps.map((step, idx) => (
           <React.Fragment key={step.id}>
             <div 
@@ -335,7 +387,7 @@ const App: React.FC = () => {
               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black transition-all ${currentStep >= step.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'bg-slate-300 text-slate-500 dark:bg-slate-800'}`}>
                 {currentStep > step.id ? '✓' : step.id}
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest ${currentStep >= step.id ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest text-center ${currentStep >= step.id ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
                 {step.label}
               </span>
             </div>
@@ -432,7 +484,7 @@ const App: React.FC = () => {
 
         {currentStep === 1 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
+            <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-50 dark:border-slate-800 pb-6 gap-6">
                  <div className="space-y-2">
                    <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">1. {t.profileAssets}</h2>
@@ -446,8 +498,8 @@ const App: React.FC = () => {
                     <TooltipWrapper text={t.tooltips.cvUpload}>
                       <div 
                         onClick={() => fileInputRef.current?.click()}
-                        className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[400px] cursor-pointer group relative overflow-hidden ${
-                          fileUploadStatus === 'success' ? 'bg-emerald-50/30 border-emerald-500/30' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
+                        className={`border-2 rounded-[32px] text-center transition-all flex flex-col items-center justify-center min-h-[350px] sm:min-h-[400px] cursor-pointer group relative overflow-hidden ${
+                          fileUploadStatus === 'success' ? 'bg-blue-50 dark:bg-slate-900 border-blue-500/50' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
                         }`}
                       >
                         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.02] pointer-events-none select-none">
@@ -455,13 +507,49 @@ const App: React.FC = () => {
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
                         {fileUploadStatus === 'success' ? (
-                          <div className="space-y-4 animate-in zoom-in-95 relative z-10">
-                             <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-2xl shadow-xl mx-auto">✓</div>
-                             <p className="text-lg font-black text-slate-900 dark:text-white break-all px-4">{cvFile?.name}</p>
-                             <button onClick={(e) => { e.stopPropagation(); setCvFile(null); setFileUploadStatus('idle'); }} className="text-xs font-black text-rose-600 uppercase border-b border-rose-600 pb-0.5">{lang === 'en' ? 'Replace file' : 'Fájl cseréje'}</button>
+                          <div className="flex flex-col items-center justify-center p-6 text-center animate-in zoom-in-95 duration-500 relative z-10 w-full h-full">
+                              <div className="relative w-24 h-24 mb-6 text-blue-600">
+                                  <div className="absolute inset-0 bg-blue-500 rounded-full animate-pulse opacity-10 blur-lg"></div>
+                                  <div className="relative w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 rounded-full border-4 border-white dark:border-slate-800 shadow-lg">
+                                      <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                  </div>
+                                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-md">
+                                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                      </svg>
+                                  </div>
+                              </div>
+                              
+                              <div className="max-w-full px-4">
+                                  <p className="text-lg font-black text-slate-900 dark:text-white break-all truncate" title={cvFile?.name}>
+                                      {cvFile?.name}
+                                  </p>
+                                  {cvFile?.size && (
+                                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">
+                                          {(cvFile.size / 1024 / 1024).toFixed(2)} MB
+                                      </p>
+                                  )}
+                              </div>
+                              
+                              <button 
+                                  onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      setCvFile(null); 
+                                      setFileUploadStatus('idle'); 
+                                  }} 
+                                  className="mt-8 px-6 py-3 bg-white dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 rounded-full text-xs font-black uppercase tracking-widest border-2 border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:border-blue-500 transition-all group flex items-center gap-2 active:scale-95 shadow-sm"
+                              >
+                                  <svg className="w-4 h-4 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 9a9 9 0 0114.28-4.94M20 15a9 9 0 01-14.28 4.94" />
+                                  </svg>
+                                  <span>{t.changeFile}</span>
+                              </button>
                           </div>
                         ) : (
-                          <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10">
+                          <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10 p-8">
                              <div className="w-24 h-24 mx-auto mb-2 relative flex items-center justify-center">
                                 <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
                                 <svg className="w-16 h-16 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -484,7 +572,7 @@ const App: React.FC = () => {
                     <TooltipWrapper text={t.tooltips.linkedinPaste}>
                       <FormTextarea
                         rows={14}
-                        className="min-h-[400px]"
+                        className="min-h-[350px] sm:min-h-[400px]"
                         placeholder={t.linkedinInputPlaceholder}
                         value={linkedinText}
                         onChange={(e) => setLinkedinText(e.target.value)}
@@ -522,7 +610,7 @@ const App: React.FC = () => {
 
         {currentStep === 2 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
+             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 dark:border-slate-800 pb-8 gap-6">
                    <div className="space-y-2">
                       <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 dark:text-white">2. {t.missionParams}</h2>
@@ -533,10 +621,10 @@ const App: React.FC = () => {
                 <div className="space-y-10">
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <TooltipWrapper text={t.tooltips.companyName}>
-                        <FormInput label={lang === 'en' ? 'Company Name' : 'Cégnév'} placeholder={lang === 'en' ? 'e.g. Google, EPAM...' : 'Pl. Google, EPAM, OTP...'} value={companyNameInput} onChange={(e) => setCompanyNameInput(e.target.value)} />
+                        <FormInput label={t.companyName} placeholder={lang === 'en' ? 'e.g. Google, EPAM...' : 'Pl. Google, EPAM, OTP...'} value={companyNameInput} onChange={(e) => setCompanyNameInput(e.target.value)} />
                     </TooltipWrapper>
                     <TooltipWrapper text={t.tooltips.jdUrl}>
-                      <FormInput label={lang === 'en' ? 'Job Link (Optional)' : 'Hirdetés Linkje (Opcionális)'} placeholder="https://..." value={jdUrl} onChange={(e) => setJdUrl(e.target.value)} />
+                      <FormInput label={t.pasteUrl} placeholder="https://..." value={jdUrl} onChange={(e) => setJdUrl(e.target.value)} />
                     </TooltipWrapper>
                    </div>
                    <div className="space-y-3">
@@ -566,7 +654,7 @@ const App: React.FC = () => {
 
         {currentStep === 3 && result && scoreTheme && (
           <div className="space-y-12 animate-in fade-in duration-700">
-            <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 mb-12">
                <TooltipWrapper text={t.tooltips.dashboardTab}>
                  <button 
                   onClick={() => setActiveTab('overview')}
@@ -607,14 +695,14 @@ const App: React.FC = () => {
 
             {activeTab === 'overview' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <div className="bg-white dark:bg-slate-900 rounded-[48px] p-6 md:p-16 border-2 border-slate-300 dark:border-slate-800 shadow-xl">
-                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                <div className="bg-white dark:bg-slate-900 rounded-[48px] p-6 sm:p-8 md:p-12 lg:p-16 border-2 border-slate-300 dark:border-slate-800 shadow-xl">
+                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                       <div className="lg:col-span-5">
                          <NeuralScoreRadar result={result} scoreTheme={scoreTheme} t={t} />
                       </div>
                       <div className="lg:col-span-7 space-y-8">
-                         <div className="flex items-center justify-between">
-                            <h2 className={`text-xs font-black uppercase tracking-[0.4em] ${scoreTheme.text}`}>{t.summary}</h2>
+                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <h2 className={`text-2xl font-black uppercase tracking-[0.2em] ${scoreTheme.text}`}>{t.summary}</h2>
                             <div className="flex gap-4">
                                {result.companyWebsite && <a href={result.companyWebsite} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-xl text-[9px] font-black uppercase border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2">{t.visitWebsite} 🔗</a>}
                             </div>
@@ -623,6 +711,12 @@ const App: React.FC = () => {
                       </div>
                    </div>
                 </div>
+
+                {jobHeuristicsAnalysis && (
+                  <SectionWrapper title={lang === 'hu' ? "Hirdetés Gyorselemzés" : "Job Ad Quick Scan"} icon="⚡" darkMode={darkMode} defaultOpen>
+                    <AnalysisConclusion conclusion={jobHeuristicsAnalysis.conclusion} />
+                  </SectionWrapper>
+                )}
 
                 <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon="🔬" darkMode={darkMode} tooltipText={t.tooltips.professionalAlignment}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -658,7 +752,13 @@ const App: React.FC = () => {
                 </SectionWrapper>
 
                 <SectionWrapper title={t.auditTitle} icon="👤" darkMode={darkMode} tooltipText={t.tooltips.linkedinAudit}>
-                  <LinkedInAuditSection audit={result.linkedinAudit!} t={t} darkMode={darkMode} />
+                  {linkedinText && result.linkedinAudit ? (
+                    <LinkedInAuditSection audit={result.linkedinAudit} t={t} darkMode={darkMode} />
+                  ) : (
+                    <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-200 dark:border-slate-800">
+                      <p className="font-bold text-slate-600 dark:text-slate-400 italic">{t.auditNotAvailable}</p>
+                    </div>
+                  )}
                 </SectionWrapper>
 
                 <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon="📊" darkMode={darkMode} tooltipText={t.tooltips.competitorAnalysis}>
@@ -720,38 +820,25 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Direct Networking" : "Közvetlen Kapcsolatépítés"} icon="🔗" darkMode={darkMode} tooltipText={t.tooltips.networking}>
-                  <NetworkingSection strategy={result.networkingStrategy!} t={t} darkMode={darkMode} />
-                </SectionWrapper>
-
                 <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon="📅" darkMode={darkMode} tooltipText={t.tooltips.plan90Day}>
-                   <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
-                      <div className="flex justify-between items-center mb-6">
-                         <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
-                         <button onClick={() => exportActionPlan(companyNameInput, result.plan30Day, t.attackPlanTitle, t.phaseLabel)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
-                      </div>
-                      <div className="space-y-6">
-                         {result.plan30Day.map((p, i) => (
-                           <div key={i} className="flex gap-4 p-5 bg-slate-50 dark:bg-slate-950/50 rounded-2xl border-l-4 border-blue-500">
-                             <span className="font-black text-blue-600">0{i+1}</span>
-                             <p className="text-xs font-bold leading-relaxed text-slate-950 dark:text-white">{p}</p>
-                           </div>
-                         ))}
-                      </div>
-                   </div>
+                  <div className="flex justify-between items-center mb-8 px-2">
+                      <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
+                      <button onClick={() => exportActionPlan(companyNameInput, result.plan90Day, t.attackPlanTitle)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
+                  </div>
+                  <Plan90DaySection plan={result.plan90Day} t={t} darkMode={darkMode} />
                 </SectionWrapper>
               </div>
             )}
 
             {activeTab === 'coach' && (
-              <div className="max-w-4xl mx-auto min-h-[800px] animate-in slide-in-from-bottom-6 duration-500">
+              <div className="max-w-4xl mx-auto h-[80vh] min-h-[600px] animate-in slide-in-from-bottom-6 duration-500">
                  <JobCoachChat result={result} t={t} darkMode={darkMode} lang={lang} />
               </div>
             )}
 
             <div className="flex justify-center pt-12">
-               <TooltipWrapper text={t.tooltips.reset}>
-                 <button onClick={reset} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 dark:text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.reset}</button>
+               <TooltipWrapper text={t.tooltips.scrollToTop}>
+                 <button onClick={handleScrollToTop} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 dark:text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.scrollToTop}</button>
                </TooltipWrapper>
             </div>
           </div>
@@ -794,21 +881,18 @@ const App: React.FC = () => {
                         <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)]">SCANNING</span>
                       </>
                     ) : (
-                      <>
-                        <span className="text-4xl">{state === AppState.VALIDATING_JD ? '🧐' : '🔍'}</span>
-                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase">
-                          {state === AppState.VALIDATING_JD ? 'Validating' : 'Searching'}
-                        </span>
-                      </>
+                      <span className="text-center font-black text-blue-600 dark:text-blue-400 tracking-widest mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase text-base px-4">
+                        {t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás...' : 'Identifying...')}
+                      </span>
                     )}
                  </div>
               </div>
               <div className="space-y-4">
                  <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-500 animate-pulse">
-                    {state === AppState.LOADING ? t.synthesizing : (state === AppState.SEARCHING_COMPANY ? t.companySearch : t.validatingJdStatus)}
+                   {state === AppState.LOADING ? t.synthesizing : (t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás és Validálás...' : 'Identification & Validation...'))}
                  </h3>
                  <p className="text-sm font-bold text-slate-600 dark:text-white/50 uppercase tracking-widest">
-                    {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (state === AppState.SEARCHING_COMPANY ? t.searchingCompanyStatus : t.validatingJdStatus)}
+                   {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (t.preAnalysisSubStatus || (lang === 'hu' ? 'Vállalati adatok és álláshirdetés ellenőrzése...' : 'Verifying company data and job description...'))}
                  </p>
               </div>
            </div>
@@ -817,7 +901,7 @@ const App: React.FC = () => {
 
       {state === AppState.ERROR && (
         <div className="fixed inset-0 z-[13000] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl">
-           <div className="bg-white dark:bg-slate-900 p-12 rounded-[48px] max-w-lg w-full text-center border-2 border-rose-500/30">
+           <div className="bg-white dark:bg-slate-900 p-6 md:p-12 rounded-[32px] md:rounded-[48px] max-w-lg w-full text-center border-2 border-rose-500/30">
               <div className="w-20 h-20 bg-rose-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-8 shadow-2xl">!</div>
               <h2 className="text-2xl font-black uppercase mb-4 text-slate-950 dark:text-white">{t.errorTitle}</h2>
               <p className="text-slate-800 dark:text-slate-300 font-bold mb-10 leading-relaxed">{errorInfo?.message || t.errorBody}</p>
@@ -831,7 +915,7 @@ const App: React.FC = () => {
 
       {showInvalidJdModal && (
         <div className="fixed inset-0 z-[13000] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl">
-           <div className="bg-white dark:bg-slate-900 p-12 rounded-[48px] max-w-lg w-full text-center border-2 border-amber-500/30">
+           <div className="bg-white dark:bg-slate-900 p-6 md:p-12 rounded-[32px] md:rounded-[48px] max-w-lg w-full text-center border-2 border-amber-500/30">
               <div className="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl">🤔</div>
               <h2 className="text-2xl font-black uppercase mb-4 text-slate-950 dark:text-white">{t.invalidJdTitle}</h2>
               <p className="text-slate-800 dark:text-slate-300 font-bold mb-10 leading-relaxed text-justify">{t.invalidJdBody}</p>
@@ -842,7 +926,7 @@ const App: React.FC = () => {
 
       {showConfirmCompany && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full text-center shadow-2xl border-2 border-slate-300 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full text-center shadow-2xl border-2 border-slate-300 dark:border-slate-800">
             <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">{t.companyConfirmTitle}</h2>
             <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mb-8">{t.companyConfirmBody}</p>
             <div className="mb-8 space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
@@ -852,7 +936,19 @@ const App: React.FC = () => {
                     <div className={`text-sm font-black truncate ${foundCompany?.url === comp.url ? 'text-blue-600' : 'text-slate-950 dark:text-white'}`}>{comp.title}</div>
                     <div className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">{comp.url}</div>
                   </div>
-                  {foundCompany?.url === comp.url && <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</div>}
+                  <div className="flex items-center shrink-0 gap-2">
+                    <a
+                      href={comp.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors group"
+                      aria-label={`Visit ${comp.title} website`}
+                    >
+                      <ExternalLinkIcon className="w-5 h-5 text-slate-500 group-hover:text-blue-500 transition-colors" />
+                    </a>
+                    {foundCompany?.url === comp.url && <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0">✓</div>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -866,7 +962,7 @@ const App: React.FC = () => {
 
       {showChoiceModal && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full text-center border-2 border-slate-300 dark:border-slate-800 shadow-2xl">
+          <div className="bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full text-center border-2 border-slate-300 dark:border-slate-800 shadow-2xl">
             <h2 className="text-2xl font-black mb-8 uppercase tracking-tight text-slate-950 dark:text-white">{t.strategyTitle}</h2>
             <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mb-10 leading-relaxed">{t.strategyBody}</p>
             <div className="flex flex-col gap-4">
@@ -879,7 +975,7 @@ const App: React.FC = () => {
 
       {showInputModal && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center">
             <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">{t.noteTitle}</h2>
             <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">{t.noteBody}</p>
             <textarea 
@@ -898,7 +994,7 @@ const App: React.FC = () => {
       )}
 
       {/* BOTTOM DEMO LABEL */}
-      <div className="fixed bottom-6 right-6 z-[1000]">
+      <div className="fixed bottom-4 right-4 z-[1000]">
         <TooltipWrapper text={t.demoVersionTooltip}>
           <div className="px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-full border-2 border-slate-200 dark:border-slate-800 shadow-md">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">

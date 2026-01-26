@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo } from "../types";
+import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo, PlanPhase } from "../types";
 import { JOBRADAR_CONFIG } from '../config';
 
 const SYSTEM_INSTRUCTION = `You are JobRadar AI, an elite Executive Career Strategist designed by Google Engineers.
@@ -8,10 +8,20 @@ Your goal is to bridge the gap between high-potential candidates and decision-ma
 
 CORE ROLE & MINDSET:
 1. DUAL-ENGINE PROCESSOR: Act as both a cynical "ATS Auditor" (finding gaps) and a "Strategic Advisor" (fixing them).
-2. INVESTIGATIVE JOURNALIST (DEEP DIVE): Analyze the company deeply. While you do not have direct live search access in this specific module, use your extensive pre-trained knowledge about corporate structures, market trends, and industry sentiment. We need leverage, not PR fluff.
+2. INVESTIGATIVE JOURNALIST (DEEP DIVE): You have access to Google Search. Use it to analyze the company deeply. We need real, up-to-date intelligence on corporate structures, market trends, and industry sentiment. We need leverage, not PR fluff.
 3. CONSULTATIVE APPROACH: Analyze the "Business Need" behind the JD. Why is this role open *now*?
 
 STRATEGIC MODULES LOGIC:
+
+- COVER LETTER ARCHITECT (KÍSÉRŐLEVÉL STRATÉGA):
+  (i) TONE & STYLE: Modern, executive hangvétel. Confident, human, and professional. Avoid clichés, AI-phrases ("Based on the data provided..."), and "HR fluff". Use formal "Önöző" tone for Hungarian.
+  (ii) TARGETED SALUTATION: Address the predicted decision-maker (e.g., "Tisztelt Operatív Igazgató!"). NEVER use generic greetings like "Tisztelt Felvételi Bizottság!".
+  (iii) VALUE-BASED APPROACH: Focus on the 'Business Need'. Frame the candidate as the direct solution to the company's current pain points or strategic goals.
+  (iv) UNIQUE SELLING PROPOSITION (USP): Weave in the candidate's USP identified in the Competitor Analysis. Explicitly position them as the 'Low-risk, High-reward' choice.
+  (v) SEMANTIC ALIGNMENT: Naturally integrate keywords from the job description into a professional context, demonstrating understanding, not just matching.
+  (vi) CHALLENGER ELEMENT: Include a brief, insightful point about an industry trend or market opportunity, suggesting how the candidate can help the company capitalize on it.
+  (vii) STRATEGIC CALL TO ACTION (CTA): Close with a confident invitation for a strategic discussion about their ROI and the 90-day plan, not a passive interview request.
+  (viii) FORMATTING: The cover letter must be a single string. Use '\\n\\n' for clear paragraph breaks. Keep it concise, under one page.
 
 - SALARY NEGOTIATION ARCHITECT (BÉRTÁRGYALÁSI STRATÉGA): 
   Analyze the seniority level, industry standards, and geographic location (Hungarian/EU focus). 
@@ -33,16 +43,25 @@ STRATEGIC MODULES LOGIC:
   (iv) Create 3 strategic 'Ice-breaker' questions to build immediate rapport.
 
 - COMPETITOR ANALYSIS ARCHITECT (VERSENYTÁRS ELEMZÉS):
-  Compare the user's profile against the typical candidate pool for this role.
-  1. Identify the 'Invisible Threshold' for this seniority.
-  2. Define 3 'Unique Selling Points' (USPs) to outperform 100+ applicants.
-  3. Position the user as the 'Low-risk, High-reward' choice for the Hiring Manager.
+  Your task is to provide strategic intelligence on the hiring company's key competitors.
+  1. For each competitor, identify their primary product/service focus.
+  2. For the 'differentiation' field, you MUST perform a strategic analysis on how the *hiring company* can outperform this specific competitor. This is NOT about the candidate. It's about corporate strategy.
+      - Use the Google Search tool to find recent news, product launches, market positioning, and customer reviews to identify weaknesses or market gaps.
+      - The output MUST be a concrete, actionable strategic advantage for the hiring company. Example: "While Competitor X focuses on large enterprises, [Hiring Company] can capture the underserved mid-market segment with a more flexible pricing model and faster onboarding, a gap confirmed by recent analyst reports."
+  3. Identify the overarching 'marketTrend' affecting this industry right now, supported by search findings.
+
+- 90-DAY STRATEGIC PLAN (90 NAPOS TERV):
+  (i) Create a detailed 3-phase plan (Days 1-30, 31-60, 61-90).
+  (ii) Each phase must have a strategic \`phaseTitle\` (e.g., "Days 1-30: Deep Immersion & Quick Wins").
+  (iii) Each phase must list at least 3-4 specific, actionable \`actions\`.
+  (iv) Actions MUST be directly tied to the Job Description's responsibilities, the candidate's CV, and the company's presumed challenges. Show that the candidate understands the business need.
+  (v) The plan should be ambitious but realistic, demonstrating immediate value and long-term vision.
 
 CRITICAL OPERATIONAL RULES (MUST FOLLOW):
 1. OUTPUT FORMAT: You must output PURE JSON matching the provided schema exactly. Do NOT use Markdown formatting outside the JSON strings.
 2. HARD GATE LOGIC: If the JD explicitly requires a language (e.g., Fluent English) and it is missing, Match Score MUST NOT exceed 65%.
 3. LICENSE EXCEPTION: Always assume the candidate possesses a valid driver's license (B category).
-4. HUNGARIAN RULES: If the language is set to Hungarian, use formal "Önöző" tone. Never use "Tisztelt Felvételi Bizottság".
+4. HUNGARIAN TONE: If the language is set to Hungarian, use formal "Önöző" tone throughout the entire JSON output.
 `;
 
 export const COACH_INSTRUCTION = `You are the "JobRadar Coach", a senior executive career mentor.
@@ -61,43 +80,83 @@ INTERACTION RULES:
 `;
 
 const categorizeError = (error: any): AnalysisErrorInfo => {
+  // Check for client-side network error before anything else
+  if (!window.navigator.onLine || (error instanceof TypeError && error.message.includes('Failed to fetch'))) {
+    return { type: AnalysisErrorType.NETWORK, message: "Nincs internetkapcsolat. Ellenőrizze a hálózatot és próbálja újra!" };
+  }
+  
   const status = error?.status;
   const message = error?.message || "";
 
-  // Handle Resource Exhausted / Quota errors
-  if (status === "RESOURCE_EXHAUSTED" || status === 429 || message.includes("quota") || message.includes("rate limit")) {
-    return { type: AnalysisErrorType.TRANSIENT, message: "Kimerült az API kvóta (Rate Limit Exceeded). Kérjük várjon néhány percet, vagy váltson másik API kulcsra!" };
+  // Handle specific Gemini API errors from the message
+  if (message.includes("API key not valid")) {
+     return { type: AnalysisErrorType.API_KEY, message: "Az API kulcs érvénytelen. Kérjük, ellenőrizze, hogy helyes kulcsot adott-e meg." };
   }
 
-  if (message.includes("Requested entity was not found")) {
-    return { type: AnalysisErrorType.API_KEY, message: "Az API kulcs nem található vagy érvénytelen. Kérjük válassza ki újra!" };
+  if (message.includes("Content generation stopped due to SAFETY")) {
+    return { type: AnalysisErrorType.UNKNOWN, message: "Az MI biztonsági okokból leállította a generálást. A megadott szöveg (CV vagy álláshirdetés) tartalmazhatott érzékeny vagy nem megfelelő tartalmat. Kérjük, ellenőrizze és próbálja újra." };
+  }
+
+  // Handle Resource Exhausted / Quota errors
+  if (status === "RESOURCE_EXHAUSTED" || status === 429 || message.toLowerCase().includes("quota") || message.toLowerCase().includes("rate limit")) {
+    return { type: AnalysisErrorType.TRANSIENT, message: "Túllépte a használati limitet (Rate Limit Exceeded). Kérjük várjon néhány percet, vagy használjon másik API kulcsot." };
+  }
+
+  // This is a common error message format for invalid keys from some Google Cloud services
+  if (message.includes("API key not found") || message.toLowerCase().includes("permission denied")) {
+    return { type: AnalysisErrorType.API_KEY, message: "Hiba az API kulccsal. Ellenőrizze, hogy a kulcs érvényes és rendelkezik a szükséges jogosultságokkal." };
+  }
+
+  // Handle standard HTTP status codes
+  if (status === 400) {
+    return { type: AnalysisErrorType.UNKNOWN, message: "Hiba a kérésben (Bad Request). Lehetséges, hogy a bevitt adatok formátuma hibás, vagy a modell elutasította a kérést. Kérjük, próbálja újra később." };
   }
 
   if (status === 401 || status === 403) {
-    return { type: AnalysisErrorType.API_KEY, message: "Hiba az API kulccsal. Ellenőrizze a jogosültaságokat!" };
+    return { type: AnalysisErrorType.API_KEY, message: "Hitelesítési hiba. Az API kulcs érvénytelen vagy lejárt." };
   }
 
   if (status === 500 || status === 503) {
-    return { type: AnalysisErrorType.TRANSIENT, message: "Átmeneti szerverhiba az AI szolgáltatónál. Kérjük próbálja meg újra!" };
+    return { type: AnalysisErrorType.TRANSIENT, message: "Átmeneti szerverhiba az MI szolgáltatónál. Kérjük próbálja meg később újra." };
   }
 
-  if (!window.navigator.onLine) {
-    return { type: AnalysisErrorType.NETWORK, message: "Nincs internetkapcsolat. Ellenőrizze a hálózatot!" };
+  // The existing check is good, let's keep it.
+  if (message.includes("Requested entity was not found")) {
+    return { type: AnalysisErrorType.API_KEY, message: "Az API kulcs nem található vagy érvénytelen. Kérjük válassza ki újra!" };
+  }
+  
+  if (error.type === AnalysisErrorType.PARSING) {
+    return { type: AnalysisErrorType.PARSING, message: "Hiba az MI válaszának feldogozása során. Ez egy átmeneti hiba lehet, kérjük próbálja újra." };
   }
 
-  return { type: AnalysisErrorType.UNKNOWN, message: "Ismeretlen hiba történt a szintézis során." };
+  // Default fallback
+  return { type: AnalysisErrorType.UNKNOWN, message: "Ismeretlen hiba történt. Kérjük, próbálja meg később újra, vagy vegye fel a kapcsolatot a támogatással." };
 };
 
 const withRetry = async <T>(fn: () => Promise<T>, retries = 2, delay = 1000): Promise<T> => {
   try {
     return await fn();
   } catch (error: any) {
-    // Retry on 500s or temporary network issues, but not on quota errors or 400s
-    if (retries > 0 && (error?.status === 500 || error?.status === 503)) {
+    // If the error is already a structured AnalysisErrorInfo, don't categorize it again.
+    if (error.type && Object.values(AnalysisErrorType).includes(error.type)) {
+        // Only retry on transient errors. For API_KEY or UNKNOWN errors, fail immediately.
+        if (retries > 0 && error.type === AnalysisErrorType.TRANSIENT) {
+            await new Promise(res => setTimeout(res, delay));
+            return withRetry(fn, retries - 1, delay * 2);
+        }
+        throw error;
+    }
+
+    // Categorize the raw error.
+    const categorizedError = categorizeError(error);
+
+    // Retry on transient errors. For API_KEY or UNKNOWN errors, fail immediately.
+    if (retries > 0 && categorizedError.type === AnalysisErrorType.TRANSIENT) {
       await new Promise(res => setTimeout(res, delay));
       return withRetry(fn, retries - 1, delay * 2);
     }
-    throw categorizeError(error);
+    
+    throw categorizedError;
   }
 };
 
@@ -220,8 +279,8 @@ export const analyzeCareerMatch = async (
         config: {
           systemInstruction: SYSTEM_INSTRUCTION,
           responseMimeType: "application/json",
-          thinkingConfig: { thinkingBudget: 16000 },
-          // Note: googleSearch tool is REMOVED from this call to allow responseMimeType: "application/json"
+          tools: [{ googleSearch: {} }],
+          thinkingConfig: { thinkingBudget: 8192 },
           responseSchema: {
             type: Type.OBJECT,
             properties: {
@@ -257,7 +316,17 @@ export const analyzeCareerMatch = async (
               cvSummaryRewrite: { type: Type.STRING },
               coverLetter: { type: Type.STRING },
               keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
-              plan30Day: { type: Type.ARRAY, items: { type: Type.STRING } },
+              plan90Day: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    phaseTitle: { type: Type.STRING },
+                    actions: { type: Type.ARRAY, items: { type: Type.STRING } }
+                  },
+                  required: ["phaseTitle", "actions"]
+                }
+              },
               interviewQuestions: { type: Type.ARRAY, items: { type: Type.STRING } },
               interviewAnswers: { type: Type.ARRAY, items: { type: Type.STRING } },
               salaryNegotiation: {
@@ -331,15 +400,6 @@ export const analyzeCareerMatch = async (
                 },
                 required: ["originalSummaryExcerpt", "optimizedSummary", "keywordImprovements"]
               },
-              networkingStrategy: {
-                type: Type.OBJECT,
-                properties: {
-                  connectionRequest: { type: Type.STRING },
-                  valueMessage: { type: Type.STRING },
-                  followUp: { type: Type.STRING }
-                },
-                required: ["connectionRequest", "valueMessage", "followUp"]
-              },
               linkedinAudit: {
                 type: Type.OBJECT,
                 properties: {
@@ -396,9 +456,9 @@ export const analyzeCareerMatch = async (
             required: [
               "matchScore", "scoreBreakdown", "scoreExplanations", 
               "executiveSummary", "hiringManagerProfile", "pros", "cons", 
-              "cvSummaryRewrite", "coverLetter", "keywords", "plan30Day", 
+              "cvSummaryRewrite", "coverLetter", "keywords", "plan90Day", 
               "companyDeepDive", "companyMarketPosition", "hungarianPresence", "whyWorkHere",
-              "interviewQuestions", "interviewAnswers", "networkingStrategy", "linkedinAudit",
+              "interviewQuestions", "interviewAnswers", "linkedinAudit",
               "competitorAnalysis", "preMortemAnalysis", "cvSuggestions", "cvRewrite",
               "salaryNegotiation", "interviewerProfiler"
             ]
@@ -406,11 +466,30 @@ export const analyzeCareerMatch = async (
         }
       });
 
+      const finishReason = response.candidates?.[0]?.finishReason;
+      if (finishReason && finishReason !== 'STOP') {
+        if (finishReason === 'SAFETY') {
+          throw { type: AnalysisErrorType.UNKNOWN, message: "Az MI biztonsági okokból leállította a generálást. A megadott szöveg (CV vagy álláshirdetés) tartalmazhatott érzékeny tartalmat. Kérjük, ellenőrizze és próbálja újra." };
+        }
+        if (finishReason === 'RECITATION') {
+           throw { type: AnalysisErrorType.UNKNOWN, message: "Az MI a forrásanyagok túlzott idézése miatt állította le a generálást. Próbálja meg más megfogalmazással." };
+        }
+        if (finishReason === 'MAX_TOKENS') {
+           throw { type: AnalysisErrorType.UNKNOWN, message: "A generált válasz túl hosszú volt. Ez a hiba általában a modell belső folyamatai miatt történik, próbálja újra." };
+        }
+        throw { type: AnalysisErrorType.TRANSIENT, message: `A generálás leállt (${finishReason}). Ez egy átmeneti hiba, kérjük próbálja meg újra.` };
+      }
+
       try {
-        const result = JSON.parse(response.text || "{}");
+        const resultText = response.text;
+        if (!resultText || resultText.trim() === '') {
+            throw { type: AnalysisErrorType.PARSING, message: "Az MI üres választ adott. Ez előfordulhat szerverhiba vagy a bemeneti adatokkal kapcsolatos probléma miatt. Kérjük, próbálja újra." };
+        }
+        const result = JSON.parse(resultText);
         return { ...result, companyWebsite, companyName };
       } catch (parseError) {
-        throw { type: AnalysisErrorType.PARSING, message: "Hiba az AI válasz feldolgozása során. Kérjük próbálja újra!" };
+        console.error("JSON Parsing Error. Raw AI response:", response.text);
+        throw { type: AnalysisErrorType.PARSING, message: "Hiba az MI válaszának feldolgozása során (érvénytelen JSON). Ez egy átmeneti hiba lehet. Kérjük, próbálja újra." };
       }
     } catch (error: any) {
       console.error("Analysis Error Detail:", error);

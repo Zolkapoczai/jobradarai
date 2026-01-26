@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { CompetitorAnalysis } from '../types';
-import { InfoTooltip } from './UIComponents';
+import { BuildingIcon, RadarIcon } from './UIComponents';
 
 interface CompetitorSectionProps {
   analysis: CompetitorAnalysis;
@@ -24,7 +23,7 @@ const CompetitorCard: React.FC<{
         <div className={`w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-inner ${
           darkMode ? 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400' : 'bg-indigo-50 border border-indigo-100 text-indigo-700'
         }`}>
-          🏢
+          <BuildingIcon className="w-6 h-6" />
         </div>
         <div>
           <h4 className="text-lg font-black tracking-tight text-slate-950 dark:text-white leading-none">{name}</h4>
@@ -64,7 +63,7 @@ const CompetitorSection: React.FC<CompetitorSectionProps> = ({ analysis, t, dark
         <div className={`w-16 h-16 rounded-3xl flex items-center justify-center text-3xl flex-shrink-0 animate-pulse-slow shadow-lg ${
           darkMode ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
         }`}>
-          📡
+          <RadarIcon className="w-8 h-8" />
         </div>
         <div className="flex-grow text-center md:text-left">
           <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400 mb-2">{t.marketTrendLabel}</h4>

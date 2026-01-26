@@ -1,5 +1,6 @@
 import React from 'react';
 import { SalaryNegotiation } from '../types';
+import { CashIcon, ChessPawnIcon, GiftIcon } from './UIComponents';
 
 interface SalaryNegotiationSectionProps {
   data: SalaryNegotiation;
@@ -14,7 +15,7 @@ const SalaryNegotiationSection: React.FC<SalaryNegotiationSectionProps> = ({ dat
         darkMode ? 'bg-slate-950/40 border-emerald-900/20' : 'bg-emerald-50/30 border-emerald-100'
       }`}>
         <div className={`w-20 h-20 rounded-3xl flex items-center justify-center text-4xl shadow-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600`}>
-          💰
+          <CashIcon className="w-10 h-10" />
         </div>
         <div className="text-center md:text-left flex-grow">
           <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 dark:text-emerald-400 mb-2">{t.salaryBandLabel}</h4>
@@ -27,7 +28,7 @@ const SalaryNegotiationSection: React.FC<SalaryNegotiationSectionProps> = ({ dat
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className={`p-10 rounded-[40px] border-2 shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-8">
-            <span className="text-2xl">♟️</span>
+            <ChessPawnIcon className="w-6 h-6 text-slate-500" />
             <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.batnaLabel}</h4>
           </div>
           <p className="text-base font-bold text-slate-900 dark:text-white leading-relaxed text-justify italic">
@@ -37,7 +38,7 @@ const SalaryNegotiationSection: React.FC<SalaryNegotiationSectionProps> = ({ dat
 
         <div className={`p-10 rounded-[40px] border-2 shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-8">
-            <span className="text-2xl">🎁</span>
+            <GiftIcon className="w-6 h-6 text-slate-500" />
             <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.tradeOffsLabel}</h4>
           </div>
           <div className="grid grid-cols-1 gap-4">

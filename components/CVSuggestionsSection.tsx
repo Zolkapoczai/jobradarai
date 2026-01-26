@@ -1,6 +1,7 @@
-
 import React, { useState } from 'react';
 import { CVSuggestion } from '../types';
+// FIX: Imported PencilIcon to resolve reference error.
+import { KeyIcon, TargetIcon, RulerIcon, ChipIcon, LightBulbIcon, PencilIcon } from './UIComponents';
 
 interface CVSuggestionsSectionProps {
   suggestions: CVSuggestion[];
@@ -19,11 +20,11 @@ const SuggestionCard: React.FC<{
     medium: darkMode ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200',
   };
 
-  const categoryIcons: Record<string, string> = {
-    keywords: '🔑',
-    focus: '🎯',
-    structure: '📐',
-    ats: '🤖',
+  const categoryIcons: Record<string, React.ReactNode> = {
+    keywords: <KeyIcon />,
+    focus: <TargetIcon />,
+    structure: <RulerIcon />,
+    ats: <ChipIcon />,
   };
 
   return (
@@ -38,7 +39,7 @@ const SuggestionCard: React.FC<{
         <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${impactColors[suggestion.impact as 'high' | 'medium']}`}>
           {suggestion.impact} Impact
         </div>
-        <span className="text-xl group-hover:scale-125 transition-transform duration-300">{categoryIcons[suggestion.category] || '💡'}</span>
+        <div className="text-slate-400 group-hover:scale-125 transition-transform duration-300">{categoryIcons[suggestion.category] || <LightBulbIcon />}</div>
       </div>
 
       <div className="mb-4">
@@ -68,7 +69,7 @@ const CVSuggestionsSection: React.FC<CVSuggestionsSectionProps> = ({ suggestions
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Grid of cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
         {suggestions.map((item, idx) => (
           <SuggestionCard 
             key={idx}
@@ -88,7 +89,7 @@ const CVSuggestionsSection: React.FC<CVSuggestionsSectionProps> = ({ suggestions
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">🔧</span>
+                <div className="w-8 h-8 flex items-center justify-center text-slate-500"><PencilIcon /></div>
                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-400">Implementation Guide</h4>
               </div>
               <h3 className="text-2xl font-black text-slate-950 dark:text-white uppercase tracking-tight">{selectedSuggestion.title}</h3>
@@ -139,7 +140,7 @@ const CVSuggestionsSection: React.FC<CVSuggestionsSectionProps> = ({ suggestions
             darkMode ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-100/50 border-slate-200'
           }`}>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-xl">💡</span>
+              <div className="w-6 h-6 flex items-center justify-center text-slate-500"><LightBulbIcon /></div>
               <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-500">The "Why" Behind This Change</h5>
             </div>
             <p className="text-sm font-bold text-slate-800 dark:text-slate-300 leading-relaxed text-justify italic">

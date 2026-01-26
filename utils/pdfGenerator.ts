@@ -1,4 +1,6 @@
+
 import { jsPDF } from "jspdf";
+import { PlanPhase } from "../types";
 
 interface ContentItem {
   type: 'h1' | 'h2' | 'p';
@@ -156,16 +158,17 @@ export const exportCoverLetter = async (companyName: string, text: string, title
   doc.save(filename);
 };
 
-export const exportActionPlan = async (companyName: string, steps: string[], titleLabel: string = 'STRATÉGIAI 90 NAPOS TERV', phaseLabel: string = 'FÁZIS') => {
+export const exportActionPlan = async (companyName: string, plan: PlanPhase[], titleLabel: string = 'STRATÉGIAI 90 NAPOS TERV') => {
   const content: ContentItem[] = [];
   
-  steps.forEach((step, i) => {
-    content.push({ type: 'h2', text: `${i + 1}. ${phaseLabel}` });
-    content.push({ type: 'p', text: step });
+  plan.forEach((phase) => {
+    content.push({ type: 'h2', text: phase.phaseTitle });
+    const actionsText = phase.actions.map(action => `• ${action}`).join('\n');
+    content.push({ type: 'p', text: actionsText });
   });
 
   const filename = `JobRadar_Strategic_Plan_${companyName.replace(/\s+/g, '_')}.pdf`;
-  const doc = await createStyledPdf(`90-DAY STRATEGIC IMPACT PLAN`, content);
+  const doc = await createStyledPdf(titleLabel, content);
   doc.save(filename);
 };
 

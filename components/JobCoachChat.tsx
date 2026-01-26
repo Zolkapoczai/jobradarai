@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnalysisResult } from '../types';
 import { GoogleGenAI } from "@google/genai";
-import { JobRadarLogo } from './UIComponents';
+import { BriefcaseIcon, CoinIcon, LightBulbIcon, WarningIcon } from './UIComponents';
 import { JOBRADAR_CONFIG } from '../config';
 
 interface JobCoachChatProps {
@@ -178,13 +178,13 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
   };
 
   return (
-    <div className={`flex flex-col h-[750px] rounded-[40px] border-2 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700 relative ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-300'}`}>
+    <div className={`flex flex-col h-full rounded-[40px] border-2 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700 relative ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-300'}`}>
       
       {/* Token Store Modal */}
       {isStoreOpen && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in zoom-in-95 duration-300">
-          <div className={`max-w-4xl w-full p-8 md:p-12 rounded-[48px] border-2 shadow-2xl relative ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-100'}`}>
-            <button onClick={() => setIsStoreOpen(false)} className="absolute top-8 right-8 w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white transition-all text-slate-900 dark:text-white font-black">✕</button>
+          <div className={`max-w-sm md:max-w-4xl w-full p-6 md:p-12 rounded-[32px] md:rounded-[48px] border-2 shadow-2xl relative ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-100'}`}>
+            <button onClick={() => setIsStoreOpen(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white transition-all text-slate-900 dark:text-white font-black">✕</button>
 
             <div className="mb-10 text-center">
               <h2 className="text-2xl font-black uppercase tracking-[0.2em] mb-3 text-slate-950 dark:text-white">{t.buyTokensTitle}</h2>
@@ -195,7 +195,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
               {/* Starter */}
               <div className={`group relative p-8 rounded-[32px] border-2 flex flex-col items-center text-center transition-all hover:border-blue-400 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200 shadow-sm'}`}>
                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-4">{t.tokenPack1}</span>
-                <span className="text-4xl font-black mb-8 text-slate-950 dark:text-white">220</span>
+                <span className="text-3xl sm:text-4xl font-black mb-8 text-slate-950 dark:text-white">220</span>
                 <button onClick={() => addTokens(220)} className="mt-auto w-full bg-slate-900 dark:bg-blue-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition-all">{lang === 'en' ? 'Buy now' : 'Vásárlás'}</button>
               </div>
 
@@ -203,14 +203,14 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
               <div className={`group relative p-8 rounded-[32px] border-2 border-blue-500 flex flex-col items-center text-center transition-all scale-105 shadow-xl ${darkMode ? 'bg-blue-900/10' : 'bg-white'}`}>
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-[9px] font-black rounded-full uppercase tracking-widest shadow-lg">{t.bestValue}</div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-4 mt-2">{t.tokenPack2}</span>
-                <span className="text-5xl font-black mb-8 text-slate-950 dark:text-white">500</span>
+                <span className="text-4xl sm:text-5xl font-black mb-8 text-slate-950 dark:text-white">500</span>
                 <button onClick={() => addTokens(500)} className="mt-auto w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all">{lang === 'en' ? 'Best Price' : 'Legjobb ár'}</button>
               </div>
 
               {/* Elite */}
               <div className={`group relative p-8 rounded-[32px] border-2 flex flex-col items-center text-center transition-all hover:border-emerald-400 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200 shadow-sm'}`}>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-4">{t.tokenPack3}</span>
-                <span className="text-4xl font-black mb-8 text-slate-950 dark:text-white">1200</span>
+                <span className="text-3xl sm:text-4xl font-black mb-8 text-slate-950 dark:text-white">1200</span>
                 <button onClick={() => addTokens(1200)} className="mt-auto w-full bg-slate-900 dark:bg-emerald-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition-all">{lang === 'en' ? 'Get Elite' : 'Elite csomag'}</button>
               </div>
             </div>
@@ -219,12 +219,14 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
       )}
 
       {/* Header */}
-      <div className="p-8 border-b-2 border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
+      <div className="p-4 sm:p-6 md:p-8 border-b-2 border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-slate-950 dark:bg-blue-600 flex items-center justify-center text-white text-xl shadow-xl">👔</div>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-slate-950 dark:bg-blue-600 flex items-center justify-center text-white shadow-xl shrink-0">
+              <BriefcaseIcon className="w-6 h-6" />
+            </div>
             <div>
-              <h3 className="text-lg font-black uppercase tracking-tight text-slate-950 dark:text-white leading-none">{t.coachTitle}</h3>
+              <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-slate-950 dark:text-white leading-none">{t.coachTitle}</h3>
               <div className="flex items-center gap-1.5 mt-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <p className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">{t.coachSubtitle}</p>
@@ -233,9 +235,12 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
           </div>
           <button 
             onClick={() => setIsStoreOpen(true)}
-            className="flex items-center gap-3 bg-white dark:bg-slate-800 px-5 py-2.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-amber-400 group"
+            className="flex items-center gap-3 bg-white dark:bg-slate-800 px-3 sm:px-5 py-2.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:border-amber-400 group shrink-0"
           >
-            <span className="text-amber-600 dark:text-amber-400 text-xs font-black tracking-widest">🪙 {credits}</span>
+            <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+              <CoinIcon className="w-4 h-4" />
+              <span className="text-xs font-black tracking-widest">{credits}</span>
+            </div>
             <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-black group-hover:scale-110 transition-transform">+</div>
           </button>
         </div>
@@ -254,12 +259,12 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
       </div>
       
       {/* Chat History */}
-      <div className="flex-grow overflow-y-auto p-8 space-y-10 bg-slate-50/30 dark:bg-slate-950/30 scroll-smooth">
+      <div className="flex-grow overflow-y-auto p-4 sm:p-8 space-y-10 bg-slate-50/30 dark:bg-slate-950/30 scroll-smooth">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
             {m.role === 'ai' ? (
               <div className="max-w-[90%] space-y-4">
-                 <div className={`p-7 rounded-[32px] rounded-bl-none font-bold text-sm leading-relaxed shadow-sm border-2 ${
+                 <div className={`p-6 sm:p-7 rounded-[32px] rounded-bl-none font-bold text-sm leading-relaxed shadow-sm border-2 ${
                     darkMode ? 'bg-slate-800 text-slate-100 border-slate-700' : 'bg-white text-slate-950 border-slate-200'
                  }`}>
                    <div className="whitespace-pre-wrap">
@@ -277,7 +282,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
                  </div>
               </div>
             ) : (
-              <div className="max-w-[80%] p-6 rounded-[28px] rounded-br-none font-bold text-sm bg-slate-900 text-white dark:bg-blue-600 shadow-xl shadow-blue-500/10">
+              <div className="max-w-[80%] p-5 sm:p-6 rounded-[28px] rounded-br-none font-bold text-sm bg-slate-900 text-white dark:bg-blue-600 shadow-xl shadow-blue-500/10">
                 {m.text}
               </div>
             )}
@@ -299,7 +304,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
           <div className="flex justify-start animate-in fade-in duration-300">
             <div className={`p-6 rounded-[32px] rounded-bl-none border-2 flex flex-col gap-4 ${darkMode ? 'bg-rose-900/20 border-rose-500/30' : 'bg-rose-50 border-rose-200'}`}>
               <div className="flex items-center gap-3">
-                <span className="text-xl">⚠️</span>
+                <WarningIcon className="w-6 h-6 text-rose-500" />
                 <p className={`text-sm font-bold ${darkMode ? 'text-rose-200' : 'text-rose-800'}`}>{t.coachError}</p>
               </div>
               <button 
@@ -315,9 +320,9 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
       </div>
 
       {/* Pro-Tip Bar */}
-      <div className="px-8 py-4 bg-blue-50 dark:bg-slate-800/80 border-t-2 border-slate-100 dark:border-slate-800 animate-in fade-in duration-500">
+      <div className="px-4 py-3 sm:px-8 sm:py-4 bg-blue-50 dark:bg-slate-800/80 border-t-2 border-slate-100 dark:border-slate-800 animate-in fade-in duration-500">
         <div className="flex items-center gap-4">
-          <span className="text-lg">💡</span>
+          <LightBulbIcon className="w-5 h-5 text-blue-500" />
           <p className="text-[10px] font-bold text-slate-900 dark:text-slate-200 leading-relaxed uppercase tracking-widest">
             <span className="font-black text-blue-600 dark:text-blue-400 mr-2">PRO-TIP:</span>
             {currentTip}
@@ -326,11 +331,11 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
       </div>
 
       {/* Input Area */}
-      <div className="p-8 border-t-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-4 items-center">
+      <div className="p-4 sm:p-6 border-t-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2 sm:gap-4 items-center">
         <button 
           onClick={toggleListening}
           disabled={isLoading || credits <= 0}
-          className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all border-2 relative disabled:opacity-30 ${
+          className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all border-2 relative disabled:opacity-30 shrink-0 ${
             isListening 
             ? 'bg-rose-100 border-rose-500 text-rose-600 dark:bg-rose-900/30 shadow-[0_0_15px_rgba(244,63,94,0.4)]' 
             : 'bg-slate-50 border-slate-300 text-slate-900 dark:bg-slate-800 dark:border-slate-700 hover:border-blue-500 hover:text-blue-500'
@@ -344,7 +349,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
 
         <input 
           disabled={isLoading || credits <= 0}
-          className={`flex-grow rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white disabled:opacity-50`}
+          className={`flex-grow rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 h-14 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white disabled:opacity-50`}
           placeholder={isListening ? t.recording : (lang === 'en' ? 'Type your answer here...' : t.inputPlaceholder)}
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -353,7 +358,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, darkMode, lang }
         <button 
           onClick={() => sendMessage()} 
           disabled={isLoading || credits <= 0 || !input.trim()}
-          className="bg-slate-950 dark:bg-blue-600 text-white w-14 h-14 rounded-2xl hover:opacity-90 disabled:bg-slate-300 transition-all shadow-xl active:scale-95 flex items-center justify-center group"
+          className="bg-slate-950 dark:bg-blue-600 text-white w-14 h-14 rounded-2xl hover:opacity-90 disabled:bg-slate-300 transition-all shadow-xl active:scale-95 flex items-center justify-center group shrink-0"
         >
           <svg className={`w-6 h-6 rotate-90 transition-transform ${isLoading ? 'animate-spin' : 'group-hover:translate-x-1 group-hover:-translate-y-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>

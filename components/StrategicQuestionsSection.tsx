@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { LightBulbIcon } from './UIComponents';
 
 interface StrategicQuestionsSectionProps {
   questions: string[];
@@ -31,7 +31,7 @@ const StrategicQuestionsSection: React.FC<StrategicQuestionsSectionProps> = ({ q
         >
           <button 
             onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-            className="w-full flex items-center gap-6 p-6 text-left"
+            className="w-full flex items-center gap-4 sm:gap-6 p-4 sm:p-6 text-left"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black transition-colors shrink-0 ${
               expandedIdx === idx ? 'bg-violet-600 text-white' : 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
@@ -49,10 +49,10 @@ const StrategicQuestionsSection: React.FC<StrategicQuestionsSectionProps> = ({ q
           </button>
 
           <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedIdx === idx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className={`p-8 pt-0 border-t-2 ${darkMode ? 'border-slate-700' : 'border-slate-100'}`}>
+            <div className={`p-4 pt-0 sm:p-8 sm:pt-0 border-t-2 ${darkMode ? 'border-slate-700' : 'border-slate-100'}`}>
               <div className={`p-6 rounded-2xl border-2 mt-4 ${darkMode ? 'bg-slate-950/40 border-slate-700 text-slate-300' : 'bg-violet-50 border-violet-100 text-slate-900'}`}>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xl">💡</span>
+                  <LightBulbIcon className="w-5 h-5 text-violet-500" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-400">Javasolt Válasz Stratégia</h4>
                 </div>
                 <p className="text-sm font-bold leading-relaxed text-justify whitespace-pre-wrap">

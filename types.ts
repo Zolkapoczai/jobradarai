@@ -48,6 +48,13 @@ export interface ScoreExplanations {
   domainFit: string;
 }
 
+// FIX: Added the missing NetworkingStrategy interface to resolve a compilation error.
+export interface NetworkingStrategy {
+  connectionRequest: string;
+  valueMessage: string;
+  followUp: string;
+}
+
 export interface CVSuggestion {
   category: 'keywords' | 'focus' | 'structure' | 'ats' | string;
   title: string;
@@ -58,12 +65,6 @@ export interface CVSuggestion {
     after: string;
     explanation: string;
   };
-}
-
-export interface NetworkingStrategy {
-  connectionRequest: string;
-  valueMessage: string;
-  followUp: string;
 }
 
 export interface LinkedInAudit {
@@ -126,6 +127,11 @@ export interface InterviewerProfiler {
   iceBreakerQuestions: string[];
 }
 
+export interface PlanPhase {
+  phaseTitle: string;
+  actions: string[];
+}
+
 export interface AnalysisResult {
   matchScore: number;
   scoreBreakdown: ScoreBreakdown;
@@ -141,7 +147,7 @@ export interface AnalysisResult {
   cvSummaryRewrite: string;
   coverLetter: string;
   keywords: string[];
-  plan30Day: string[];
+  plan90Day: PlanPhase[];
   interviewQuestions: string[];
   interviewAnswers: string[];
   detectedLanguage: string;
@@ -150,7 +156,6 @@ export interface AnalysisResult {
   companyName: string;
   companyWebsite: string;
   cvSuggestions?: CVSuggestion[];
-  networkingStrategy?: NetworkingStrategy;
   linkedinAudit?: LinkedInAudit;
   competitorAnalysis?: CompetitorAnalysis;
   preMortemAnalysis?: PreMortemAnalysis;
@@ -158,3 +163,16 @@ export interface AnalysisResult {
   salaryNegotiation?: SalaryNegotiation;
   interviewerProfiler?: InterviewerProfiler;
 }
+
+export type AnalysisConclusion = {
+  positives: string[];
+  warnings: string[];
+  opportunities: string[];
+};
+
+export type JobAnalysis = {
+  seniorityScore: number;
+  stackFocusScore: number;
+  transparencyScore: number;
+  conclusion: AnalysisConclusion;
+};

@@ -1,5 +1,6 @@
 import React from 'react';
 import { InterviewerProfiler } from '../types';
+import { UserIcon } from './UIComponents';
 
 interface InterviewerProfilerSectionProps {
   data: InterviewerProfiler;
@@ -17,7 +18,7 @@ const InterviewerProfilerSection: React.FC<InterviewerProfilerSectionProps> = ({
           }`}>
             <div className="flex items-center gap-4 mb-6">
               <div className={`w-12 h-12 flex items-center justify-center rounded-2xl text-xl shadow-inner bg-blue-100 dark:bg-blue-900/30 text-blue-600`}>
-                👤
+                <UserIcon className="w-6 h-6" />
               </div>
               <div>
                 <h4 className="text-lg font-black tracking-tight text-slate-950 dark:text-white leading-none">{person.role}</h4>

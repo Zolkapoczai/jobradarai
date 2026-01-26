@@ -12,17 +12,17 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose, t }) =>
 
   return (
     <div className="fixed inset-0 z-[11000] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-[48px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="max-w-2xl w-full bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 sm:p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
         <button 
           onClick={onClose} 
-          className="absolute top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-900 dark:text-white z-[11100]"
+          className="absolute top-6 right-6 md:top-8 md:right-8 w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-900 dark:text-white z-[11100]"
         >
           ✕
         </button>
         
         <div className="space-y-12">
           <div className="text-center">
-            <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 dark:text-white">{t.aboutTitle}</h2>
+            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-slate-950 dark:text-white">{t.aboutTitle}</h2>
           </div>
 
           <div className="space-y-10">

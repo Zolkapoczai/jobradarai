@@ -30,7 +30,7 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
       onMouseEnter={() => setRadarHovered(true)}
       onMouseLeave={() => { setRadarHovered(false); setActiveFactor(null); }}
     >
-      <div className={`relative w-72 h-72 flex items-center justify-center rounded-full transition-all duration-700 shadow-2xl group-hover:shadow-[0_0_50px_rgba(59,130,246,0.15)] cursor-pointer ${radarHovered ? 'scale-[1.02]' : 'scale-100'}`}>
+      <div className={`relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center rounded-full transition-all duration-700 shadow-2xl group-hover:shadow-[0_0_50px_rgba(59,130,246,0.15)] cursor-pointer ${radarHovered ? 'scale-[1.02]' : 'scale-100'}`}>
         <div className={`absolute inset-0 rounded-full overflow-hidden transition-opacity duration-700 ${radarHovered ? 'opacity-100' : 'opacity-0'}`}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1)_0%,transparent_80%)]"></div>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -58,10 +58,10 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
             key={i}
             onMouseEnter={() => setActiveFactor(i)}
             onMouseLeave={() => setActiveFactor(null)}
-            className={`absolute ${f.pos} w-24 h-24 flex flex-col items-center justify-center transition-all duration-700 z-[100] ${radarHovered ? 'opacity-100 scale-110 translate-y-0' : 'opacity-0 scale-50 translate-y-8 pointer-events-none'}`}
+            className={`absolute ${f.pos} w-20 h-20 sm:w-24 sm:h-24 flex flex-col items-center justify-center transition-all duration-700 z-[100] ${radarHovered ? 'opacity-100 scale-110 translate-y-0' : 'opacity-0 scale-50 translate-y-8 pointer-events-none'}`}
             style={{ transitionDelay: `${i * 100}ms` }}
           >
-            <div className={`relative w-14 h-14 flex items-center justify-center mb-2 transition-all duration-300 ${activeFactor === i ? 'scale-125 shadow-2xl' : 'scale-100'}`}>
+            <div className={`relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-2 transition-all duration-300 ${activeFactor === i ? 'scale-125 shadow-2xl' : 'scale-100'}`}>
               <div className="absolute inset-0 rounded-full blur-md opacity-20" style={{ backgroundColor: f.color }}></div>
               <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 40 40">
                 <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeWidth="3" />
@@ -88,7 +88,7 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
         <TooltipWrapper text={t.tooltips.scoreRadar}>
           <div className={`relative flex flex-col items-center transition-all duration-700 ${radarHovered ? 'scale-90 opacity-30 blur-[2px]' : 'scale-100 opacity-100 blur-0'}`}>
             <div className="flex items-center gap-2">
-              <span className={`text-8xl font-black ${scoreTheme.text} tracking-tighter tabular-nums drop-shadow-sm`}>{Math.floor(result.matchScore)}%</span>
+              <span className={`text-7xl sm:text-8xl font-black ${scoreTheme.text} tracking-tighter tabular-nums drop-shadow-sm`}>{Math.floor(result.matchScore)}%</span>
             </div>
             <span className="text-[10px] font-black uppercase text-slate-700 dark:text-slate-100 tracking-[0.4em] mt-2">{t.matchLevel}</span>
           </div>

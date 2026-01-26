@@ -27,17 +27,24 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
       {/* Header - Always visible */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-8 py-6 text-left transition-colors ${
+        className={`w-full flex items-center justify-between px-6 py-5 sm:px-8 sm:py-6 text-left transition-colors ${
           darkMode ? 'hover:bg-slate-800/50' : 'hover:bg-slate-50'
         }`}
       >
-        <div className="flex items-center">
-          <h3 className={`text-lg font-black uppercase tracking-tight transition-all duration-300 group-hover:text-blue-600 ${
-            darkMode ? 'text-white' : 'text-slate-950'
-          }`}>
-            {title}
-          </h3>
-          {tooltipText && <InfoTooltip text={tooltipText} />}
+        <div className="flex items-center gap-4">
+          {icon && (
+            <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 ${darkMode ? "bg-slate-800" : "bg-slate-100"}`}>
+              {icon}
+            </div>
+          )}
+          <div className="flex items-center">
+            <h3 className={`text-base sm:text-lg font-black uppercase tracking-tight transition-all duration-300 group-hover:text-blue-600 ${
+              darkMode ? 'text-white' : 'text-slate-950'
+            }`}>
+              {title}
+            </h3>
+            {tooltipText && <InfoTooltip text={tooltipText} />}
+          </div>
         </div>
 
         <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-transform duration-500 ${
@@ -55,7 +62,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
           isOpen ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className={`p-8 md:p-10 border-t-2 ${
+        <div className={`p-6 sm:p-8 border-t-2 ${
           darkMode ? 'border-slate-800 bg-slate-950/20' : 'border-slate-100 bg-slate-50/30'
         }`}>
           {children}
