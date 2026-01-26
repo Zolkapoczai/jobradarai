@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { InfoTooltip } from './UIComponents';
 
 interface SectionWrapperProps {
   title: string;
@@ -6,6 +7,7 @@ interface SectionWrapperProps {
   darkMode: boolean;
   defaultOpen?: boolean;
   icon?: React.ReactNode;
+  tooltipText?: string;
 }
 
 const SectionWrapper: React.FC<SectionWrapperProps> = ({ 
@@ -13,7 +15,8 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
   children, 
   darkMode, 
   defaultOpen = false,
-  icon 
+  icon,
+  tooltipText
 }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -29,11 +32,12 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
         }`}
       >
         <div className="flex items-center">
-          <h3 className={`text-lg font-black uppercase tracking-tight transition-all duration-300 hover:translate-x-2 hover:text-blue-600 cursor-pointer ${
+          <h3 className={`text-lg font-black uppercase tracking-tight transition-all duration-300 group-hover:text-blue-600 ${
             darkMode ? 'text-white' : 'text-slate-950'
           }`}>
             {title}
           </h3>
+          {tooltipText && <InfoTooltip text={tooltipText} />}
         </div>
 
         <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-transform duration-500 ${

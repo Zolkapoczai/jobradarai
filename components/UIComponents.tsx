@@ -49,7 +49,7 @@ export const GoogleHelloText: React.FC = () => (
   </div>
 );
 
-// Reusable Tooltip component
+// Reusable Tooltip component for icons
 export const InfoTooltip: React.FC<{ text: string; position?: 'top' | 'bottom' }> = ({ text, position = 'top' }) => (
   <div className="group relative inline-block ml-2 align-middle z-[150]">
     <div className="cursor-help w-5 h-5 rounded-full border-2 border-slate-900 dark:border-slate-300 flex items-center justify-center text-[11px] text-slate-950 dark:text-white font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">i</div>
@@ -59,6 +59,31 @@ export const InfoTooltip: React.FC<{ text: string; position?: 'top' | 'bottom' }
     </div>
   </div>
 );
+
+// Generic Tooltip Wrapper for any component
+export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }> = ({ text, children, position = 'top' }) => {
+  const positionClasses = {
+    top: 'bottom-full mb-3 left-1/2 -translate-x-1/2',
+    bottom: 'top-full mt-3 left-1/2 -translate-x-1/2',
+    left: 'right-full mr-3 top-1/2 -translate-y-1/2',
+    right: 'left-full ml-3 top-1/2 -translate-y-1/2',
+  };
+  const arrowClasses = {
+    top: 'top-full left-1/2 -translate-x-1/2 border-t-slate-800/95',
+    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-slate-800/95',
+    left: 'left-full top-1/2 -translate-y-1/2 border-l-slate-800/95',
+    right: 'right-full top-1/2 -translate-y-1/2 border-r-slate-800/95',
+  };
+  return (
+    <div className="group relative">
+      {children}
+      <div className={`absolute ${positionClasses[position]} w-64 bg-slate-800/95 backdrop-blur-sm text-white text-xs p-4 rounded-xl shadow-2xl z-[2000] opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform group-hover:scale-100 scale-95`}>
+        <div className={`absolute border-8 border-transparent ${arrowClasses[position]}`}></div>
+        <p className="font-bold leading-relaxed text-justify">{text}</p>
+      </div>
+    </div>
+  );
+};
 
 // Match Factor visualization bar
 export const FactorBar: React.FC<{ label: string; value: number; color: string; tooltip: string; isHighlighted: boolean }> = ({ label, value, color, tooltip, isHighlighted }) => {

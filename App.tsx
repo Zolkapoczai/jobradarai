@@ -1,9 +1,8 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite } from './services/jobAgent';
 import { translations } from './translations';
-import { GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo } from './components/UIComponents';
+import { GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo, TooltipWrapper } from './components/UIComponents';
 import JobCoachChat from './components/JobCoachChat';
 import NeuralScoreRadar from './components/NeuralScoreRadar';
 import PricingPage from './components/PricingPage';
@@ -205,7 +204,10 @@ const App: React.FC = () => {
     setJdUrl('');
     setCompanyNameInput('');
     setInterviewerLinkedin('');
+    setLinkedinText('');
     setUserNote('');
+    setCvFile(null);
+    setFileUploadStatus('idle');
   };
 
   useEffect(() => {
@@ -250,6 +252,16 @@ const App: React.FC = () => {
             >
               {darkMode ? '☀️' : '🌙'}
             </button>
+            <TooltipWrapper text={t.tooltips.resetAll}>
+              <button 
+                onClick={reset} 
+                className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-rose-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-400"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </TooltipWrapper>
           </div>
         </div>
       </div>
@@ -373,49 +385,53 @@ const App: React.FC = () => {
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
-                    <div 
-                      onClick={() => fileInputRef.current?.click()}
-                      className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[350px] cursor-pointer group relative overflow-hidden ${
-                        fileUploadStatus === 'success' ? 'bg-emerald-50/30 border-emerald-500/30' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
-                      }`}
-                    >
-                      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.02] pointer-events-none select-none">
-                        <span className="text-[140px] font-black tracking-tighter">PDF</span>
+                    <TooltipWrapper text={t.tooltips.cvUpload} position="bottom">
+                      <div 
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[350px] cursor-pointer group relative overflow-hidden ${
+                          fileUploadStatus === 'success' ? 'bg-emerald-50/30 border-emerald-500/30' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
+                        }`}
+                      >
+                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.02] pointer-events-none select-none">
+                          <span className="text-[140px] font-black tracking-tighter">PDF</span>
+                        </div>
+                        <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
+                        {fileUploadStatus === 'success' ? (
+                          <div className="space-y-4 animate-in zoom-in-95 relative z-10">
+                             <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-2xl shadow-xl mx-auto">✓</div>
+                             <p className="text-lg font-black text-slate-900 dark:text-white break-all px-4">{cvFile?.name}</p>
+                             <button onClick={(e) => { e.stopPropagation(); setCvFile(null); setFileUploadStatus('idle'); }} className="text-xs font-black text-rose-600 uppercase border-b border-rose-600 pb-0.5">{lang === 'en' ? 'Replace file' : 'Fájl cseréje'}</button>
+                          </div>
+                        ) : (
+                          <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10">
+                             <div className="w-24 h-24 mx-auto mb-2 relative flex items-center justify-center">
+                                <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                                <svg className="w-16 h-16 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                                  <polyline points="9 15 12 12 15 15"></polyline>
+                                  <path d="M4 16v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" opacity="0.3"></path>
+                                </svg>
+                             </div>
+                             <p className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 px-4">{t.dragDropText}</p>
+                             <span className="inline-block px-6 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 group-hover:bg-blue-700 transition-all">{t.browseText}</span>
+                          </div>
+                        )}
                       </div>
-                      <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
-                      {fileUploadStatus === 'success' ? (
-                        <div className="space-y-4 animate-in zoom-in-95 relative z-10">
-                           <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-2xl shadow-xl mx-auto">✓</div>
-                           <p className="text-lg font-black text-slate-900 dark:text-white break-all px-4">{cvFile?.name}</p>
-                           <button onClick={(e) => { e.stopPropagation(); setCvFile(null); setFileUploadStatus('idle'); }} className="text-xs font-black text-rose-600 uppercase border-b border-rose-600 pb-0.5">{lang === 'en' ? 'Replace file' : 'Fájl cseréje'}</button>
-                        </div>
-                      ) : (
-                        <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10">
-                           <div className="w-24 h-24 mx-auto mb-2 relative flex items-center justify-center">
-                              <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
-                              <svg className="w-16 h-16 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="12" y1="18" x2="12" y2="12"></line>
-                                <polyline points="9 15 12 12 15 15"></polyline>
-                                <path d="M4 16v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" opacity="0.3"></path>
-                              </svg>
-                           </div>
-                           <p className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 px-4">{t.dragDropText}</p>
-                           <span className="inline-block px-6 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 group-hover:bg-blue-700 transition-all">{t.browseText}</span>
-                        </div>
-                      )}
-                    </div>
+                    </TooltipWrapper>
                  </div>
                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{t.linkedinLabel}</label>
-                    <FormTextarea
-                      rows={14}
-                      className="min-h-[350px]"
-                      placeholder={t.linkedinInputPlaceholder}
-                      value={linkedinText}
-                      onChange={(e) => setLinkedinText(e.target.value)}
-                    />
+                    <TooltipWrapper text={t.tooltips.linkedinPaste} position="bottom">
+                      <FormTextarea
+                        rows={14}
+                        className="min-h-[350px]"
+                        placeholder={t.linkedinInputPlaceholder}
+                        value={linkedinText}
+                        onChange={(e) => setLinkedinText(e.target.value)}
+                      />
+                    </TooltipWrapper>
                     <div className="flex justify-end">
                        <div className="group relative">
                           <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
@@ -449,20 +465,28 @@ const App: React.FC = () => {
                 </div>
                 <div className="space-y-10">
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <FormInput label={lang === 'en' ? 'Company Name' : 'Cégnév'} placeholder={lang === 'en' ? 'e.g. Google, EPAM...' : 'Pl. Google, EPAM, OTP...'} value={companyNameInput} onChange={(e) => setCompanyNameInput(e.target.value)} />
+                    <TooltipWrapper text={t.tooltips.companyName}>
+                        <FormInput label={lang === 'en' ? 'Company Name' : 'Cégnév'} placeholder={lang === 'en' ? 'e.g. Google, EPAM...' : 'Pl. Google, EPAM, OTP...'} value={companyNameInput} onChange={(e) => setCompanyNameInput(e.target.value)} />
+                    </TooltipWrapper>
+                    <TooltipWrapper text={t.tooltips.jdUrl}>
                       <FormInput label={lang === 'en' ? 'Job Link (Optional)' : 'Hirdetés Linkje (Opcionális)'} placeholder="https://..." value={jdUrl} onChange={(e) => setJdUrl(e.target.value)} />
+                    </TooltipWrapper>
                    </div>
-                   <div className="space-y-3 max-w-[70%]">
+                   <div className="space-y-3">
                       <div className="flex justify-between items-center px-1">
                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">{lang === 'en' ? 'Job Description Text' : 'Álláshirdetés Szövege'}</label>
                          <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">{lang === 'en' ? 'Critical field' : 'Kritikus mező'}</span>
                       </div>
-                      <FormTextarea rows={12} className="min-h-[300px] leading-relaxed shadow-inner" placeholder={lang === 'en' ? 'Paste the full job description here...' : 'Ide másold be a teljes hirdetés szövegét (feladatok, elvárások, juttatások)...'} value={jdText} onChange={(e) => setJdText(e.target.value)} />
+                      <TooltipWrapper text={t.tooltips.jdText} position="bottom">
+                        <FormTextarea rows={12} className="min-h-[300px] leading-relaxed shadow-inner" placeholder={lang === 'en' ? 'Paste the full job description here...' : 'Ide másold be a teljes hirdetés szövegét (feladatok, elvárások, juttatások)...'} value={jdText} onChange={(e) => setJdText(e.target.value)} />
+                      </TooltipWrapper>
                    </div>
                    <div className="space-y-3">
                       <div className="flex justify-between items-end gap-4">
                          <div className="flex-grow">
+                          <TooltipWrapper text={t.tooltips.interviewerLinkedin}>
                             <FormInput label={lang === 'en' ? "Interviewer's LinkedIn Profile (Optional)" : "Interjúztató LinkedIn Profilja (Opcionális)"} placeholder="https://www.linkedin.com/in/..." value={interviewerLinkedin} onChange={(e) => setInterviewerLinkedin(e.target.value)} />
+                          </TooltipWrapper>
                          </div>
                          <button onClick={() => setCurrentStep(1)} className="px-6 py-4 rounded-2xl border-2 border-slate-300 font-black text-[10px] uppercase tracking-widest text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800 transition-all mb-1 shrink-0">{lang === 'en' ? 'Back' : 'Vissza'}</button>
                       </div>
@@ -476,19 +500,42 @@ const App: React.FC = () => {
         {currentStep === 3 && result && scoreTheme && (
           <div className="space-y-12 animate-in fade-in duration-700">
             <div className="flex items-center justify-center gap-4 mb-12">
-               {['overview', 'preparation', 'coach'].map((tab) => (
+               <TooltipWrapper text={t.tooltips.dashboardTab}>
                  <button 
-                  key={tab}
-                  onClick={() => setActiveTab(tab as any)}
+                  onClick={() => setActiveTab('overview')}
                   className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
-                    activeTab === tab 
+                    activeTab === 'overview' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
                   }`}
                  >
-                   {tab === 'overview' ? (lang === 'en' ? 'DASHBOARD' : 'DASHBOARD') : tab === 'preparation' ? (lang === 'en' ? 'STRATEGY' : 'STRATÉGIA') : (lang === 'en' ? 'INTERVIEW COACH' : 'INTERJÚ COACH')}
+                   DASHBOARD
                  </button>
-               ))}
+               </TooltipWrapper>
+               <TooltipWrapper text={t.tooltips.strategyTab}>
+                 <button 
+                  onClick={() => setActiveTab('preparation')}
+                  className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                    activeTab === 'preparation' 
+                    ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
+                  }`}
+                 >
+                   {lang === 'en' ? 'STRATEGY' : 'STRATÉGIA'}
+                 </button>
+               </TooltipWrapper>
+               <TooltipWrapper text={t.tooltips.coachTab}>
+                 <button 
+                  onClick={() => setActiveTab('coach')}
+                  className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                    activeTab === 'coach' 
+                    ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
+                  }`}
+                 >
+                   {lang === 'en' ? 'INTERVIEW COACH' : 'INTERJÚ COACH'}
+                 </button>
+               </TooltipWrapper>
             </div>
 
             {activeTab === 'overview' && (
@@ -510,7 +557,7 @@ const App: React.FC = () => {
                    </div>
                 </div>
 
-                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon="🔬" darkMode={darkMode}>
+                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon="🔬" darkMode={darkMode} tooltipText={t.tooltips.professionalAlignment}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                      <div className="bg-white dark:bg-slate-900 rounded-[32px] border-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                         <div className="px-8 py-4 bg-emerald-50 dark:bg-emerald-900/10 border-b-2 border-slate-100 dark:border-slate-800 flex items-center gap-3">
@@ -543,11 +590,11 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={t.auditTitle} icon="👤" darkMode={darkMode}>
+                <SectionWrapper title={t.auditTitle} icon="👤" darkMode={darkMode} tooltipText={t.tooltips.linkedinAudit}>
                   <LinkedInAuditSection audit={result.linkedinAudit!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon="📊" darkMode={darkMode}>
+                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon="📊" darkMode={darkMode} tooltipText={t.tooltips.competitorAnalysis}>
                   <div className="space-y-4 mb-6 px-1">
                     <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed italic">
                       {lang === 'hu' ? "A valószínűsíthető jelölti kör elemzése és az Ön megkülönböztető előnyeinek (USP) meghatározása a kiemelkedés érdekében." : "Analysis of the likely candidate pool and identifying your Unique Selling Points (USP) to stand out."}
@@ -556,13 +603,13 @@ const App: React.FC = () => {
                   <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.preMortemTitle} icon="🚩" darkMode={darkMode}>
+                <SectionWrapper title={t.preMortemTitle} icon="🚩" darkMode={darkMode} tooltipText={t.tooltips.preMortem}>
                   <RedFlagSection analysis={result.preMortemAnalysis!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
-                <SectionWrapper title={t.cvSuggestionsTitle} icon="✏️" darkMode={darkMode}>
+                <SectionWrapper title={t.cvSuggestionsTitle} icon="✏️" darkMode={darkMode} tooltipText={t.tooltips.cvSuggestions}>
                   <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
-                <SectionWrapper title={t.rewriteTitle} icon="🦎" darkMode={darkMode}>
+                <SectionWrapper title={t.rewriteTitle} icon="🦎" darkMode={darkMode} tooltipText={t.tooltips.cvRewrite}>
                   <RewriterSection rewrite={result.cvRewrite!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
               </div>
@@ -570,19 +617,19 @@ const App: React.FC = () => {
 
             {activeTab === 'preparation' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon="🔥" darkMode={darkMode} defaultOpen>
+                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon="🔥" darkMode={darkMode} defaultOpen tooltipText={t.tooltips.interviewPrep}>
                   <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.salaryTitle} icon="💸" darkMode={darkMode}>
+                <SectionWrapper title={t.salaryTitle} icon="💸" darkMode={darkMode} tooltipText={t.tooltips.salaryNegotiation}>
                   <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.interviewerTitle} icon="📡" darkMode={darkMode}>
+                <SectionWrapper title={t.interviewerTitle} icon="📡" darkMode={darkMode} tooltipText={t.tooltips.interviewerProfile}>
                   <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon="🏢" darkMode={darkMode}>
+                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon="🏢" darkMode={darkMode} tooltipText={t.tooltips.corporateEcosystem}>
                    <div className="space-y-12">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                          <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon="📈" darkMode={darkMode} />
@@ -596,7 +643,7 @@ const App: React.FC = () => {
                    </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon="📝" darkMode={darkMode}>
+                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon="📝" darkMode={darkMode} tooltipText={t.tooltips.coverLetter}>
                   <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                        <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
@@ -606,11 +653,11 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Direct Networking" : "Közvetlen Kapcsolatépítés"} icon="🔗" darkMode={darkMode}>
+                <SectionWrapper title={lang === 'en' ? "Direct Networking" : "Közvetlen Kapcsolatépítés"} icon="🔗" darkMode={darkMode} tooltipText={t.tooltips.networking}>
                   <NetworkingSection strategy={result.networkingStrategy!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon="📅" darkMode={darkMode}>
+                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon="📅" darkMode={darkMode} tooltipText={t.tooltips.plan90Day}>
                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
                       <div className="flex justify-between items-center mb-6">
                          <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
@@ -636,7 +683,9 @@ const App: React.FC = () => {
             )}
 
             <div className="flex justify-center pt-12">
-               <button onClick={reset} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 dark:text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.reset}</button>
+               <TooltipWrapper text={t.tooltips.reset}>
+                 <button onClick={reset} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 dark:text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.reset}</button>
+               </TooltipWrapper>
             </div>
           </div>
         )}

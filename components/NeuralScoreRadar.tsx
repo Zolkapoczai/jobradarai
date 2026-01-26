@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AnalysisResult } from '../types';
-import { FactorBar } from './UIComponents';
+import { FactorBar, TooltipWrapper } from './UIComponents';
 
 interface NeuralScoreRadarProps {
   result: AnalysisResult;
@@ -84,12 +84,14 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
           </div>
         ))}
 
-        <div className={`relative flex flex-col items-center transition-all duration-700 ${radarHovered ? 'scale-90 opacity-30 blur-[2px]' : 'scale-100 opacity-100 blur-0'}`}>
-          <div className="flex items-center gap-2">
-            <span className={`text-8xl font-black ${scoreTheme.text} tracking-tighter tabular-nums drop-shadow-sm`}>{result.matchScore}%</span>
+        <TooltipWrapper text={t.tooltips.scoreRadar}>
+          <div className={`relative flex flex-col items-center transition-all duration-700 ${radarHovered ? 'scale-90 opacity-30 blur-[2px]' : 'scale-100 opacity-100 blur-0'}`}>
+            <div className="flex items-center gap-2">
+              <span className={`text-8xl font-black ${scoreTheme.text} tracking-tighter tabular-nums drop-shadow-sm`}>{result.matchScore}%</span>
+            </div>
+            <span className="text-[10px] font-black uppercase text-slate-700 dark:text-slate-100 tracking-[0.4em] mt-2">{t.matchLevel}</span>
           </div>
-          <span className="text-[10px] font-black uppercase text-slate-700 dark:text-slate-100 tracking-[0.4em] mt-2">{t.matchLevel}</span>
-        </div>
+        </TooltipWrapper>
       </div>
       
       <div className="mt-14 w-full grid grid-cols-1 gap-6 px-4">
