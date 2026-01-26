@@ -21,7 +21,8 @@ const RewriterSection: React.FC<RewriterSectionProps> = ({ rewrite, t, darkMode 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-2 px-2">
-        <InfoTooltip text={t.rewriteTooltip} position="bottom" />
+        {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
+        <InfoTooltip text={t.rewriteTooltip} />
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Section Intelligence Overview</span>
       </div>
 

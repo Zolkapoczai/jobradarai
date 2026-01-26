@@ -27,13 +27,11 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
           </div>
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-8 flex-grow">{t.planFreeDesc}</p>
           <div className="mb-8 flex flex-col">
-            {!isEn && (
-              <span className="text-lg text-slate-400 dark:text-slate-500 font-bold line-through">500 Ft</span>
-            )}
             <div>
-              <span className="text-4xl font-black">{isEn ? '1 EUR' : '0 Ft'}</span>
+              <span className="text-4xl font-black">{isEn ? '0 EUR' : '0 Ft'}</span>
               <span className="text-slate-700 dark:text-slate-300 font-semibold ml-2">/ {t.planFreeTime}</span>
             </div>
+            <div className="text-rose-600 font-black text-xs uppercase mt-2 tracking-widest">{isEn ? 'DEMO VERSION' : 'DEMO VERZIÓ'}</div>
           </div>
           <ul className="space-y-4 mb-10">
             {t.pricingFeats.map((feat: string, i: number) => (
@@ -57,8 +55,9 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
           </div>
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-8 flex-grow">{t.planWeeklyDesc}</p>
           <div className="mb-8">
-            <span className="text-4xl font-black">{isEn ? '3 EUR' : '990 Ft'}</span>
+            <span className="text-4xl font-black">{isEn ? '0 EUR' : '0 Ft'}</span>
             <span className="text-slate-700 dark:text-slate-300 font-semibold ml-2">/ {t.planWeeklyTime}</span>
+            <div className="text-rose-600 font-black text-xs uppercase mt-2 tracking-widest">{isEn ? 'DEMO VERSION' : 'DEMO VERZIÓ'}</div>
           </div>
           <ul className="space-y-4 mb-10">
             {t.pricingFeats.map((feat: string, i: number) => (
@@ -79,8 +78,9 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
           </div>
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-8 flex-grow">{t.planMonthlyDesc}</p>
           <div className="mb-8">
-            <span className="text-4xl font-black">{isEn ? '5 EUR' : '1990 Ft'}</span>
+            <span className="text-4xl font-black">{isEn ? '0 EUR' : '0 Ft'}</span>
             <span className="text-slate-700 dark:text-slate-300 font-semibold ml-2">/ {t.planMonthlyTime}</span>
+            <div className="text-rose-600 font-black text-xs uppercase mt-2 tracking-widest">{isEn ? 'DEMO VERSION' : 'DEMO VERZIÓ'}</div>
           </div>
           <ul className="space-y-4 mb-10">
             {t.pricingFeats.map((feat: string, i: number) => (

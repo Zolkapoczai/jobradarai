@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 // Modern SVG Logo Component - Replaces image files for stability and sharpness
 export const JobRadarLogo: React.FC<{ className?: string }> = ({ className }) => (
@@ -49,19 +49,70 @@ export const GoogleHelloText: React.FC = () => (
   </div>
 );
 
-// Reusable Tooltip component for icons
-export const InfoTooltip: React.FC<{ text: string; position?: 'top' | 'bottom' }> = ({ text, position = 'top' }) => (
-  <div className="group relative inline-block ml-2 align-middle z-[150]">
-    <div className="cursor-help w-5 h-5 rounded-full border-2 border-slate-900 dark:border-slate-300 flex items-center justify-center text-[11px] text-slate-950 dark:text-white font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">i</div>
-    <div className={`absolute ${position === 'top' ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 w-72 p-5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform ${position === 'top' ? 'translate-y-2 group-hover:translate-y-0' : '-translate-y-2 group-hover:translate-y-0'} border border-slate-200 dark:border-slate-700 z-[3000]`}>
-      <div className={`absolute ${position === 'top' ? 'top-full border-t-white dark:border-t-slate-800' : 'bottom-full border-b-white dark:border-b-slate-800'} left-1/2 -translate-x-1/2 border-8 border-transparent`}></div>
-      <p className="font-bold leading-relaxed text-justify">{text}</p>
-    </div>
-  </div>
-);
+// Reusable Tooltip component for icons - now with dynamic positioning
+export const InfoTooltip: React.FC<{ text: string }> = ({ text }) => {
+    const [visible, setVisible] = useState(false);
+    const [position, setPosition] = useState<'top' | 'bottom'>('top');
+    const wrapperRef = useRef<HTMLDivElement>(null);
 
-// Generic Tooltip Wrapper for any component
-export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }> = ({ text, children, position = 'top' }) => {
+    const handleMouseEnter = () => {
+        if (!wrapperRef.current) return;
+        const rect = wrapperRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        // Simple logic: prefer bottom if enough space (150px estimate), otherwise top.
+        if (rect.bottom + 150 < viewportHeight) {
+            setPosition('bottom');
+        } else {
+            setPosition('top');
+        }
+        setVisible(true);
+    };
+
+    const handleMouseLeave = () => {
+        setVisible(false);
+    };
+
+    return (
+        <div 
+            ref={wrapperRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="relative inline-block ml-2 align-middle z-[150]"
+        >
+            <div className="cursor-help w-5 h-5 rounded-full border-2 border-slate-900 dark:border-slate-300 flex items-center justify-center text-[11px] text-slate-950 dark:text-white font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">i</div>
+            <div className={`absolute ${position === 'top' ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 w-72 p-5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-2xl shadow-xl pointer-events-none transition-all duration-300 transform ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'} border border-slate-200 dark:border-slate-700 z-[3000]`}>
+                <div className={`absolute ${position === 'top' ? 'top-full border-t-white dark:border-t-slate-800' : 'bottom-full border-b-white dark:border-b-slate-800'} left-1/2 -translate-x-1/2 border-8 border-transparent`}></div>
+                <p className="font-bold leading-relaxed text-justify">{text}</p>
+            </div>
+        </div>
+    );
+};
+
+
+// Generic Tooltip Wrapper for any component - now with dynamic positioning
+export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode; }> = ({ text, children }) => {
+  const [visible, setVisible] = useState(false);
+  const [position, setPosition] = useState<'top' | 'bottom' | 'left' | 'right'>('top');
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    
+    // Simple logic: prefer bottom if enough space (150px estimate), otherwise top.
+    if (rect.bottom + 150 < viewportHeight) {
+      setPosition('bottom');
+    } else {
+      setPosition('top');
+    }
+    setVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    setVisible(false);
+  };
+
   const positionClasses = {
     top: 'bottom-full mb-3 left-1/2 -translate-x-1/2',
     bottom: 'top-full mt-3 left-1/2 -translate-x-1/2',
@@ -74,16 +125,23 @@ export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode;
     left: 'left-full top-1/2 -translate-y-1/2 border-l-white dark:border-l-slate-800',
     right: 'right-full top-1/2 -translate-y-1/2 border-r-white dark:border-r-slate-800',
   };
+  
   return (
-    <div className="group relative">
+    <div 
+      ref={wrapperRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative"
+    >
       {children}
-      <div className={`absolute ${positionClasses[position]} w-64 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs p-4 rounded-xl shadow-xl z-[2000] opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 transform group-hover:scale-100 scale-95`}>
+      <div className={`absolute ${positionClasses[position]} w-64 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs p-4 rounded-xl shadow-xl z-[2000] pointer-events-none transition-all duration-300 transform ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
         <div className={`absolute border-8 border-transparent ${arrowClasses[position]}`}></div>
         <p className="font-bold leading-relaxed text-justify">{text}</p>
       </div>
     </div>
   );
 };
+
 
 // Match Factor visualization bar
 export const FactorBar: React.FC<{ label: string; value: number; color: string; tooltip: string; isHighlighted: boolean }> = ({ label, value, color, tooltip, isHighlighted }) => {

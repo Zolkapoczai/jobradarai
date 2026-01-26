@@ -1,6 +1,9 @@
+
 export const translations = {
   hu: {
-    welcome: "Üdvözöljük!",
+    welcome: "Üdvözöljük a JobRadar AI-ban!",
+    welcomeBody: "Belefáradt a sikertelen álláskeresésbe? A JobRadar AI egy személyes karrier-stratéga, amely megmutatja, hogyan gondolkodik egy HR-es. Töltse fel önéletrajzát és a pozíció leírását, és pillanatok alatt megkapja a teljes stratégiai csomagot: valós esélyek elemzése, személyre szabott kísérőlevél, célzott interjúkérdések, és CV-optimalizációs javaslatok, hogy garantáltan átjusson az automata szűrőkön (ATS).",
+    welcomeContinue: "Indulás",
     selectLang: "Üdvözöljük a Jobradaron!",
     pdfTitle: "RENDSZER OPTIMALIZÁCIÓ",
     pdfBody: "A JobRadar algoritmusai vektoros PDF-dokumentumok elemzésére letek kalibrálva. Ez garantálja a dokumentum eredeti struktúrájának integritását és a szemantikai pontosságot a neurális letapogatás során.",
@@ -14,7 +17,7 @@ export const translations = {
     strategyAi: "Rád bízom a megfogalmazást",
     strategyCancel: "Mégse",
     noteTitle: "Saját szempontok",
-    noteBody: "Írd le pár szóban (max 200 karakter), amit szeretnél, ha figyelembe vennénk.",
+    noteBody: "Adjon meg kulcsfontosságú instrukciókat vagy kontextust, amelyet az AI-nak hangsúlyoznia kell. Ezt az információt a rendszer kiemelten kezeli a vezetői összefoglaló és a kísérőlevél megalkotásakor.",
     notePlaceholder: "Pl. Említsd meg a 3 év külföldi tapasztalatomat...",
     noteStart: "Indítás!",
     noteBack: "Vissza",
@@ -34,10 +37,10 @@ export const translations = {
     companySearch: "Cég ellenőrzése...",
     companyConfirmTitle: "Cég megerősítése",
     companyConfirmBody: "Válassza ki a megfelelő vállalati profilt az elemzéshez:",
-    companyConfirmYes: "Kiválasztás",
+    companyConfirmYes: "Kiválassz",
     companyConfirmNo: "Mégse, pontosítom",
     linkWarningTitle: "Figyelem: Csak hivatkozás",
-    linkWarningBody: "Mivel csak az állás hivatkozását (link) adtad meg, a rendszer nem látja a közvetlen szöveges leírást. Ebben az esetben a feldolgozás eredménye jelentős mértékben feltételezett adaton alapulhat.",
+    linkWarningBody: "Mivel csak az állás hivatkozását (link) adtad meg, a rendszer nem látja a közvetlen szöveges leírást. Ebben az esetben a feldgozás eredménye jelentős mértékben feltételezett adaton alapulhat.",
     linkWarningContinue: "Értem, folytassuk",
     linkWarningCancel: "Vissza a szerkesztéshez",
     executeScan: "Elemzés indítása",
@@ -104,9 +107,16 @@ export const translations = {
     visitWebsite: "Weboldal Megtekintése",
     about: "Rólunk",
     pricing: "Árazás",
+    howItWorks: "Hogyan Működik",
     prep: " Felkészülés",
-    aboutTitle: "A JobRadar  Küldetése",
-    aboutBody: "A JobRadar AI v5.0 nem csupán egy elemző szoftver, hanem egy komplett Executive Karrier Akcelerátor.",
+    aboutTitle: "A JOBRADAR AI KÜLDETÉSE",
+    aboutMissionTitle: "MISSZIÓ",
+    aboutMissionText: "A JobRadar AI egy professzionális karrier-stratégiai eszköz, amely a mesterséges intelligencia erejével hidalja át a szakadékot a tehetséges jelöltek és a valódi döntéshozók között. Nem automatizált kiválasztási szoftver, hanem egy \"Human-in-the-loop\" döntéstámogató platform.",
+    aboutTechTitle: "TECHNOLÓGIA - VEKTOROS PDF ELEMZÉS",
+    aboutTechText: "A legtöbb rendszer csak a szöveget látja. Mi a struktúrát is. Rendszerünk a PDF állományok natív vektoros rétegét dolgozza fel. Ez azt jelenti, hogy nemcsak azt értjük, mit írt le, hanem azt is, hogyan látja ezt egy vállalati ATS. Azonosítjuk a rejtett formázási hibákat, amelyek miatt egy senior pályázat is fennakadhat a szűrőn.",
+    aboutDataTitle: "ADATINTEGRITÁS - MIÉRT A SZÖVEGBEILLESZTÉS?",
+    aboutDataText: "Miért nem elég a link? A vállalati karrieroldalak dinamikusak. A hirdetés szövegének közvetlen bemásolása (\"Raw Data Input\") garantálja a 100%-os pontosságot. Ezzel kizárjuk a hibás webes beolvasásból eredő torzításokat (hallucinációt), biztosítva, hogy a stratégia valós adatokra épüljön.",
+    aboutComplianceText: "EU AI ACT Compliant: A rendszer megfelel az Európai Unió szigorú szabályozásának.",
     methodologyTitle: "Elemzési Módszertan",
     methodologyBody: "Technológiánk egy 5-fázisú 'Multi-Agent' stratégiát alkalmaz.",
     fillRequired: "Kérjük töltsön ki minden kötelező mezőt (Cégnév, Leírás vagy Link, CV).",
@@ -150,6 +160,10 @@ export const translations = {
     tooltipJdSection: "Adja meg az álláshirdetés részleteit.",
     whyWorkHereLabel: "Miért dolgozz itt?",
     searchingCompanyStatus: "Vállalati adatok keresése folyamatban...",
+    validatingJdStatus: "Munkaköri leírás validálása...",
+    invalidJdTitle: "Értelmezhetetlen Munkaköri Leírás",
+    invalidJdBody: "Az MI drága erőforrásokkal dolgozik, és a megadott szöveg nem tűnik valós álláshirdetésnek. Kérjük, ne pazarolja a tokeneket, és másoljon be egy részletes, valós munkaköri leírást a pontos elemzés érdekében.",
+    invalidJdButton: "Értettem, javítom",
     strategicContext: "Stratégiai Kontextus",
     corporateCulture: "Vállalati Kultúra & SWOT",
     suggestedAnswerLabel: "Javasolt Válasz Stratégia",
@@ -251,6 +265,39 @@ export const translations = {
     afterLabel: "Executive Upgrade",
     whyLabel: "A változtatás oka",
     scenarioLabel: "Szituáció",
+    demoVersionLabel: "DEMO VERZIÓ",
+    demoVersionTooltip: "Jelenleg a rendszer tesztelés alatt van, semmilyen fellelősséget a készítők nem vállalnak a működésért, az eredményért.",
+    howItWorksModal: {
+      title: "Hogyan Működik a JobRadar?",
+      close: "Bezárás",
+      slides: [
+        {
+          title: "1. Lépés: Adatfeltöltés",
+          points: [
+            { icon: "📄", title: "Önéletrajz (PDF)", text: "Töltsd fel a szakmai önéletrajzodat. A rendszerünk a PDF vektoros adatait elemzi a maximális pontosság érdekében." },
+            { icon: "🔗", title: "LinkedIn Profil", text: "Másold be a LinkedIn profilod szövegét. Ez segít az AI-nak megérteni a digitális lábnyomodat és javaslatokat tenni." },
+          ],
+          columns: 2,
+        },
+        {
+          title: "2. Lépés: Célállás Megadása",
+          points: [
+            { icon: "🎯", title: "Cégnév és Hirdetés", text: "Add meg a cég nevét és másold be a teljes álláshirdetést. Minél több az információ, annál pontosabb az elemzés." },
+            { icon: "🕵️", title: "Interjúztató (Opcionális)", text: "Ha ismered, add meg az interjúztató LinkedIn profilját a személyre szabottabb stratégia érdekében." },
+          ],
+          columns: 2,
+        },
+        {
+            title: "3. Lépés: AI Elemzés és Stratégia",
+            steps: [
+                { title: "Illeszkedés Elemzése", text: "Az AI összeveti a profilodat a hirdetéssel és pontozza az illeszkedést." },
+                { title: "Stratégia Generálása", text: "Személyre szabott kísérőlevelet, interjúkérdéseket, és 90 napos tervet kapsz." },
+                { title: "Felkészülés", text: "Használd az AI Coach-ot, hogy gyakorold az interjút és magabiztosan vágj neki." }
+            ],
+            note: "Az egész folyamat kevesebb mint egy percet vesz igénybe, és egy teljes körű, azonnal használható stratégiai csomagot ad a kezedbe."
+        }
+      ],
+    },
     tooltips: {
       cvUpload: "Töltse fel szakmai önéletrajzát PDF formátumban. A vektoros elemzés biztosítja a legpontosabb eredményt a dokumentum szerkezetének megőrzésével.",
       linkedinPaste: "Másolja be a LinkedIn profiljának szöveges tartalmát. Ez sokkal pontosabb elemzést tesz lehetővé, mint egy egyszerű link, mivel az AI közvetlenül látja a kulcsszavakat és a struktúrát.",
@@ -277,10 +324,58 @@ export const translations = {
       coverLetter: "Személyre szabott, a becsült döntéshozónak címzett kísérőlevél tervezet, amely kiemeli az Ön legfontosabb erősségeit az álláshoz kapcsolódóan.",
       networking: "Közvetlen kapcsolatfelvételi stratégia a döntéshozókkal: LinkedIn üzenet-sablonok, amelyekkel megkerülheti a HR-t és felkeltheti a figyelmet.",
       plan90Day: "Konkrét, 30-60-90 napos terv, amely bemutatja, hogyan teremtene értéket az első negyedévben. Erős benyomást kelt az interjún.",
+    },
+    terms: {
+      linkText: "Általános Szerződési Feltételek és Adatkezelés",
+      title: "Jogi Nyilatkozat",
+      downloadPdf: "Letöltés PDF-ként",
+      contentHtml: `
+        <h4>Általános Szerződési Feltételek (ÁSZF)</h4>
+        <p><strong>Hatálybalépés dátuma: ${new Date().toLocaleDateString('hu-HU')}</strong></p>
+        <p><strong>1. A Szolgáltatás Meghatározása:</strong> A JobRadar AI ("Szolgáltatás") egy mesterséges intelligencia (MI) alapú döntéstámogató szoftver, amely a felhasználó ("Felhasználó") által feltöltött szakmai önéletrajz, álláshirdetés és egyéb releváns adatok alapján karrier-stratégiai javaslatokat, elemzéseket és tartalmakat generál. A Szolgáltatás célja, hogy segítse a Felhasználót az álláskeresési folyamatban, de nem helyettesíti a szakmai tanácsadást vagy a Felhasználó saját ítélőképességét.</p>
+        <p><strong>2. Technológiai Háttér:</strong> A Szolgáltatás a Google Ireland Limited által biztosított "Gemini" nagy nyelvi modellen ("LLM") alapul. A Felhasználó tudomásul veszi, hogy az adatok elemzése ezen technológia segítségével történik. A Szolgáltató nem felelős a Google Gemini működéséért vagy az általa generált kimenet pontosságáért.</p>
+        <p><strong>3. Megfelelőség az EU AI Rendeletével:</strong> A JobRadar AI az Európai Parlament és a Tanács (EU) 2024/1689 rendelete ("AI Act") értelmében a foglalkoztatás területén alkalmazott, "magas kockázatú" MI-rendszernek minősül. A rendszer kimenetei kizárólag tájékoztató jellegű, valószínűségi becsléseken alapuló javaslatok, és nem hoznak automatizált döntéseket. A Felhasználó felelőssége a generált tartalmak felülvizsgálata és validálása ("Human-in-the-loop" elv).</p>
+        <p><strong>4. Felelősség Korlátozása:</strong> A Szolgáltató kizár minden felelősséget a Szolgáltatás használatából eredő károkért. A Szolgáltató nem garantálja, hogy a generált tartalmak hibátlanok, vagy hogy azok felhasználása sikeres álláspályázathoz vezet. A Felhasználó teljes felelősséggel tartozik a generált tartalmak felhasználásáért.</p>
+        <p><strong>5. Szellemi Tulajdon:</strong> A JobRadar AI weboldal a Szolgáltató szellemi tulajdonát képezi. A Felhasználó által generált tartalmak a generálást követően a Felhasználó tulajdonába kerülnek.</p>
+        <p><strong>6. Irányadó Jog:</strong> A jelen ÁSZF-re a magyar jog az irányadó. Jogviták esetén a magyar bíróságok rendelkeznek joghatósággal.</p>
+      `,
+      contentPdf: [
+        { type: 'h2', text: 'Általános Szerződési Feltételek' },
+        { type: 'p', text: `Hatálybalépés dátuma: ${new Date().toLocaleDateString('hu-HU')}`},
+        { type: 'p', text: '1. A Szolgáltatás Meghatározása: A JobRadar AI ("Szolgáltatás") egy mesterséges intelligencia (MI) alapú döntéstámogató szoftver, amely a felhasználó ("Felhasználó") által feltöltött szakmai önéletrajz, álláshirdetés és egyéb releváns adatok alapján karrier-stratégiai javaslatokat, elemzéseket és tartalmakat generál. A Szolgáltatás célja, hogy segítse a Felhasználót az álláskeresési folyamatban, de nem helyettesíti a szakmai tanácsadást vagy a Felhasználó saját ítélőképességét.' },
+        { type: 'p', text: '2. Technológiai Háttér: A Szolgáltatás a Google Ireland Limited által biztosított "Gemini" nagy nyelvi modellen ("LLM") alapul. A Felhasználó tudomásul veszi, hogy az adatok elemzése ezen technológia segítségével történik. A Szolgáltató nem felelős a Google Gemini működéséért vagy az általa generált kimenet pontosságáért.' },
+        { type: 'p', text: '3. Megfelelőség az EU AI Rendeletével: A JobRadar AI az Európai Parlament és a Tanács (EU) 2024/1689 rendelete ("AI Act") értelmében a foglalkoztatás területén alkalmazott, "magas kockázatú" MI-rendszernek minősül. A rendszer kimenetei kizárólag tájékoztató jellegű, valószínűségi becsléseken alapuló javaslatok, és nem hoznak automatizált döntéseket. A Felhasználó felelőssége a generált tartalmak felülvizsgálata és validálása ("Human-in-the-loop" elv).' },
+        { type: 'p', text: '4. Felelősség Korlátozása: A Szolgáltató kizár minden felelősséget a Szolgáltatás használatából eredő károkért. A Szolgáltató nem garantálja, hogy a generált tartalmak hibátlanok, vagy hogy azok felhasználása sikeres álláspályázathoz vezet. A Felhasználó teljes felelősséggel tartozik a generált tartalmak felhasználásáért.' },
+        { type: 'p', text: '5. Szellemi Tulajdon: A JobRadar AI weboldal a Szolgáltató szellemi tulajdonát képezi. A Felhasználó által generált tartalmak a generálást követően a Felhasználó tulajdonába kerülnek.' },
+        { type: 'p', text: '6. Irányadó Jog: A jelen ÁSZF-re a magyar jog az irányadó. Jogviták esetén a magyar bíróságok rendelkeznek joghatósággal.' },
+      ]
+    },
+    privacy: {
+      title: "Adatkezelési Tájékoztató (GDPR)",
+      contentHtml: `
+        <h4>Adatkezelési Tájékoztató (GDPR)</h4>
+        <p><strong>1. Az Adatkezelő Megnevezése:</strong> JobRadar AI (a továbbiakban: "Adatkezelő").</p>
+        <p><strong>2. A Kezelt Személyes Adatok Köre és Célja:</strong> Az Adatkezelő a Felhasználó által önkéntesen megadott személyes adatokat (önéletrajz, LinkedIn profil, stb.) kezeli kizárólag a szolgáltatás nyújtása, azaz a karrier-stratégiai elemzés elvégzése céljából.</p>
+        <p><strong>3. Az Adatkezelés Jogalapja:</strong> Az adatkezelés jogalapja az (EU) 2016/679 rendelet (GDPR) 6. cikk (1) bekezdés a) pontja, azaz a Felhasználó önkéntes, egyértelmű hozzájárulása, amelyet a szolgáltatás használatával ad meg.</p>
+        <p><strong>4. Adatfeldolgozó:</strong> Az Adatkezelő az elemzéshez technológiai partnerként a <strong>Google Ireland Limited</strong> ("Gemini" szolgáltatás) veszi igénybe mint Adatfeldolgozót. A feltöltött adatok ideiglenesen továbbításra kerülnek a Google szervereire az elemzés elvégzésének idejére.</p>
+        <p><strong>5. Az Adatkezelés Időtartama:</strong> Az Adatkezelő a feltöltött személyes adatokat kizárólag a böngésző munkamenet (session) lezárásáig tárolja. A munkamenet végén az adatok véglegesen törlésre kerülnek. Az Adatkezelő nem épít adatbázist a feltöltött önéletrajzokból.</p>
+        <p><strong>6. A Felhasználó Jogai és Jogorvoslat:</strong> A Felhasználó jogosult tájékoztatást kérni adatai kezeléséről, valamint kérheti azok helyesbítését vagy törlését. Jogainak megsértése esetén a Nemzeti Adatvédelmi és Információszabadság Hatóságnál (NAIH) tehet panaszt.</p>
+      `,
+      contentPdf: [
+        { type: 'h2', text: 'Adatkezelési Tájékoztató (GDPR)' },
+        { type: 'p', text: '1. Az Adatkezelő Megnevezése: JobRadar AI (a továbbiakban: "Adatkezelő").' },
+        { type: 'p', text: '2. A Kezelt Személyes Adatok Köre és Célja: Az Adatkezelő a Felhasználó által önkéntesen megadott személyes adatokat (önéletrajz, LinkedIn profil, stb.) kezeli kizárólag a szolgáltatás nyújtása, azaz a karrier-stratégiai elemzés elvégzése céljából.' },
+        { type: 'p', text: '3. Az Adatkezelés Jogalapja: Az adatkezelés jogalapja az (EU) 2016/679 rendelet (GDPR) 6. cikk (1) bekezdés a) pontja, azaz a Felhasználó önkéntes, egyértelmű hozzájárulása, amelyet a szolgáltatás használatával ad meg.' },
+        { type: 'p', text: '4. Adatfeldolgozó: Az Adatkezelő az elemzéshez technológiai partnerként a Google Ireland Limited ("Gemini" szolgáltatás) veszi igénybe mint Adatfeldolgozót. A feltöltött adatok ideiglenesen továbbításra kerülnek a Google szervereire az elemzés elvégzésének idejére.' },
+        { type: 'p', text: '5. Az Adatkezelés Időtartama: Az Adatkezelő a feltöltött személyes adatokat kizárólag a böngésző munkamenet (session) lezárásáig tárolja. A munkamenet végén az adatok véglegesen törlésre kerülnek. Az Adatkezelő nem épít adatbázist a feltöltött önéletrajzokból.' },
+        { type: 'p', text: '6. A Felhasználó Jogai és Jogorvoslat: A Felhasználó jogosult tájékoztatást kérni adatai kezeléséről, valamint kérheti azok helyesbítését vagy törlését. Jogainak megsértése esetén a Nemzeti Adatvédelmi és Információszabadság Hatóságnál (NAIH) tehet panaszt.' },
+      ]
     }
   },
   en: {
-    welcome: "Welcome!",
+    welcome: "Welcome to JobRadar AI!",
+    welcomeBody: "Tired of unsuccessful job applications? JobRadar AI is your personal career strategist, showing you how recruiters think. Upload your CV and the job description, and in moments, you'll receive a complete strategic package: an analysis of your real chances, a tailored cover letter, targeted interview questions, and CV optimization tips guaranteed to get you past automated filters (ATS).",
+    welcomeContinue: "Let's Start",
     selectLang: "Welcome to JobRadar!",
     pdfTitle: "SYSTEM OPTIMIZATION",
     pdfBody: "JobRadar algorithms are calibrated for vector PDF analysis.",
@@ -294,7 +389,7 @@ export const translations = {
     strategyAi: "I'll let the AI handle it",
     strategyCancel: "Cancel",
     noteTitle: "Custom Focus Points",
-    noteBody: "Describe what you'd like us to emphasize.",
+    noteBody: "Provide key instructions or context for the AI to emphasize. This information will be prioritized when crafting the executive summary and cover letter.",
     notePlaceholder: "e.g., Mention my international experience...",
     noteStart: "Let's Go!",
     noteBack: "Back",
@@ -378,9 +473,16 @@ export const translations = {
     visitWebsite: "Visit Website",
     about: "About",
     pricing: "Pricing",
+    howItWorks: "How It Works",
     prep: " Prep",
-    aboutTitle: "The JobRadar AI Mission",
-    aboutBody: "Complete Executive Career Accelerator.",
+    aboutTitle: "THE JOBRADAR AI MISSION",
+    aboutMissionTitle: "MISSION",
+    aboutMissionText: "JobRadar AI is a professional career strategy tool that bridges the gap between talented candidates and actual decision-makers using the power of artificial intelligence. It's not automated selection software, but a \"Human-in-the-loop\" decision support platform.",
+    aboutTechTitle: "TECHNOLOGY - VECTOR PDF ANALYSIS",
+    aboutTechText: "Most systems only see the text. We see the structure too. Our system processes the native vector layers of PDF files. This means we understand not just what was written, but also how a corporate ATS sees it. We identify hidden formatting errors that can cause even a senior application to get stuck in the filter.",
+    aboutDataTitle: "DATA INTEGRITY - WHY PASTE THE TEXT?",
+    aboutDataText: "Why isn't a link enough? Corporate career pages are dynamic. Directly pasting the job description text ('Raw Data Input') guarantees 100% accuracy. This eliminates distortions (hallucinations) from faulty web scraping, ensuring your strategy is built on real data.",
+    aboutComplianceText: "EU AI ACT Compliant: The system complies with the strict regulations of the European Union.",
     methodologyTitle: "Analysis Methodology",
     methodologyBody: "5-phase 'Multi-Agent' strategy.",
     fillRequired: "Please fill required fields.",
@@ -422,6 +524,10 @@ export const translations = {
     tooltipJdSection: "Provide details about the job.",
     whyWorkHereLabel: "Why Work Here",
     searchingCompanyStatus: "Searching corporate intelligence...",
+    validatingJdStatus: "Validating job description...",
+    invalidJdTitle: "Uninterpretable Job Description",
+    invalidJdBody: "The AI operates with expensive resources, and the provided text doesn't seem to be a real job description. Please refrain from wasting tokens and paste a detailed, genuine job description to ensure an accurate analysis.",
+    invalidJdButton: "Understood, I will correct it",
     strategicContext: "Strategic Context",
     corporateCulture: "Corporate Culture & SWOT",
     suggestedAnswerLabel: "Suggested Response Strategy",
@@ -523,6 +629,39 @@ export const translations = {
     afterLabel: "Executive Upgrade",
     whyLabel: "The 'Why'",
     scenarioLabel: "Scenario",
+    demoVersionLabel: "DEMO VERSION",
+    demoVersionTooltip: "The system is currently under testing; the creators assume no responsibility for its operation or results.",
+    howItWorksModal: {
+      title: "How Does JobRadar Work?",
+      close: "Close",
+      slides: [
+        {
+          title: "Step 1: Upload Your Assets",
+          points: [
+            { icon: "📄", title: "Resume (PDF)", text: "Upload your professional resume. Our system analyzes the PDF's vector data for maximum accuracy." },
+            { icon: "🔗", title: "LinkedIn Profile", text: "Paste your LinkedIn profile text. This helps the AI understand your digital footprint and make suggestions." },
+          ],
+          columns: 2,
+        },
+        {
+          title: "Step 2: Define Your Target",
+          points: [
+            { icon: "🎯", title: "Company & Job Ad", text: "Enter the company name and paste the full job description. The more information, the more accurate the analysis." },
+            { icon: "🕵️", title: "Interviewer (Optional)", text: "If you know it, provide the interviewer's LinkedIn profile for a more personalized strategy." },
+          ],
+          columns: 2,
+        },
+        {
+            title: "Step 3: AI Analysis & Strategy",
+            steps: [
+                { title: "Fit Analysis", text: "The AI compares your profile with the job ad and scores the match." },
+                { title: "Strategy Generation", text: "You get a custom cover letter, interview questions, and a 90-day plan." },
+                { title: "Preparation", text: "Use the AI Coach to practice for the interview and go in with confidence." }
+            ],
+            note: "The entire process takes less than a minute and gives you a comprehensive, ready-to-use strategic package."
+        }
+      ],
+    },
     tooltips: {
       cvUpload: "Upload your professional CV in PDF format. Vector analysis ensures the most accurate results by preserving the document's structure.",
       linkedinPaste: "Paste the text content from your LinkedIn profile. This allows for a much more accurate analysis than a simple link, as the AI can directly see keywords and structure.",
@@ -549,6 +688,52 @@ export const translations = {
       coverLetter: "A personalized cover letter draft addressed to the estimated decision-maker, highlighting your key strengths related to the job.",
       networking: "A direct contact strategy for decision-makers: LinkedIn message templates to bypass HR and capture attention.",
       plan90Day: "A concrete 30-60-90 day plan demonstrating how you would create value in the first quarter. Makes a strong impression in the interview.",
+    },
+    terms: {
+      linkText: "Terms of Service & Privacy Policy",
+      title: "Legal Notice",
+      downloadPdf: "Download as PDF",
+      contentHtml: `
+        <h4>Terms of Service (ToS)</h4>
+        <p><strong>Effective Date: ${new Date().toLocaleDateString('en-US')}</strong></p>
+        <p><strong>1. Definition of the Service:</strong> JobRadar AI ("Service") is an artificial intelligence (AI) based decision support software that generates career strategy suggestions, analyses, and content based on the professional resume, job description, and other relevant data uploaded by the user ("User"). The purpose of the Service is to assist the User in the job search process, but it does not replace professional advice or the User's own judgment.</p>
+        <p><strong>2. Technological Background:</strong> The Service is based on the "Gemini" large language model ("LLM") provided by Google Ireland Limited. The User acknowledges that data analysis is performed using this technology. The Service Provider is not responsible for the operation, availability, or accuracy of the output generated by Google Gemini.</p>
+        <p><strong>3. Compliance with the EU AI Act:</strong> JobRadar AI is classified as a "high-risk" AI system in the field of employment under Regulation (EU) 2024/1689 of the European Parliament and of the Council ("AI Act"). The system's outputs are solely informative suggestions based on probabilistic estimates and do not constitute automated decisions. The User is responsible for reviewing and validating all generated content (the "Human-in-the-loop" principle).</p>
+        <p><strong>4. Limitation of Liability:</strong> The Service Provider disclaims all liability for any direct or indirect damages arising from the use of the Service. The Service Provider does not guarantee that the generated content is flawless or that its use will lead to a successful job application. The User bears full responsibility for the use of the generated content.</p>
+        <p><strong>5. Intellectual Property:</strong> The JobRadar AI website is the intellectual property of the Service Provider. Content generated by the User (e.g., cover letter) becomes the property of the User upon generation.</p>
+        <p><strong>6. Governing Law:</strong> These ToS are governed by Hungarian law. In case of disputes, Hungarian courts have jurisdiction.</p>
+      `,
+      contentPdf: [
+        { type: 'h2', text: 'Terms of Service' },
+        { type: 'p', text: `Effective Date: ${new Date().toLocaleDateString('en-US')}`},
+        { type: 'p', text: '1. Definition of the Service: JobRadar AI ("Service") is an artificial intelligence (AI) based decision support software that generates career strategy suggestions, analyses, and content based on the professional resume, job description, and other relevant data uploaded by the user ("User"). The purpose of the Service is to assist the User in the job search process, but it does not replace professional advice or the User\'s own judgment.' },
+        { type: 'p', text: '2. Technological Background: The Service is based on the "Gemini" large language model ("LLM") provided by Google Ireland Limited. The User acknowledges that data analysis is performed using this technology. The Service Provider is not responsible for the operation, availability, or accuracy of the output generated by Google Gemini.' },
+        { type: 'p', text: '3. Compliance with the EU AI Act: JobRadar AI is classified as a "high-risk" AI system in the field of employment under Regulation (EU) 2024/1689 of the European Parliament and of the Council ("AI Act"). The system\'s outputs are solely informative suggestions based on probabilistic estimates and do not constitute automated decisions. The User is responsible for reviewing and validating all generated content (the "Human-in-the-loop" principle).' },
+        { type: 'p', text: '4. Limitation of Liability: The Service Provider disclaims all liability for any direct or indirect damages arising from the use of the Service. The Service Provider does not guarantee that the generated content is flawless or that its use will lead to a successful job application. The User bears full responsibility for the use of the generated content.' },
+        { type: 'p', text: '5. Intellectual Property: The JobRadar AI website is the intellectual property of the Service Provider. Content generated by the User (e.g., cover letter) becomes the property of the User upon generation.' },
+        { type: 'p', text: '6. Governing Law: These ToS are governed by Hungarian law. In case of disputes, Hungarian courts have jurisdiction.' },
+      ]
+    },
+    privacy: {
+      title: "Privacy Policy (GDPR)",
+      contentHtml: `
+        <h4>Privacy Policy (GDPR)</h4>
+        <p><strong>1. Data Controller:</strong> JobRadar AI (hereinafter: "Controller").</p>
+        <p><strong>2. Scope and Purpose of Data Processed:</strong> The Controller processes personal data voluntarily provided by the User (resume, LinkedIn profile, etc.) solely for the purpose of providing the service, i.e., performing the career strategy analysis.</p>
+        <p><strong>3. Legal Basis for Processing:</strong> The legal basis for data processing is Article 6(1)(a) of Regulation (EU) 2016/679 (GDPR), i.e., the User's voluntary and explicit consent, given by using the service.</p>
+        <p><strong>4. Data Processor:</strong> The Controller uses <strong>Google Ireland Limited</strong> ("Gemini" service) as a technology partner and Data Processor. Uploaded data is temporarily transferred to Google's servers for the duration of the analysis.</p>
+        <p><strong>5. Data Retention Period:</strong> The Controller stores the uploaded personal data only until the end of the browser session. At the end of the session, the data is permanently deleted. The Controller does not build a database of uploaded resumes.</p>
+        <p><strong>6. User Rights and Legal Remedies:</strong> The User has the right to request information about the processing of their data, and to request their rectification or erasure. In case of a breach of their rights, the User may file a complaint with the Hungarian National Authority for Data Protection and Freedom of Information (NAIH).</p>
+      `,
+      contentPdf: [
+        { type: 'h2', text: 'Privacy Policy (GDPR)' },
+        { type: 'p', text: '1. Data Controller: JobRadar AI (hereinafter: "Controller").' },
+        { type: 'p', text: '2. Scope and Purpose of Data Processed: The Controller processes personal data voluntarily provided by the User (resume, LinkedIn profile, etc.) solely for the purpose of providing the service, i.e., performing the career strategy analysis.' },
+        { type: 'p', text: '3. Legal Basis for Processing: The legal basis for data processing is Article 6(1)(a) of Regulation (EU) 2016/679 (GDPR), i.e., the User\'s voluntary and explicit consent, given by using the service.' },
+        { type: 'p', text: '4. Data Processor: The Controller uses Google Ireland Limited ("Gemini" service) as a technology partner and Data Processor. Uploaded data is temporarily transferred to Google\'s servers for the duration of the analysis.' },
+        { type: 'p', text: '5. Data Retention Period: The Controller stores the uploaded personal data only until the end of the browser session. At the end of the session, the data is permanently deleted. The Controller does not build a database of uploaded resumes.' },
+        { type: 'p', text: '6. User Rights and Legal Remedies: The User has the right to request information about the processing of their data, and to request their rectification or erasure. In case of a breach of their rights, the User may file a complaint with the Hungarian National Authority for Data Protection and Freedom of Information (NAIH).' },
+      ]
     }
   }
 };

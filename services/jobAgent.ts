@@ -101,13 +101,37 @@ const withRetry = async <T>(fn: () => Promise<T>, retries = 2, delay = 1000): Pr
   }
 };
 
+export const validateJdText = async (jdText: string): Promise<boolean> => {
+    if (!jdText || jdText.trim().length < 150) { // Basic length check
+        return false;
+    }
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-flash-latest',
+            contents: `Is the following text a real, detailed job description for a professional role? The user might be trying to trick you with random text like "asdfasdf" or song lyrics. Be critical. Answer with only the single word "YES" or "NO".
+
+            Text: "${jdText.substring(0, 1500)}"`,
+            config: {
+                temperature: 0.0,
+            }
+        });
+        const resultText = response.text?.trim().toUpperCase();
+        return resultText === 'YES';
+    } catch (error) {
+        console.error("Error during JD validation:", error);
+        return true; // Fail open: If validation fails, assume it's valid to not block the user.
+    }
+};
+
+
 export const searchCompanyWebsite = async (companyName: string): Promise<{ url: string; title: string }[] | null> => {
   const trimmedInput = companyName.trim();
-  const urlPattern = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/i;
+  const urlPattern = new RegExp('^(https?://)?(www\\.)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(/.*)?$', 'i');
   
   if (urlPattern.test(trimmedInput)) {
     const fullUrl = trimmedInput.startsWith('http') ? trimmedInput : `https://${trimmedInput}`;
-    const domainOnly = trimmedInput.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
+    const domainOnly = trimmedInput.replace(new RegExp('^(https?://)?(www\\.)?'), '').split('/')[0];
     return [{ url: fullUrl, title: domainOnly }];
   }
 

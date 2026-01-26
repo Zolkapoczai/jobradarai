@@ -21,6 +21,7 @@ export interface FileInput {
 
 export enum AppState {
   IDLE = 'IDLE',
+  VALIDATING_JD = 'VALIDATING_JD',
   SEARCHING_COMPANY = 'SEARCHING_COMPANY',
   LOADING = 'LOADING',
   RESULT = 'RESULT',

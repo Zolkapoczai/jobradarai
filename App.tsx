@@ -1,6 +1,7 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
-import { analyzeCareerMatch, searchCompanyWebsite } from './services/jobAgent';
+import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
 import { translations } from './translations';
 import { GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo, TooltipWrapper } from './components/UIComponents';
 import JobCoachChat from './components/JobCoachChat';
@@ -17,13 +18,15 @@ import StrategicQuestionsSection from './components/StrategicQuestionsSection';
 import SalaryNegotiationSection from './components/SalaryNegotiationSection';
 import InterviewerProfilerSection from './components/InterviewerProfilerSection';
 import { AboutModal } from './components/AboutModal';
+import { TermsOfServiceModal } from './components/TermsOfServiceModal';
+import { HowItWorksModal } from './components/HowItWorksModal';
 import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
 import { processPdfFile, validatePdf } from './utils/fileProcessor';
 
 const App: React.FC = () => {
   // Global App States
   const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
-  const [darkMode, setDarkMode] = useState<boolean>(localStorage.getItem('darkMode') === 'true');
+  const darkMode = false; // Force light mode
   const [state, setState] = useState<AppState>(AppState.IDLE);
   
   // Navigation & View States
@@ -31,10 +34,10 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'preparation' | 'coach'>('overview');
   const [showPricing, setShowPricing] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isTosOpen, setIsTosOpen] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
-  const [introStep, setIntroStep] = useState<'lang' | 'disclaimer'>(
-    localStorage.getItem('userLang') ? 'disclaimer' : 'lang'
-  );
+  const [introStep, setIntroStep] = useState<'welcome' | 'lang' | 'disclaimer'>('welcome');
 
   // Input States
   const [jdText, setJdText] = useState('');
@@ -53,6 +56,7 @@ const App: React.FC = () => {
   const [foundCompany, setFoundCompany] = useState<{ url: string; title: string } | null>(null);
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [showInputModal, setShowInputModal] = useState(false);
+  const [showInvalidJdModal, setShowInvalidJdModal] = useState(false);
 
   // Results & Progress
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -74,10 +78,10 @@ const App: React.FC = () => {
   }, [result]);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', String(darkMode));
-    if (darkMode) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, [darkMode]);
+    // Always enforce light mode
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('darkMode', 'false');
+  }, []);
 
   // Load Session State on Mount
   useEffect(() => {
@@ -151,6 +155,17 @@ const App: React.FC = () => {
 
   const verifyCompany = async () => {
     if (!companyNameInput || (!jdText && !jdUrl) || !cvFile) return;
+
+    // JD Validation Step
+    setState(AppState.VALIDATING_JD);
+    const isJdValid = await validateJdText(jdText);
+    
+    if (!isJdValid) {
+      setShowInvalidJdModal(true);
+      setState(AppState.IDLE);
+      return; // Stop execution
+    }
+
     setState(AppState.SEARCHING_COMPANY);
     try {
       const companies = await searchCompanyWebsite(companyNameInput);
@@ -196,18 +211,33 @@ const App: React.FC = () => {
   };
 
   const reset = () => {
-    localStorage.removeItem('jobradar_state');
+    // Reset analysis state but keep user assets (CV, LinkedIn text)
     setState(AppState.IDLE);
-    setCurrentStep(1);
     setResult(null);
+    setErrorInfo(null);
+    setActiveTab('overview');
+
+    // Clear only job-specific data
     setJdText('');
     setJdUrl('');
     setCompanyNameInput('');
     setInterviewerLinkedin('');
-    setLinkedinText('');
     setUserNote('');
-    setCvFile(null);
-    setFileUploadStatus('idle');
+
+    // Reset company verification state
+    setshowConfirmCompany(false);
+    setAllFoundCompanies([]);
+    setFoundCompany(null);
+    setShowChoiceModal(false);
+    setShowInputModal(false);
+
+    // If a CV is already uploaded, move to step 2 to analyze a new job.
+    // Otherwise, go back to step 1 to upload assets.
+    if (cvFile) {
+      setCurrentStep(2);
+    } else {
+      setCurrentStep(1);
+    }
   };
 
   useEffect(() => {
@@ -225,14 +255,36 @@ const App: React.FC = () => {
         <div className="flex flex-col cursor-pointer group" onClick={reset}>
           <JobRadarLogo className="h-12 md:h-16 w-auto transition-all hover:scale-105" />
         </div>
-        <div className="flex items-center gap-4 md:gap-6 justify-end">
+        
+        {/* CENTRALT DEMO LABEL */}
+        <div className="hidden md:flex flex-grow justify-center">
+            {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
+            <TooltipWrapper text={t.demoVersionTooltip}>
+              <div className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border-2 border-slate-200 shadow-sm">
+                <span className="text-sm font-black uppercase tracking-widest text-red-800">
+                  {t.demoVersionLabel}
+                </span>
+              </div>
+            </TooltipWrapper>
+        </div>
+
+        <div className="flex items-center gap-2 md:gap-4 justify-end">
+          <button 
+            onClick={() => setIsHowItWorksOpen(true)} 
+            className="hidden md:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+          >
+            {t.howItWorks}
+          </button>
           <button 
             onClick={() => setIsAboutOpen(true)} 
-            className="hidden md:block bg-gradient-to-r from-[#0f172a] via-[#1e40af] to-[#3b82f6] text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all active:scale-95"
+            className="hidden md:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             {t.about || 'Rólunk'}
           </button>
-          <button onClick={() => setShowPricing(true)} className="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-700 hover:text-blue-600 transition-all border-2 border-transparent hover:border-blue-100 dark:text-slate-300">
+          <button 
+            onClick={() => setShowPricing(true)} 
+            className="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+          >
             {t.pricing}
           </button>
           <div className="flex items-center gap-2">
@@ -245,12 +297,6 @@ const App: React.FC = () => {
               className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400 font-black text-[10px]"
             >
               {lang === 'hu' ? 'HU' : 'EN'}
-            </button>
-            <button 
-              onClick={() => setDarkMode(!darkMode)} 
-              className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400"
-            >
-              {darkMode ? '☀️' : '🌙'}
             </button>
             <TooltipWrapper text={t.tooltips.resetAll}>
               <button 
@@ -278,7 +324,14 @@ const App: React.FC = () => {
       <div className="flex items-center justify-center gap-4 mb-16 w-full max-w-3xl mx-auto px-4">
         {steps.map((step, idx) => (
           <React.Fragment key={step.id}>
-            <div className="flex flex-col items-center gap-2">
+            <div 
+              className={`flex flex-col items-center gap-2 transition-opacity ${currentStep > step.id ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+              onClick={() => {
+                if (currentStep > step.id) {
+                  setCurrentStep(step.id as 1 | 2 | 3);
+                }
+              }}
+            >
               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black transition-all ${currentStep >= step.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'bg-slate-300 text-slate-500 dark:bg-slate-800'}`}>
                 {currentStep > step.id ? '✓' : step.id}
               </div>
@@ -297,31 +350,43 @@ const App: React.FC = () => {
     return (
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-100 dark:bg-slate-950 transition-colors duration-500">
         <div
-          className={`${introStep === 'lang' ? 'max-w-lg' : 'max-w-xl'} w-full bg-white dark:bg-slate-900 rounded-[32px] p-6 md:p-8 border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center relative overflow-hidden transition-all duration-500`}
+          className="max-w-xl w-full bg-white dark:bg-slate-900 rounded-[32px] p-6 md:p-8 border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center relative overflow-hidden transition-all duration-500"
         >
+          <button
+            onClick={() => {
+                const newLang = lang === 'hu' ? 'en' : 'hu';
+                setLang(newLang);
+                localStorage.setItem('userLang', newLang);
+            }}
+            className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-300 text-slate-700 hover:border-slate-500 font-black text-[10px]"
+          >
+            {lang === 'hu' ? 'EN' : 'HU'}
+          </button>
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
           
-          {introStep === 'lang' ? (
+          {introStep === 'welcome' && (
             <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500 py-6">
-              <div className="flex justify-center mb-8">
-                <JobRadarLogo className="h-[67px] w-auto" />
-              </div>
-              <div className="flex flex-col items-center gap-3 pt-4 max-w-[240px] mx-auto">
-                <button 
-                  onClick={() => handleLangSelect('hu')} 
-                  className="w-full py-[14.5px] rounded-xl bg-gradient-to-r from-[#0B1121] to-blue-700 text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[13px]"
-                >
-                  Magyar
-                </button>
-                <button 
-                  onClick={() => handleLangSelect('en')} 
-                  className="w-full py-[14.5px] rounded-xl bg-slate-900 text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-slate-950/20 hover:scale-[1.02] active:scale-95 transition-all text-[13px]"
-                >
-                  English
-                </button>
-              </div>
+                <div className="flex justify-center mb-8">
+                    <JobRadarLogo className="h-[67px] w-auto" />
+                </div>
+                <h2 className="text-xl font-black uppercase tracking-tight text-slate-950 dark:text-white">
+                    {t.welcome}
+                </h2>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed px-4 text-justify">
+                    {t.welcomeBody}
+                </p>
+                <div className="px-8 pt-4">
+                    <PrimaryButton 
+                      onClick={() => setIntroStep('disclaimer')}
+                      className="py-3 text-xs rounded-xl shadow-2xl shadow-blue-500/30"
+                    >
+                      {t.welcomeContinue}
+                    </PrimaryButton>
+                </div>
             </div>
-          ) : (
+          )}
+          
+          {introStep === 'disclaimer' && (
             <div className="space-y-4 animate-in slide-in-from-right-6 duration-500 py-2">
               <div className="space-y-3">
                 <h2 className="text-xl font-black uppercase tracking-tight text-slate-950 dark:text-white">
@@ -361,13 +426,13 @@ const App: React.FC = () => {
       )}
 
       <Header />
-
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <Stepper />
 
         {currentStep === 1 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-slate-900 rounded-[40px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
+            <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-50 dark:border-slate-800 pb-6 gap-6">
                  <div className="space-y-2">
                    <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">1. {t.profileAssets}</h2>
@@ -385,7 +450,8 @@ const App: React.FC = () => {
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
-                    <TooltipWrapper text={t.tooltips.cvUpload} position="bottom">
+                    {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
+                    <TooltipWrapper text={t.tooltips.cvUpload}>
                       <div 
                         onClick={() => fileInputRef.current?.click()}
                         className={`border-2 rounded-[32px] p-8 text-center transition-all flex flex-col items-center justify-center min-h-[350px] cursor-pointer group relative overflow-hidden ${
@@ -423,7 +489,8 @@ const App: React.FC = () => {
                  </div>
                  <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{t.linkedinLabel}</label>
-                    <TooltipWrapper text={t.tooltips.linkedinPaste} position="bottom">
+                    {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
+                    <TooltipWrapper text={t.tooltips.linkedinPaste}>
                       <FormTextarea
                         rows={14}
                         className="min-h-[350px]"
@@ -455,7 +522,7 @@ const App: React.FC = () => {
 
         {currentStep === 2 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-10 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
+             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 md:p-14 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 dark:border-slate-800 pb-8 gap-6">
                    <div className="space-y-2">
                       <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 dark:text-white">2. {t.missionParams}</h2>
@@ -477,7 +544,8 @@ const App: React.FC = () => {
                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">{lang === 'en' ? 'Job Description Text' : 'Álláshirdetés Szövege'}</label>
                          <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">{lang === 'en' ? 'Critical field' : 'Kritikus mező'}</span>
                       </div>
-                      <TooltipWrapper text={t.tooltips.jdText} position="bottom">
+                      {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
+                      <TooltipWrapper text={t.tooltips.jdText}>
                         <FormTextarea rows={12} className="min-h-[300px] leading-relaxed shadow-inner" placeholder={lang === 'en' ? 'Paste the full job description here...' : 'Ide másold be a teljes hirdetés szövegét (feladatok, elvárások, juttatások)...'} value={jdText} onChange={(e) => setJdText(e.target.value)} />
                       </TooltipWrapper>
                    </div>
@@ -503,7 +571,7 @@ const App: React.FC = () => {
                <TooltipWrapper text={t.tooltips.dashboardTab}>
                  <button 
                   onClick={() => setActiveTab('overview')}
-                  className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-5 sm:px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'overview' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
@@ -515,7 +583,7 @@ const App: React.FC = () => {
                <TooltipWrapper text={t.tooltips.strategyTab}>
                  <button 
                   onClick={() => setActiveTab('preparation')}
-                  className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-5 sm:px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'preparation' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
@@ -527,7 +595,7 @@ const App: React.FC = () => {
                <TooltipWrapper text={t.tooltips.coachTab}>
                  <button 
                   onClick={() => setActiveTab('coach')}
-                  className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-5 sm:px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'coach' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
@@ -540,7 +608,7 @@ const App: React.FC = () => {
 
             {activeTab === 'overview' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <div className="bg-white dark:bg-slate-900 rounded-[48px] p-10 md:p-16 border-2 border-slate-300 dark:border-slate-800 shadow-xl">
+                <div className="bg-white dark:bg-slate-900 rounded-[48px] p-6 md:p-16 border-2 border-slate-300 dark:border-slate-800 shadow-xl">
                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                       <div className="lg:col-span-5">
                          <NeuralScoreRadar result={result} scoreTheme={scoreTheme} t={t} />
@@ -549,7 +617,7 @@ const App: React.FC = () => {
                          <div className="flex items-center justify-between">
                             <h2 className={`text-xs font-black uppercase tracking-[0.4em] ${scoreTheme.text}`}>{t.summary}</h2>
                             <div className="flex gap-4">
-                               {result.companyWebsite && <a href={result.companyWebsite} target="_blank" className="px-5 py-2.5 rounded-xl text-[9px] font-black uppercase border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2">{t.visitWebsite} 🔗</a>}
+                               {result.companyWebsite && <a href={result.companyWebsite} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-xl text-[9px] font-black uppercase border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2">{t.visitWebsite} 🔗</a>}
                             </div>
                          </div>
                          <p className="text-xl font-semibold leading-relaxed text-justify whitespace-pre-wrap text-slate-950 dark:text-white">{result.executiveSummary}</p>
@@ -691,7 +759,7 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {(state === AppState.LOADING || state === AppState.SEARCHING_COMPANY) && (
+      {(state === AppState.LOADING || state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD) && (
         <div className="fixed inset-0 z-[12000] flex items-center justify-center p-6 bg-slate-50/95 dark:bg-slate-950/90 backdrop-blur-xl text-center">
            <div className="space-y-12 max-w-2xl">
               <div className="w-64 h-64 mx-auto relative group">
@@ -715,9 +783,9 @@ const App: React.FC = () => {
                     <circle 
                       cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="4" 
                       strokeDasharray="283" 
-                      strokeDashoffset={state === AppState.SEARCHING_COMPANY ? 70 : 283 - (283 * progress) / 100} 
+                      strokeDashoffset={state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD ? 70 : 283 - (283 * progress) / 100} 
                       strokeLinecap="round" 
-                      className={`transition-all duration-700 shadow-[0_0_10px_rgba(59,130,246,0.5)] ${state === AppState.SEARCHING_COMPANY ? 'animate-spin origin-center' : ''}`} 
+                      className={`transition-all duration-700 shadow-[0_0_10px_rgba(59,130,246,0.5)] ${state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD ? 'animate-spin origin-center' : ''}`} 
                     />
                  </svg>
                  <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -728,18 +796,20 @@ const App: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <span className="text-4xl">🔍</span>
-                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase">Searching</span>
+                        <span className="text-4xl">{state === AppState.VALIDATING_JD ? '🧐' : '🔍'}</span>
+                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase">
+                          {state === AppState.VALIDATING_JD ? 'Validating' : 'Searching'}
+                        </span>
                       </>
                     )}
                  </div>
               </div>
               <div className="space-y-4">
                  <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-500 animate-pulse">
-                   {state === AppState.LOADING ? t.synthesizing : t.companySearch}
+                    {state === AppState.LOADING ? t.synthesizing : (state === AppState.SEARCHING_COMPANY ? t.companySearch : t.validatingJdStatus)}
                  </h3>
                  <p className="text-sm font-bold text-slate-600 dark:text-white/50 uppercase tracking-widest">
-                   {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : t.searchingCompanyStatus}
+                    {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (state === AppState.SEARCHING_COMPANY ? t.searchingCompanyStatus : t.validatingJdStatus)}
                  </p>
               </div>
            </div>
@@ -756,6 +826,17 @@ const App: React.FC = () => {
                  <PrimaryButton onClick={() => startAnalysis(userNote)}>{t.errorRetry}</PrimaryButton>
                  <button onClick={reset} className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.reset}</button>
               </div>
+           </div>
+        </div>
+      )}
+
+      {showInvalidJdModal && (
+        <div className="fixed inset-0 z-[13000] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl">
+           <div className="bg-white dark:bg-slate-900 p-12 rounded-[48px] max-w-lg w-full text-center border-2 border-amber-500/30">
+              <div className="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl">🤔</div>
+              <h2 className="text-2xl font-black uppercase mb-4 text-slate-950 dark:text-white">{t.invalidJdTitle}</h2>
+              <p className="text-slate-800 dark:text-slate-300 font-bold mb-10 leading-relaxed text-justify">{t.invalidJdBody}</p>
+              <PrimaryButton onClick={() => setShowInvalidJdModal(false)}>{t.invalidJdButton}</PrimaryButton>
            </div>
         </div>
       )}
@@ -799,12 +880,13 @@ const App: React.FC = () => {
 
       {showInputModal && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full border-2 border-slate-300 dark:border-slate-800 shadow-2xl">
-            <h2 className="text-2xl font-black mb-8 uppercase tracking-tight text-slate-950 dark:text-white">{t.noteTitle}</h2>
+          <div className="bg-white dark:bg-slate-900 rounded-[48px] p-12 max-w-lg w-full border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">{t.noteTitle}</h2>
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">{t.noteBody}</p>
             <textarea 
               maxLength={200} 
               placeholder={t.notePlaceholder} 
-              className="w-full rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white h-48 resize-none shadow-inner" 
+              className="w-full rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white h-40 resize-none shadow-inner" 
               value={userNote} 
               onChange={(e) => setUserNote(e.target.value)} 
             />
@@ -816,7 +898,28 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+      {/* BOTTOM DEMO LABEL */}
+      <div className="fixed bottom-6 right-6 z-[1000]">
+        {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
+        <TooltipWrapper text={t.demoVersionTooltip}>
+          <div className="px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-full border-2 border-slate-200 dark:border-slate-800 shadow-md">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              {t.demoVersionLabel}
+            </span>
+          </div>
+        </TooltipWrapper>
+      </div>
+
+      <footer className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p className="mb-2 font-semibold">JobRadar AI © {new Date().getFullYear()}</p>
+        <button onClick={() => setIsTosOpen(true)} className="font-bold text-blue-600 hover:underline">
+          {t.terms.linkText}
+        </button>
+      </footer>
+
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} t={t} />
+      <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
+      <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
     </div>
   );
 };

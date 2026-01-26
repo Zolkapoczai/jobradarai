@@ -1,4 +1,3 @@
-
 import { jsPDF } from "jspdf";
 
 interface ContentItem {
@@ -168,4 +167,15 @@ export const exportActionPlan = async (companyName: string, steps: string[], tit
   const filename = `JobRadar_Strategic_Plan_${companyName.replace(/\s+/g, '_')}.pdf`;
   const doc = await createStyledPdf(`90-DAY STRATEGIC IMPACT PLAN`, content);
   doc.save(filename);
+};
+
+export const exportTermsAsPdf = async (t: any) => {
+    const content: ContentItem[] = [
+        ...t.terms.contentPdf,
+        { type: 'h1', text: '' }, // spacer
+        ...t.privacy.contentPdf
+    ];
+    
+    const doc = await createStyledPdf(t.terms.title, content);
+    doc.save(`JobRadarAI_ASZF_GDPR.pdf`);
 };
