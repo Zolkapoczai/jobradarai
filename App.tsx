@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, JobAnalysis } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
 import { analyzeJob } from './services/jobAnalysisService';
@@ -893,7 +894,7 @@ const App: React.FC = () => {
               </div>
               <div className="space-y-4">
                  <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-500 animate-pulse">
-                   {state === AppState.LOADING ? t.synthesizing : (t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás és Validálás...' : 'Identification & Validation...'))}
+                   {state === AppState.LOADING ? t.synthesizing : (t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás és Validál��s...' : 'Identification & Validation...'))}
                  </h3>
                  <p className="text-sm font-bold text-slate-600 dark:text-white/50 uppercase tracking-widest">
                    {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (t.preAnalysisSubStatus || (lang === 'hu' ? 'Vállalati adatok és álláshirdetés ellenőrzése...' : 'Verifying company data and job description...'))}
@@ -1017,6 +1018,7 @@ const App: React.FC = () => {
 
       <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
       <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
+      <Analytics />
     </div>
   );
 };
