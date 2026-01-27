@@ -4,7 +4,7 @@ export const translations = {
     preAnalysisStatus: "Vállalati Adatok Validálása...",
     preAnalysisSubStatus: "Álláshirdetés és online jelenlét ellenőrzése...",
     welcome: "Üdvözöljük!",
-    welcomeBody: "A JobRadar egy személyes karrier-stratégiai portál, amely segít értelmezni az álláshirdetéseket. Töltse fel önéletrajzát és a pozíció leírását, és a rendszer pillanatok alatt elkészíti a teljes stratégiai csomagot: valós esélyek elemzése, személyre szabott kísérőlevél, bértárgyalási taktikák és CV-javaslatok. Az interaktív AI Coach chatben pedig élesben gyakorolhatja a legkeményebb interjúkérdéseket, hogy magabiztosan álljon a döntéshozók elé.",
+    welcomeBody: "A JobRadar egy személyes karrier-stratégiai portál, amely segít értelmezni az álláshirdetéseket. Töltse fel önéletrajzát és a pozíció leírását, és a rendszer pillanatok alatt elkészíti a teljes stratégiai csomagot: valós esélyek elemzése, személyre szabott kísérőlevél, bértárgyalási taktikák és CV-javaslatok. Az interaktív AI Coach chatben pedig élesben gyakorolhatja a legkemmyebb interjúkérdéseket, hogy magabiztosan álljon a döntéshozók elé.",
     welcomeContinue: "Indulás",
     selectLang: "Üdvözöljük a Jobradaron!",
     pdfTitle: "RENDSZER OPTIMALIZÁCIÓ",
@@ -108,19 +108,10 @@ export const translations = {
     coverLetterTitle: "Kísérőlevél Tervezet",
     attackPlanTitle: "Stratégiai 90 Napos Terv",
     visitWebsite: "Weboldal Megtekintése",
-    about: "Rólunk",
     pricing: "Előfizetés",
     howItWorks: "Hogyan Működik",
     prep: " Felkészülés",
     continueToJobDetails: "Álláshirdetés megadása",
-    aboutTitle: "A JOBRADAR AI KÜLDETÉSE",
-    aboutMissionTitle: "MISSZIÓ",
-    aboutMissionText: "A JobRadar egy professzionális karrier-stratégiai eszköz, amely a mesterséges intelligencia erejével hidalja át a szakadékot a tehetséges jelöltek és a valódi döntéshozók között. Nem automatizált kiválasztási szoftver, hanem egy \"Human-in-the-loop\" döntéstámogató platform.",
-    aboutTechTitle: "TECHNOLÓGIA - VEKTOROS PDF ELEMZÉS",
-    aboutTechText: "A legtöbb rendszer csak a szöveget látja. Mi a struktúrát is. Rendszerünk a PDF állományok natív vektoros rétegét dolgozza fel. Ez azt jelenti, hogy nemcsak azt értjük, mit írt le, hanem azt is, hogyan látja ezt egy vállalati ATS. Azonosítjuk a rejtett formázási hibákat, amelyek miatt egy senior pályázat is fennakadhat a szűrőn.",
-    aboutDataTitle: "ADATINTEGRITÁS - MIÉRT A SZÖVEGBEILLESZTÉS?",
-    aboutDataText: "Miért nem elég a link? A vállalati karrieroldalak dinamikusak. A hirdetés szövegének közvetlen bemásolása (\"Raw Data Input\") garantálja a 100%-os pontosságot. Ezzel kizárjuk a hibás webes beolvasásból eredő torzításokat (hallucinációt), biztosítva, hogy a stratégia valós adatokra épüljön.",
-    aboutComplianceText: "EU AI Act Compliant: A rendszer megfelel az Európai Unió szigorú szabályozásának.",
     methodologyTitle: "Elemzési Módszertan",
     methodologyBody: "Technológiánk egy 5-fázisú 'Multi-Agent' stratégiát alkalmaz.",
     fillRequired: "Kérjük töltsön ki minden kötelező mezőt (Cégnév, Leírás vagy Link, CV).",
@@ -219,8 +210,8 @@ export const translations = {
     linkedinLabel: "LinkedIn Profil Szövege",
     linkedinHelperNote: "",
     linkedinInputPlaceholder: "Másolja be ide a profilját...",
-    linkedinPdfHelp: "Hol tölthető le a PDF?",
-    linkedinPdfInstructions: "1. Nyissa meg a profilját.\n2. Kattintson a 'Több' gombra.\n3. Válasza a 'Mentés PDF-ként' opciót.",
+    linkedinPdfHelp: "Hogyan mentsd le a LinkedIn profilod PDF-ként?",
+    linkedinPdfInstructions: "1. Nyissa meg a LinkedIn profilját.\n2. Kattintson a profilképe alatt található 'Több' gombra.\n3. Válassza a 'Mentés PDF-ként' opciót.",
     auditNotAvailable: "Mivel nem töltötte fel a profilja adatait, így ebben a szekcióban sajnos nem tudunk tanácsot adni.",
     competitorTitle: "Versenytárs Hírszerzés",
     competitorSubtitle: "Ismerd a piacot, domináld az interjút",
@@ -264,42 +255,42 @@ export const translations = {
     demoVersionLabel: "DEMO VERZIÓ",
     demoVersionTooltip: "Jelenleg a rendszer tesztelés alatt van, semmilyen fellelősséget a készítők nem vállalnak a működésért, az eredményért.",
     howItWorksModal: {
-      title: "Hogyan Működik a JobRadar?",
+      title: "A JobRadar Működési Folyamata",
       close: "Bezárás",
       slides: [
         {
-          title: "1. Lépés: A Bemeneti Adatok Mélysége",
+          title: "1. Lépés: Adatmélység - A Bemenet Minősége",
           points: [
-            { icon: "📄", title: "Önéletrajz (Vektoros PDF Elemzés)", text: "A legtöbb rendszer csak a szöveget látja. Mi a struktúrát is. A JobRadar a PDF natív vektoros rétegét dolgozza fel. Így nemcsak azt értjük, mit írt le, hanem azt is, hogyan látja ezt egy vállalati ATS. Azonosítjuk a rejtett formázási hibákat, amelyek miatt egy senior pályázat is fennakadhat a szűrőn." },
-            { icon: "🔗", title: "LinkedIn Profil (Nyers Szöveg)", text: "Miért a szöveg, és nem a link? Mert a profilok dinamikusak. A szöveg közvetlen bemásolása garantálja a 100%-os pontosságot, kizárva a webes beolvasásból eredő torzításokat és hallucinációkat, így a stratégia valós adatokra épül." },
+            { icon: "📄", title: "Önéletrajz (Vektoros PDF Elemzés)", text: "Míg a legtöbb rendszer csak a szöveget olvassa ki (OCR), a JobRadar a PDF natív, vektoros szerkezetét elemzi. Ez azt jelenti, hogy nem csak a szavakat értjük, hanem a teljes vizuális kontextust is: az oszlopokat, a betűméreteket és a rejtett formázási elemeket. Így pontosan azt látjuk, amit egy modern vállalati szűrőrendszer (ATS), és azonosítjuk azokat a strukturális hibákat, amik miatt a legjobb profilok is fennakadhatnak." },
+            { icon: "🔗", title: "LinkedIn & Álláshirdetés (Nyers Szöveg)", text: "Miért a szöveg bemásolása és nem egy link? A válasz az adatintegritás. A weboldalak dinamikusan változnak, a linkek elavulhatnak, a web-scraperek pedig gyakran blokkolva vannak vagy tévesen értelmezik a tartalmat. A nyers szöveg bemásolásával garantáljuk, hogy az AI pontosan ugyanazt az információt elemzi, amit Ön is lát, kizárva a hibákat és a 'gépi hallucinációt'." },
           ],
           columns: 1,
         },
         {
-          title: "2. Lépés: A Célpont Definíciója",
+          title: "2. Lépés: Célpont Definíció - A Stratégiai Kontextus",
           points: [
-            { icon: "🎯", title: "Cégnév és Hirdetés Szövege", text: "A cégnév alapján az AI mélyreható piackutatást végez (vállalati kultúra, piaci helyzet, versenytársak), míg a hirdetés szövege adja a konkrét szakmai elvárásokat. A kettő kombinációja teremti meg a stratégiai kontextust." },
-            { icon: "🕵️", title: "Interjúztató Profilja (Opcionális)", text: "Ha megadja az interjúztató LinkedIn profilját, az AI megkísérli megbecsülni a valószínűsíthető stílusát, szakmai hátterét és fókuszpontjait (DISC profil). Ezzel célzottabb kommunikációs stratégiát kap." },
+            { icon: "🎯", title: "Cégnév & Hirdetés (Mikro & Makro Környezet)", text: "A rendszer kettős kontextusban dolgozik. Az álláshirdetés (JD) adja a 'MIKRO' kontextust: a konkrét szerepkörhöz szükséges technikai és soft skilleket. A cégnév adja a 'MAKRO' kontextust: az AI a Google Search segítségével valós idejű kutatást végez a cég piaci helyzetéről, versenytársairól, kultúrájáról és stratégiai céljairól. A kettő kombinációja teszi lehetővé a valódi stratégiai illeszkedés elemzését." },
+            { icon: "🕵️", title: "Interjúztató Profilozása (Opcionális)", text: "Ha megadja a döntéshozó LinkedIn profilját, az AI pszichometriai elemzést végez. A nyelvezet, a karrierút és a szakmai hálózat alapján megbecsüli a személyiségtípusát (DISC modell), a valószínűsíthető szakmai félelmeit ('miért ne venne fel') és a 'Yes-Triggereit' ('milyen bizonyíték győzi meg'). Ezzel a kommunikációját célzottan az ő nyelvezetére hangolhatja." },
           ],
           columns: 1,
         },
         {
             title: "3. Lépés: Multi-Agent AI Elemzés",
             steps: [
-                { title: "Fit/Gap Analízis", text: "A neurális háló összeveti a CV-t a JD-vel, és pontozza az illeszkedést a négy fő dimenzióban (Hard/Soft Skillek, Tapasztalat, Iparági Illeszkedés)." },
-                { title: "Stratégiai Modulok", text: "Különböző AI 'személyiségek' dolgoznak a riport elemein: egy 'ATS Auditor' a CV-javaslatokat, egy 'Pszichológus' az interjúztatói profilt, és egy 'Versenytárs Elemző' a piaci intelligenciát készíti el." },
-                { title: "Vezetői Eszköztár", text: "Az eredmény egy azonnal használható vezetői eszköztár: személyre szabott kísérőlevél, bértárgyalási szkriptek, 90 napos terv, és a legkritikusabb interjúkérdések." }
+                { title: "Fit/Gap Analízis", text: "A neurális háló összeveti a CV-t a JD-vel, és pontozza az illeszkedést négy fő dimenzió mentén: Hard Skillek (technológiák), Soft Skillek (vezetés, kommunikáció), Tapasztalat (projektek mérete, évek) és Iparági Illeszkedés (pl. FinTech vs. Telco)." },
+                { title: "Stratégiai Modulok", text: "Nem egy, hanem több, specializált AI 'ügynök' dolgozik a riporton: egy 'ATS Auditor' a CV-javaslatokat, egy 'Executive Headhunter' a kísérőlevelet, és egy 'Piaci Elemző' a versenytárs-intelligenciát készíti el." },
+                { title: "Vezetői Eszköztár", text: "A kimenet egy azonnal bevethető stratégiai csomag ('deployment kit'): testreszabott kísérőlevél, bértárgyalási szkriptek, 90 napos terv, és a feltárt gyengeségeire célzott interjúkérdések." }
             ],
-            note: "A rendszer a Gemini 2.5 Flash modellt használja a komplex, több-lépcsős érvelési láncok és a mély szakmai kontextus megértéséhez."
+            note: "A rendszer a Gemini 2.5 Flash modellt használja, amely képes a komplex, több-lépcsős érvelési láncok és a mély szakmai kontextus megértésére, valós idejű webes adatokkal kiegészítve."
         },
         {
             title: "4. Lépés: Interaktív Felkészülés az AI Coach-csal",
             points: [
-                { icon: "🎙️", title: "Valós idejű Gyakorlás", text: "Ne csak olvassa a stratégiát, gyakorolja is be! Az AI Coach a generált riport alapján tesz fel Önnek célzott, 'kellemes' kérdéseket, hogy tesztelje a felkészültségét." },
-                { icon: "📈", title: "Azonnali Visszajelzés", text: "Minden válaszára azonnali, konstruktív visszajelzést kap. A coach értékeli (1-10 skálán) a válaszát, és javaslatot tesz egy erősebb, 'executive' megfogalmazásra." },
+                { icon: "🎙️", title: "Célzott Gyakorlás", text: "Az AI Coach nem véletlenszerű kérdéseket tesz fel. A riportban azonosított 'Red Flag'-ekre és hiányosságokra (Gap Analízis) építi a kérdéseit, hogy célzottan az Ön gyenge pontjait tesztelje és erősítse. A hangfelismerő funkcióval valós interjúhelyzetet szimulálhat." },
+                { icon: "📈", title: "Azonnali, Mély Visszajelzés", text: "Minden válaszára három szintű visszajelzést kap: Struktúra (pl. Használta-e a STAR-módszert?), Megfogalmazás (pl. 'Túl passzív volt, próbálja ezzel az erősebb, aktívabb mondattal...'), és Stratégiai Tartalom (pl. 'Itt elmulasztott egy lehetőséget, hogy összekösse a tapasztalatát a cég negyedéves céljaival.')." },
             ],
             columns: 1,
-            note: "Ez a modul interaktív és kredit alapú, így a fókusz a minőségi, hatékony felkészülésen van, nem a mennyiségen."
+            note: "Ez a modul interaktív és kredit alapú, így a fókusz a minőségi, hatékony felkészülésen van. A cél, hogy ne csak tudja a helyes választ, hanem magabiztosan elő is tudja adni azt."
         }
       ],
     },
@@ -486,19 +477,10 @@ export const translations = {
     coverLetterTitle: "Cover Letter Draft",
     attackPlanTitle: "Strategic 90-Day Plan",
     visitWebsite: "Visit Website",
-    about: "About Us",
     pricing: "Subscription",
     howItWorks: "How It Works",
     prep: "Preparation",
     continueToJobDetails: "Enter Job Details",
-    aboutTitle: "THE MISSION OF JOBRADAR AI",
-    aboutMissionTitle: "MISSION",
-    aboutMissionText: "JobRadar AI is a professional career strategy tool that uses the power of artificial intelligence to bridge the gap between talented candidates and real decision-makers. It is not an automated selection software but a 'Human-in-the-loop' decision support platform.",
-    aboutTechTitle: "TECHNOLOGY - VECTOR PDF ANALYSIS",
-    aboutTechText: "Most systems only see the text. We see the structure too. Our system processes the native vector layer of PDF files. This means we not only understand what you wrote but also how a corporate ATS sees it. We identify hidden formatting errors that can cause a senior application to get stuck in the filter.",
-    aboutDataTitle: "DATA INTEGRITY - WHY PASTE THE TEXT?",
-    aboutDataText: "Why isn't a link enough? Corporate career sites are dynamic. Directly pasting the ad text ('Raw Data Input') guarantees 100% accuracy. This eliminates distortions from faulty web scraping (hallucinations), ensuring the strategy is built on real data.",
-    aboutComplianceText: "EU AI Act Compliant: The system complies with the strict regulations of the European Union.",
     methodologyTitle: "Analysis Methodology",
     methodologyBody: "Our technology uses a 5-phase 'Multi-Agent' strategy.",
     fillRequired: "Please fill in all required fields (Company Name, Description or Link, CV).",
@@ -597,8 +579,8 @@ export const translations = {
     linkedinLabel: "LinkedIn Profile Text",
     linkedinHelperNote: "",
     linkedinInputPlaceholder: "Paste your profile here...",
-    linkedinPdfHelp: "Where to download the PDF?",
-    linkedinPdfInstructions: "1. Open your profile.\n2. Click the 'More' button.\n3. Select the 'Save to PDF' option.",
+    linkedinPdfHelp: "How to save your LinkedIn profile as a PDF?",
+    linkedinPdfInstructions: "1. Go to your LinkedIn profile.\n2. Click the 'More' button below your profile picture.\n3. Select the 'Save to PDF' option.",
     auditNotAvailable: "Since you did not upload your profile data, we cannot provide advice in this section.",
     competitorTitle: "Competitor Intelligence",
     competitorSubtitle: "Know the market, dominate the interview",
@@ -642,42 +624,42 @@ export const translations = {
     demoVersionLabel: "DEMO VERSION",
     demoVersionTooltip: "The system is currently under testing; the creators assume no responsibility for its operation or results.",
     howItWorksModal: {
-        title: "How Does JobRadar Work?",
+        title: "How JobRadar Works",
         close: "Close",
         slides: [
             {
-                title: "Step 1: The Depth of Input Data",
+                title: "Step 1: Data Depth - The Quality of Input",
                 points: [
-                    { icon: "📄", title: "Resume (Vector PDF Analysis)", text: "Most systems only see the text. We also see the structure. JobRadar processes the native vector layer of PDFs. This means we understand not just what you wrote, but also how a corporate ATS sees it. We identify hidden formatting errors that can get a senior application filtered out." },
-                    { icon: "🔗", title: "LinkedIn Profile (Raw Text)", text: "Why text and not a link? Because profiles are dynamic. Pasting the text directly ensures 100% accuracy, eliminating distortions and hallucinations from web scraping, so the strategy is built on real data." },
+                    { icon: "📄", title: "Resume (Vector PDF Analysis)", text: "While most systems only read text (OCR), JobRadar analyzes the native vector structure of the PDF. This means we understand not just the words, but the full visual context: columns, font sizes, and hidden formatting elements. We see exactly what a modern corporate screening system (ATS) sees, and we identify the structural errors that cause even the best profiles to get stuck." },
+                    { icon: "🔗", title: "LinkedIn & Job Ad (Raw Text)", text: "Why paste the text instead of a link? The answer is data integrity. Websites change dynamically, links become obsolete, and web scrapers are often blocked or misinterpret content. By pasting the raw text, we guarantee that the AI analyzes the exact same information you see, eliminating errors and 'machine hallucinations'." },
                 ],
                 columns: 1,
             },
             {
-                title: "Step 2: Defining the Target",
+                title: "Step 2: Target Definition - The Strategic Context",
                 points: [
-                    { icon: "🎯", title: "Company Name & Ad Text", text: "Based on the company name, the AI conducts in-depth market research (corporate culture, market position, competitors), while the ad text provides the specific professional requirements. The combination of the two creates the strategic context." },
-                    { icon: "🕵️", title: "Interviewer Profile (Optional)", text: "If you provide the interviewer's LinkedIn profile, the AI will attempt to estimate their likely style, professional background, and focus points (DISC profile). This gives you a more targeted communication strategy." },
+                    { icon: "🎯", title: "Company Name & Ad (Micro & Macro Environment)", text: "The system operates in a dual context. The job description (JD) provides the 'MICRO' context: the technical and soft skills required for the specific role. The company name provides the 'MACRO' context: the AI uses Google Search to conduct real-time research on the company's market position, competitors, culture, and strategic goals. The combination of the two enables a true strategic fit analysis." },
+                    { icon: "🕵️", title: "Interviewer Profiling (Optional)", text: "If you provide the decision-maker's LinkedIn profile, the AI performs a psychometric analysis. Based on their language, career path, and professional network, it estimates their personality type (DISC model), their likely professional fears ('why they wouldn't hire you'), and their 'Yes-Triggers' ('what evidence will convince them'). This allows you to tailor your communication to their specific language." },
                 ],
                 columns: 1,
             },
             {
                 title: "Step 3: Multi-Agent AI Analysis",
                 steps: [
-                    { title: "Fit/Gap Analysis", text: "The neural network compares the CV with the JD and scores the fit across four main dimensions (Hard/Soft Skills, Experience, Domain Fit)." },
-                    { title: "Strategic Modules", text: "Different AI 'personas' work on the report elements: an 'ATS Auditor' for CV suggestions, a 'Psychologist' for the interviewer profile, and a 'Competitor Analyst' for market intelligence." },
-                    { title: "Executive Toolkit", text: "The result is an immediately usable executive toolkit: a personalized cover letter, salary negotiation scripts, a 90-day plan, and the most critical interview questions." }
+                    { title: "Fit/Gap Analysis", text: "The neural network compares the CV with the JD and scores the fit across four main dimensions: Hard Skills (technologies), Soft Skills (leadership, communication), Experience (project scale, years), and Domain Fit (e.g., FinTech vs. Telco)." },
+                    { title: "Strategic Modules", text: "Not one, but multiple specialized AI 'agents' work on the report: an 'ATS Auditor' for CV suggestions, an 'Executive Headhunter' for the cover letter, and a 'Market Analyst' for competitor intelligence." },
+                    { title: "Executive Toolkit", text: "The output is an immediately deployable strategic package ('deployment kit'): a tailored cover letter, salary negotiation scripts, a 90-day plan, and interview questions targeting your identified weaknesses." }
                 ],
-                note: "The system uses the Gemini 2.5 Flash model to understand complex, multi-step reasoning chains and deep professional context."
+                note: "The system uses the Gemini 2.5 Flash model, which is capable of understanding complex, multi-step reasoning chains and deep professional context, augmented with real-time web data."
             },
             {
                 title: "Step 4: Interactive Preparation with the AI Coach",
                 points: [
-                    { icon: "🎙️", title: "Real-time Practice", text: "Don't just read the strategy, practice it! The AI Coach asks you targeted, 'uncomfortable' questions based on the generated report to test your readiness." },
-                    { icon: "📈", title: "Instant Feedback", text: "You receive immediate, constructive feedback on every answer. The coach evaluates your response (on a 1-10 scale) and suggests a stronger, 'executive' phrasing." },
+                    { icon: "🎙️", title: "Targeted Practice", text: "The AI Coach doesn't ask random questions. It builds its questions based on the 'Red Flags' and gaps identified in your report to specifically test and strengthen your weak points. You can use the speech recognition feature to simulate a real interview situation." },
+                    { icon: "📈", title: "Immediate, In-depth Feedback", text: "For every answer, you receive three levels of feedback: Structure (e.g., 'Did you use the STAR method?'), Phrasing (e.g., 'That was too passive, try this stronger, active sentence...'), and Strategic Content (e.g., 'You missed an opportunity here to connect your experience to the company's quarterly goals.')." },
                 ],
                 columns: 1,
-                note: "This module is interactive and credit-based, so the focus is on quality, effective preparation, not quantity."
+                note: "This module is interactive and credit-based, focusing on quality, effective preparation. The goal is not just to know the right answer, but to deliver it with confidence."
             }
         ],
     },

@@ -23,7 +23,6 @@ import SalaryNegotiationSection from './components/SalaryNegotiationSection';
 import InterviewerProfilerSection from './components/InterviewerProfilerSection';
 import AnalysisConclusion from './components/AnalysisConclusion';
 import Plan90DaySection from './components/Plan90DaySection';
-import { AboutModal } from './components/AboutModal';
 import { TermsOfServiceModal } from './components/TermsOfServiceModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
@@ -42,7 +41,6 @@ const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [activeTab, setActiveTab] = useState<'overview' | 'preparation' | 'coach'>('overview');
   const [showPricing, setShowPricing] = useState(false);
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isTosOpen, setIsTosOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
@@ -319,12 +317,6 @@ const App: React.FC = () => {
             className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             {t.howItWorks}
-          </button>
-          <button 
-            onClick={() => setIsAboutOpen(true)} 
-            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
-          >
-            {t.about || 'Rólunk'}
           </button>
           <button 
             onClick={() => setShowPricing(true)} 
@@ -1023,7 +1015,6 @@ const App: React.FC = () => {
         </button>
       </footer>
 
-      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} t={t} />
       <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
       <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
     </div>

@@ -264,7 +264,7 @@ export const FormTextarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaEle
 export const PrimaryButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, className, ...props }) => (
   <button
     {...props}
-    className={`w-full py-4 rounded-full bg-gradient-to-r from-[#0f172a] via-[#1e40af] to-[#3b82f6] text-white font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 hover:shadow-blue-900/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    className={`w-full py-4 rounded-full bg-gradient-to-r from-[#1e40af] via-[#2563eb] to-[#3b82f6] text-white font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 hover:shadow-blue-900/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
     {children}
   </button>
