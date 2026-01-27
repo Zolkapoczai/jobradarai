@@ -490,11 +490,18 @@ const App: React.FC = () => {
         {currentStep === 1 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
-               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-50 dark:border-slate-800 pb-6 gap-6">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 dark:border-slate-800 pb-8 gap-6">
                  <div className="space-y-2">
                    <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">1. {t.profileAssets}</h2>
                    <p className="text-sm font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
                  </div>
+                 <PrimaryButton 
+                    className="w-full md:w-auto px-10 shadow-xl" 
+                    onClick={() => setCurrentStep(2)} 
+                    disabled={!cvFile}
+                 >
+                    {t.continueToJobDetails}
+                 </PrimaryButton>
                </div>
 
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
