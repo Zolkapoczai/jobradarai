@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo, PlanPhase } from "../types";
 import { JOBRADAR_CONFIG } from '../config';
@@ -103,7 +104,7 @@ const categorizeError = (error: any): AnalysisErrorInfo => {
 
   // This is a common error message format for invalid keys from some Google Cloud services
   if (message.includes("API key not found") || message.toLowerCase().includes("permission denied")) {
-    return { type: AnalysisErrorType.API_KEY, message: "Hiba az API kulccsal. Ellenőrizze, hogy a kulcs érvényes és rendelkezik a szükséges jogosultságokkal." };
+    return { type: AnalysisErrorType.API_KEY, message: "Hiba az API kulccsal. Ellenőrizze, hogy a kulcs érvéyes és rendelkezik a szükséges jogosultságokkal." };
   }
 
   // Handle standard HTTP status codes
@@ -242,43 +243,70 @@ export const analyzeCareerMatch = async (
   linkedinProfileText?: string
 ): Promise<AnalysisResult> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const targetLang = lang === 'hu' ? 'HUNGARIAN (Magyar)' : 'ENGLISH';
   
-  const languageInstruction = lang === 'hu' 
-    ? "IMPORTANT: A teljes választ és a JSON tartalmát MAGYAR nyelven generáld (Hungarian)." 
-    : "IMPORTANT: You MUST generate the entire JSON response and all text content in ENGLISH.";
-
-  let prompt = `DEEP ANALYSIS INITIATED: [Company: ${companyName}] [URL: ${companyWebsite}]
-  TARGET LANGUAGE: ${targetLang}
-  ${languageInstruction}
-
-  Candidate Data: ${cvFile ? 'Binary PDF Attached' : cvText}
-  Job Scope: ${jdText}
-  Special Hook: ${userNote ? userNote : 'None'}
-  Interviewer Profile: ${interviewerLinkedin ? interviewerLinkedin : 'Generic Predicted Decision Maker'}
-  LinkedIn Profile Data: ${linkedinProfileText ? linkedinProfileText : 'Not provided'}
-  
-  CRITICAL PROTOCOLS:
-  - CV SUGGESTIONS DEEP-DIVE: For each CV suggestion, provide an implementationExample with a 'before' and an 'after'.
-  - NEGOTIATION SCENARIOS: Provide 5 distinct, nuanced scripts as objects with 'scenario' and 'script' keys.
-  - APPLY ALL STRATEGIC MODULES (Salary Architecture, Interviewer X-Ray, Competitor Analysis).
-  - ALL text must be in ${targetLang}. 
-  - Generate exactly 5 interview questions and strategic answers.`;
-
-  const contents: any[] = [{ text: prompt }];
-  if (cvFile) {
-    contents.push({ inlineData: { data: cvFile.data, mimeType: cvFile.mimeType } });
-  }
-
   return withRetry(async () => {
     try {
-      const response = await ai.models.generateContent({
+      // ===== STAGE 1: RESEARCH CALL (using Google Search) =====
+      const researchPrompt = `Using Google Search, conduct a deep-dive investigation into the company: "${companyName}" with website "${companyWebsite}".
+      Synthesize your findings into a comprehensive intelligence report. Focus on these areas:
+      1.  **Corporate Identity & Market Position:** What is their core business? Who are their main customers? What is their market share and reputation?
+      2.  **Recent News & Strategy:** Any recent product launches, mergers, financial reports, or strategic shifts mentioned in the news?
+      3.  **Corporate Culture:** What is the sentiment about working there? (Check sources like Glassdoor, Reddit if possible). What are their stated values?
+      4.  **Competitive Landscape:** Who are their top 3-4 direct competitors? What are their key differentiators?
+      5.  **Hungarian Presence (if applicable):** What is the scale and focus of their operations in Hungary?
+      
+      Provide a detailed, objective report based on your search findings.`;
+      
+      const researchResponse = await ai.models.generateContent({
+          model: JOBRADAR_CONFIG.AI_MODEL,
+          contents: researchPrompt,
+          config: {
+              tools: [{ googleSearch: {} }],
+              temperature: 0.1,
+          }
+      });
+      const researchReport = researchResponse.text;
+
+      // ===== STAGE 2: ANALYSIS & JSON GENERATION CALL =====
+      const targetLang = lang === 'hu' ? 'HUNGARIAN (Magyar)' : 'ENGLISH';
+      const languageInstruction = lang === 'hu' 
+        ? "IMPORTANT: A teljes választ és a JSON tartalmát MAGYAR nyelven generáld (Hungarian)." 
+        : "IMPORTANT: You MUST generate the entire JSON response and all text content in ENGLISH.";
+      
+      let analysisPrompt = `DEEP ANALYSIS INITIATED: [Company: ${companyName}] [URL: ${companyWebsite}]
+      TARGET LANGUAGE: ${targetLang}
+      ${languageInstruction}
+
+      **INTERNAL RESEARCH BRIEFING (DO NOT output this in the JSON):**
+      ${researchReport}
+      **END OF BRIEFING.**
+
+      Candidate Data: ${cvFile ? 'Binary PDF Attached' : cvText}
+      Job Scope: ${jdText}
+      Special Hook: ${userNote ? userNote : 'None'}
+      Interviewer Profile: ${interviewerLinkedin ? interviewerLinkedin : 'Generic Predicted Decision Maker'}
+      LinkedIn Profile Data: ${linkedinProfileText ? linkedinProfileText : 'Not provided'}
+      
+      CRITICAL PROTOCOLS:
+      - Use the provided INTERNAL RESEARCH BRIEFING to inform your analysis for all relevant fields (competitors, market position, etc.).
+      - CV SUGGESTIONS DEEP-DIVE: For each CV suggestion, provide an implementationExample with a 'before' and an 'after'.
+      - NEGOTIATION SCENARIOS: Provide 5 distinct, nuanced scripts as objects with 'scenario' and 'script' keys.
+      - APPLY ALL STRATEGIC MODULES (Salary Architecture, Interviewer X-Ray, Competitor Analysis).
+      - ALL text must be in ${targetLang}. 
+      - Generate exactly 5 interview questions and strategic answers.`;
+
+      const contents: any[] = [{ text: analysisPrompt }];
+      if (cvFile) {
+        contents.push({ inlineData: { data: cvFile.data, mimeType: cvFile.mimeType } });
+      }
+
+      const analysisResponse = await ai.models.generateContent({
         model: JOBRADAR_CONFIG.AI_MODEL,
         contents: { parts: contents },
         config: {
           systemInstruction: SYSTEM_INSTRUCTION,
           responseMimeType: "application/json",
-          tools: [{ googleSearch: {} }],
+          // NO `tools` here to avoid the conflict
           thinkingConfig: { thinkingBudget: 8192 },
           responseSchema: {
             type: Type.OBJECT,
@@ -465,7 +493,7 @@ export const analyzeCareerMatch = async (
         }
       });
 
-      const finishReason = response.candidates?.[0]?.finishReason;
+      const finishReason = analysisResponse.candidates?.[0]?.finishReason;
       if (finishReason && finishReason !== 'STOP') {
         if (finishReason === 'SAFETY') {
           throw { type: AnalysisErrorType.UNKNOWN, message: "Az MI biztonsági okokból leállította a generálást. A megadott szöveg (CV vagy álláshirdetés) tartalmazhatott érzékeny tartalmat. Kérjük, ellenőrizze és próbálja újra." };
@@ -480,15 +508,15 @@ export const analyzeCareerMatch = async (
       }
 
       try {
-        const resultText = response.text;
+        const resultText = analysisResponse.text;
         if (!resultText || resultText.trim() === '') {
             throw { type: AnalysisErrorType.PARSING, message: "Az MI üres választ adott. Ez előfordulhat szerverhiba vagy a bemeneti adatokkal kapcsolatos probléma miatt. Kérjük, próbálja újra." };
         }
         const result = JSON.parse(resultText);
         return { ...result, companyWebsite, companyName };
       } catch (parseError) {
-        console.error("JSON Parsing Error. Raw AI response:", response.text);
-        throw { type: AnalysisErrorType.PARSING, message: "Hiba az MI válaszának feldolgozása során (érvénytelen JSON). Ez egy átmeneti hiba lehet. Kérjük, próbálja újra." };
+        console.error("JSON Parsing Error. Raw AI response:", analysisResponse.text);
+        throw { type: AnalysisErrorType.PARSING, message: "Hiba az MI válaszának feldogozása során (érvénytelen JSON). Ez egy átmeneti hiba lehet. Kérjük, próbálja újra." };
       }
     } catch (error: any) {
       console.error("Analysis Error Detail:", error);

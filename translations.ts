@@ -48,11 +48,12 @@ export const translations = {
     executeScan: "Elemzés indítása",
     synthesizing: "STRATÉGIAI KIÉRTÉKELÉS ÉS SZIMULÁCIÓ...",
     loadingSteps: [
-      "Neurális motor inicializálása...",
-      "Dokumentum szemantikai elemzése...",
-      "Álláskövetelmények feltérképezése...",
+      "Piaci hírszerzés indítása (Google Search)...",
+      "Vállalati adatok elemzése és szintézise...",
+      "Neurális motor inicializálása a riporttal...",
+      "CV és állásleírás szemantikai elemzése...",
       "Stratégiai illeszkedés számítása...",
-      "Taktikai elemek generálása...",
+      "Taktikai modulok generálása...",
       "Jelentés véglegesítése..."
     ],
     clearAll: "Mindent töröl",
@@ -287,7 +288,7 @@ export const translations = {
             title: "4. Lépés: Interaktív Felkészülés az AI Coach-csal",
             points: [
                 { icon: "🎙️", title: "Célzott Gyakorlás", text: "Az AI Coach nem véletlenszerű kérdéseket tesz fel. A riportban azonosított 'Red Flag'-ekre és hiányosságokra (Gap Analízis) építi a kérdéseit, hogy célzottan az Ön gyenge pontjait tesztelje és erősítse. A hangfelismerő funkcióval valós interjúhelyzetet szimulálhat." },
-                { icon: "📈", title: "Azonnali, Mély Visszajelzés", text: "Minden válaszára három szintű visszajelzést kap: Struktúra (pl. Használta-e a STAR-módszert?), Megfogalmazás (pl. 'Túl passzív volt, próbálja ezzel az erősebb, aktívabb mondattal...'), és Stratégiai Tartalom (pl. 'Itt elmulasztott egy lehetőséget, hogy összekösse a tapasztalatát a cég negyedéves céljaival.')." },
+                { icon: "📈", title: "Azonnali, Mély Visszajelzés", text: "Minden válaszára három szintű visszajelzést kap: Struktúra (pl. Használta-e a STAR-módszert?), Megfogalmazás (pl. 'Túl passív volt, próbálja ezzel az erősebb, aktívabb mondattal...'), és Stratégiai Tartalom (pl. 'Itt elmulasztott egy lehetőséget, hogy összekösse a tapasztalatát a cég negyedéves céljaival.')." },
             ],
             columns: 1,
             note: "Ez a modul interaktív és kredit alapú, így a fókusz a minőségi, hatékony felkészülésen van. A cél, hogy ne csak tudja a helyes választ, hanem magabiztosan elő is tudja adni azt."
@@ -417,12 +418,13 @@ export const translations = {
     executeScan: "Start Analysis",
     synthesizing: "STRATEGIC EVALUATION AND SIMULATION...",
     loadingSteps: [
-      "Initializing neural engine...",
-      "Semantic analysis of documents...",
-      "Mapping job requirements...",
-      "Calculating strategic fit...",
-      "Generating tactical elements...",
-      "Finalizing report..."
+      "Initiating Market Intelligence (Google Search)...",
+      "Analyzing and Synthesizing Company Data...",
+      "Initializing Neural Engine with Intelligence Report...",
+      "Performing Semantic Analysis of CV & JD...",
+      "Calculating Strategic Fit Score...",
+      "Generating Tactical Modules...",
+      "Finalizing Executive Report..."
     ],
     clearAll: "Clear All",
     summary: "Summary",
