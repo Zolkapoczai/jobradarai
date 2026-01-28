@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, JobAnalysis } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
 import { analyzeJob } from './services/jobAnalysisService';
@@ -1018,6 +1019,9 @@ const App: React.FC = () => {
 
       <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
       <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
+      
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 };
