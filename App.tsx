@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, JobAnalysis } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
 import { analyzeJob } from './services/jobAnalysisService';

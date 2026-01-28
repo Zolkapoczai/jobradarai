@@ -255,6 +255,11 @@ export const translations = {
     scenarioLabel: "Szituáció",
     demoVersionLabel: "DEMO VERZIÓ",
     demoVersionTooltip: "Jelenleg a rendszer tesztelés alatt van, semmilyen fellelősséget a készítők nem vállalnak a működésért, az eredményért.",
+    contactModalTitle: "Személyes Konzultáció?",
+    contactModalBody: "Kérdése van az előfizetéssel vagy a szolgáltatással kapcsolatban? Lépjen kapcsolatba velünk bizalommal.",
+    contactModalName: "Poczai Zoltán",
+    contactModalPhone: "+36 70 370 59 13",
+    contactModalClose: "Bezárás",
     howItWorksModal: {
       title: "A JobRadar Működési Folyamata",
       close: "Bezárás",
@@ -625,6 +630,11 @@ export const translations = {
     scenarioLabel: "Scenario",
     demoVersionLabel: "DEMO VERSION",
     demoVersionTooltip: "The system is currently under testing; the creators assume no responsibility for its operation or results.",
+    contactModalTitle: "Personal Consultation?",
+    contactModalBody: "Have a question about the subscription or the service? Feel free to get in touch.",
+    contactModalName: "Poczai Zoltán",
+    contactModalPhone: "+36 70 370 59 13",
+    contactModalClose: "Close",
     howItWorksModal: {
         title: "How JobRadar Works",
         close: "Close",
