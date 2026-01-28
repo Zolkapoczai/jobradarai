@@ -11,6 +11,7 @@ interface PricingPageProps {
 const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const isEn = lang === 'en';
 
   useEffect(() => {
@@ -35,6 +36,12 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
     setTimeout(() => setCopied(false), 2000);
   };
   
+  const handleEmailCopy = () => {
+    navigator.clipboard.writeText(t.contactModalEmail);
+    setEmailCopied(true);
+    setTimeout(() => setEmailCopied(false), 2000);
+  };
+  
   return (
     <>
       {showContactModal && (
@@ -51,19 +58,34 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
             
             <div className="space-y-6">
                 <div className={`p-6 rounded-3xl border-2 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <div className="text-lg font-black text-slate-950 dark:text-white">{t.contactModalName}</div>
-                    <div className="flex items-center justify-center gap-4 mt-2">
-                        <span className="text-base font-bold text-blue-600 dark:text-blue-400 tracking-wider">{t.contactModalPhone}</span>
-                        <button 
-                            onClick={handleCopy}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border-2 ${
-                                copied 
-                                ? 'bg-emerald-600 border-emerald-500 text-white' 
-                                : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-300 hover:border-blue-500' : 'bg-slate-200 border-slate-300 text-slate-700 hover:border-blue-700')
-                            }`}
-                        >
-                            {copied ? t.copiedText : t.copyText}
-                        </button>
+                    <div className="text-lg font-black text-slate-950 dark:text-white text-center mb-6">{t.contactModalName}</div>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <span className="text-sm font-bold text-blue-600 dark:text-blue-400 tracking-wider">{t.contactModalPhone}</span>
+                            <button 
+                                onClick={handleCopy}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border-2 shrink-0 ${
+                                    copied 
+                                    ? 'bg-emerald-600 border-emerald-500 text-white' 
+                                    : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-300 hover:border-blue-500' : 'bg-slate-200 border-slate-300 text-slate-700 hover:border-blue-700')
+                                }`}
+                            >
+                                {copied ? t.copiedText : t.copyText}
+                            </button>
+                        </div>
+                        <div className="flex items-center justify-between gap-4">
+                            <span className="text-sm font-bold text-blue-600 dark:text-blue-400 tracking-wider break-all text-left">{t.contactModalEmail}</span>
+                            <button 
+                                onClick={handleEmailCopy}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border-2 shrink-0 ${
+                                    emailCopied 
+                                    ? 'bg-emerald-600 border-emerald-500 text-white' 
+                                    : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-300 hover:border-blue-500' : 'bg-slate-200 border-slate-300 text-slate-700 hover:border-blue-700')
+                                }`}
+                            >
+                                {emailCopied ? t.copiedText : t.copyText}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +109,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
               {t.planFreeBadge}
             </div>
-            <div className="flex justify-between items-start mb-8 mt-4">
+            <div className="flex justify-center items-start mb-8 mt-4">
               <h3 className="text-2xl font-black uppercase tracking-tight">{t.planFreeTitle}</h3>
             </div>
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-8 flex-grow">{t.planFreeDesc}</p>
@@ -115,7 +137,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-700 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
               MOST POPULAR
             </div>
-            <div className="mb-8 mt-4">
+            <div className="mb-8 mt-4 text-center">
               <h3 className="text-2xl font-black uppercase tracking-tight">{t.planWeeklyTitle}</h3>
             </div>
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-8 flex-grow">{t.planWeeklyDesc}</p>
@@ -137,8 +159,11 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
           </div>
 
           {/* Monthly Plan (Career Builder) */}
-          <div className={`p-10 rounded-[48px] border flex flex-col transition-all hover:scale-[1.02] shadow-xl ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
-            <div className="mb-8 mt-4">
+          <div className={`relative p-10 rounded-[48px] border-2 border-violet-600/40 flex flex-col transition-all hover:scale-[1.05] shadow-2xl ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+            <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-violet-700 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+              {t.planMonthlyBadge}
+            </div>
+            <div className="mb-8 mt-4 text-center">
               <h3 className="text-2xl font-black uppercase tracking-tight">{t.planMonthlyTitle}</h3>
             </div>
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-8 flex-grow">{t.planMonthlyDesc}</p>
@@ -150,7 +175,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang, darkMode }) => {
             <ul className="space-y-4 mb-10">
               {t.pricingFeats.map((feat: string, i: number) => (
                 <li key={i} className="flex items-center gap-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  <span className="text-blue-600 font-black">✓</span> {feat}
+                  <span className="text-violet-600 font-black">✓</span> {feat}
                 </li>
               ))}
             </ul>
