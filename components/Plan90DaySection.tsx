@@ -23,11 +23,11 @@ const Plan90DaySection: React.FC<Plan90DaySectionProps> = ({ plan, darkMode, t }
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {plan.map((phase, idx) => (
-        <div key={idx} className={`relative pl-12 border-l-4 ${phaseColors[idx % phaseColors.length]}`}>
-          <div className={`absolute -left-5 top-0 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-lg border-4 ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
+        <div key={idx} className={`relative pl-10 sm:pl-12 border-l-4 ${phaseColors[idx % phaseColors.length]}`}>
+          <div className={`absolute -left-4 sm:-left-5 top-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-base sm:text-lg shadow-lg border-4 ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
             <span className={phaseTextColors[idx % phaseTextColors.length]}>{idx + 1}</span>
           </div>
-          <div className="ml-4">
+          <div className="ml-2 sm:ml-4">
             <h4 className={`text-lg font-black uppercase tracking-tight ${phaseTextColors[idx % phaseTextColors.length]} mb-6`}>{phase.phaseTitle}</h4>
             <ul className="space-y-4">
               {phase.actions.map((action, actionIdx) => (

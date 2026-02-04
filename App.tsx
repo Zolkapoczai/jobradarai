@@ -30,12 +30,17 @@ import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
 import { processPdfFile, validatePdf } from './utils/fileProcessor';
 
 const App: React.FC = () => {
+  const MOBILE_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
+
   // Global App States
   const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
+  const [userPrefersDark, setUserPrefersDark] = useState<boolean>(() => {
     const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false; // Default to light mode
+    return saved ? JSON.parse(saved) : false;
   });
+  const effectiveDarkMode = userPrefersDark && !isMobile;
+  
   const [state, setState] = useState<AppState>(AppState.IDLE);
   
   // Navigation & View States
@@ -87,7 +92,7 @@ const App: React.FC = () => {
   }, [result]);
 
   const toggleDarkMode = () => {
-    setDarkMode(prev => {
+    setUserPrefersDark(prev => {
         const next = !prev;
         localStorage.setItem('darkMode', JSON.stringify(next));
         return next;
@@ -99,12 +104,18 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (darkMode) {
+    const handleResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  useEffect(() => {
+    if (effectiveDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [darkMode]);
+  }, [effectiveDarkMode]);
 
   // Load Session State on Mount
   useEffect(() => {
@@ -326,12 +337,13 @@ const App: React.FC = () => {
             {t.pricing}
           </button>
           <div className="flex items-center gap-2">
-            <TooltipWrapper text={t.tooltips.toggleTheme}>
+            <TooltipWrapper text={isMobile ? t.tooltips.mobileDarkModeDisabled : t.tooltips.toggleTheme}>
               <button 
                 onClick={toggleDarkMode}
-                className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400"
+                disabled={isMobile}
+                className={`w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400 ${isMobile ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {darkMode ? (
+                {userPrefersDark ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                 ) : (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -467,11 +479,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f1f5f9] text-slate-950'} font-sans`}>
+    <div className={`min-h-screen transition-colors duration-300 ${effectiveDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f1f5f9] text-slate-950'} font-sans`}>
       {showPricing && (
         <div className="fixed inset-0 z-[10500] bg-white dark:bg-slate-950 overflow-y-auto pt-24 pb-12">
           <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors z-[10600] text-slate-900 dark:text-white">✕</button>
-          <PricingPage t={t} lang={lang} darkMode={darkMode} />
+          <PricingPage t={t} lang={lang} darkMode={effectiveDarkMode} />
         </div>
       )}
 
@@ -663,7 +675,7 @@ const App: React.FC = () => {
                <TooltipWrapper text={t.tooltips.dashboardTab}>
                  <button 
                   onClick={() => setActiveTab('overview')}
-                  className={`px-5 sm:px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-3 sm:px-6 md:px-8 py-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'overview' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
@@ -675,7 +687,7 @@ const App: React.FC = () => {
                <TooltipWrapper text={t.tooltips.strategyTab}>
                  <button 
                   onClick={() => setActiveTab('preparation')}
-                  className={`px-5 sm:px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-3 sm:px-6 md:px-8 py-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'preparation' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
@@ -687,7 +699,7 @@ const App: React.FC = () => {
                <TooltipWrapper text={t.tooltips.coachTab}>
                  <button 
                   onClick={() => setActiveTab('coach')}
-                  className={`px-5 sm:px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  className={`px-3 sm:px-6 md:px-8 py-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'coach' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
@@ -718,12 +730,12 @@ const App: React.FC = () => {
                 </div>
 
                 {jobHeuristicsAnalysis && (
-                  <SectionWrapper title={lang === 'hu' ? "Hirdetés Gyorselemzés" : "Job Ad Quick Scan"} icon={<LightningIcon />} darkMode={darkMode} defaultOpen>
+                  <SectionWrapper title={lang === 'hu' ? "Hirdetés Gyorselemzés" : "Job Ad Quick Scan"} icon={<LightningIcon />} darkMode={effectiveDarkMode} defaultOpen>
                     <AnalysisConclusion conclusion={jobHeuristicsAnalysis.conclusion} />
                   </SectionWrapper>
                 )}
 
-                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} darkMode={darkMode} tooltipText={t.tooltips.professionalAlignment}>
+                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.professionalAlignment}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                      <div className="bg-white dark:bg-slate-900 rounded-[32px] border-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                         <div className="px-8 py-4 bg-emerald-50 dark:bg-emerald-900/10 border-b-2 border-slate-100 dark:border-slate-800 flex items-center gap-3">
@@ -756,9 +768,9 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={t.auditTitle} icon={<UserIcon />} darkMode={darkMode} tooltipText={t.tooltips.linkedinAudit}>
+                <SectionWrapper title={t.auditTitle} icon={<UserIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.linkedinAudit}>
                   {linkedinText && result.linkedinAudit ? (
-                    <LinkedInAuditSection audit={result.linkedinAudit} t={t} darkMode={darkMode} />
+                    <LinkedInAuditSection audit={result.linkedinAudit} t={t} darkMode={effectiveDarkMode} />
                   ) : (
                     <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-200 dark:border-slate-800">
                       <p className="font-bold text-slate-600 dark:text-slate-400 italic">{t.auditNotAvailable}</p>
@@ -766,56 +778,56 @@ const App: React.FC = () => {
                   )}
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon={<ChartBarIcon />} darkMode={darkMode} tooltipText={t.tooltips.competitorAnalysis}>
+                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon={<ChartBarIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.competitorAnalysis}>
                   <div className="space-y-4 mb-6 px-1">
                     <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed italic">
                       {lang === 'hu' ? "A valószínűsíthető jelölti kör elemzése és az Ön megkülönböztető előnyeinek (USP) meghatározása a kiemelkedés érdekében." : "Analysis of the likely candidate pool and identifying your Unique Selling Points (USP) to stand out."}
                     </p>
                   </div>
-                  <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={darkMode} />
+                  <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.preMortemTitle} icon={<WarningIcon />} darkMode={darkMode} tooltipText={t.tooltips.preMortem}>
-                  <RedFlagSection analysis={result.preMortemAnalysis!} t={t} darkMode={darkMode} />
+                <SectionWrapper title={t.preMortemTitle} icon={<WarningIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.preMortem}>
+                  <RedFlagSection analysis={result.preMortemAnalysis!} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
-                <SectionWrapper title={t.cvSuggestionsTitle} icon={<PencilIcon />} darkMode={darkMode} tooltipText={t.tooltips.cvSuggestions}>
-                  <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} darkMode={darkMode} />
+                <SectionWrapper title={t.cvSuggestionsTitle} icon={<PencilIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.cvSuggestions}>
+                  <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
-                <SectionWrapper title={t.rewriteTitle} icon={<SparklesIcon />} darkMode={darkMode} tooltipText={t.tooltips.cvRewrite}>
-                  <RewriterSection rewrite={result.cvRewrite!} t={t} darkMode={darkMode} />
+                <SectionWrapper title={t.rewriteTitle} icon={<SparklesIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.cvRewrite}>
+                  <RewriterSection rewrite={result.cvRewrite!} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
               </div>
             )}
 
             {activeTab === 'preparation' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} darkMode={darkMode} defaultOpen tooltipText={t.tooltips.interviewPrep}>
-                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={darkMode} />
+                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} darkMode={effectiveDarkMode} defaultOpen tooltipText={t.tooltips.interviewPrep}>
+                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.salaryTitle} icon={<CashIcon />} darkMode={darkMode} tooltipText={t.tooltips.salaryNegotiation}>
-                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} darkMode={darkMode} />
+                <SectionWrapper title={t.salaryTitle} icon={<CashIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.salaryNegotiation}>
+                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.interviewerTitle} icon={<RadarIcon />} darkMode={darkMode} tooltipText={t.tooltips.interviewerProfile}>
-                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} darkMode={darkMode} />
+                <SectionWrapper title={t.interviewerTitle} icon={<RadarIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.interviewerProfile}>
+                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon={<BuildingIcon />} darkMode={darkMode} tooltipText={t.tooltips.corporateEcosystem}>
+                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon={<BuildingIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.corporateEcosystem}>
                    <div className="space-y-12">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                         <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon={<TrendingUpIcon />} darkMode={darkMode} />
-                         <IntelligenceCard title={lang === 'en' ? "Presence in HU" : "HU Jelenlét"} content={result.hungarianPresence} icon={<LocationMarkerIcon />} darkMode={darkMode} />
-                         <IntelligenceCard title={lang === 'en' ? "Culture & SWOT" : "Kultúra & SWOT"} content={result.companyDeepDive} icon={<DnaIcon />} darkMode={darkMode} />
-                         <IntelligenceCard title={lang === 'en' ? "Value Proposition" : "Értékajánlat"} content={result.whyWorkHere} icon={<LightBulbIcon />} darkMode={darkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon={<TrendingUpIcon />} darkMode={effectiveDarkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Presence in HU" : "HU Jelenlét"} content={result.hungarianPresence} icon={<LocationMarkerIcon />} darkMode={effectiveDarkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Culture & SWOT" : "Kultúra & SWOT"} content={result.companyDeepDive} icon={<DnaIcon />} darkMode={effectiveDarkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Value Proposition" : "Értékajánlat"} content={result.whyWorkHere} icon={<LightBulbIcon />} darkMode={effectiveDarkMode} />
                       </div>
                       <div className="pt-8 border-t border-slate-300 dark:border-slate-800">
-                        <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={darkMode} />
+                        <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={effectiveDarkMode} />
                       </div>
                    </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} darkMode={darkMode} tooltipText={t.tooltips.coverLetter}>
+                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.coverLetter}>
                   <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                        <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
@@ -825,19 +837,19 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon={<CalendarIcon />} darkMode={darkMode} tooltipText={t.tooltips.plan90Day}>
+                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon={<CalendarIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.plan90Day}>
                   <div className="flex justify-between items-center mb-8 px-2">
                       <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
                       <button onClick={() => exportActionPlan(companyNameInput, result.plan90Day, t.attackPlanTitle)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
                   </div>
-                  <Plan90DaySection plan={result.plan90Day} t={t} darkMode={darkMode} />
+                  <Plan90DaySection plan={result.plan90Day} t={t} darkMode={effectiveDarkMode} />
                 </SectionWrapper>
               </div>
             )}
 
             {activeTab === 'coach' && (
               <div className="max-w-4xl mx-auto h-[80vh] min-h-[600px] animate-in slide-in-from-bottom-6 duration-500">
-                 <JobCoachChat result={result} t={t} darkMode={darkMode} lang={lang} />
+                 <JobCoachChat result={result} t={t} darkMode={effectiveDarkMode} lang={lang} />
               </div>
             )}
 
