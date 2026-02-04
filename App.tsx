@@ -480,6 +480,7 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${effectiveDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f1f5f9] text-slate-950'} font-sans`}>
+      <Analytics />
       {showPricing && (
         <div className="fixed inset-0 z-[10500] bg-white dark:bg-slate-950 overflow-y-auto pt-24 pb-12">
           <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors z-[10600] text-slate-900 dark:text-white">✕</button>
