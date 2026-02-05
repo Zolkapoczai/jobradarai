@@ -34,11 +34,6 @@ const App: React.FC = () => {
   // Global App States
   const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
-  const [userPrefersDark, setUserPrefersDark] = useState<boolean>(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
-  const effectiveDarkMode = userPrefersDark && !isMobile;
   
   const [state, setState] = useState<AppState>(AppState.IDLE);
   
@@ -90,14 +85,6 @@ const App: React.FC = () => {
     return { text: 'text-rose-600', bg: 'bg-rose-50', stroke: '#e11d48' };
   }, [result]);
 
-  const toggleDarkMode = () => {
-    setUserPrefersDark(prev => {
-        const next = !prev;
-        localStorage.setItem('darkMode', JSON.stringify(next));
-        return next;
-    });
-  };
-
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -108,13 +95,6 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  useEffect(() => {
-    if (effectiveDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [effectiveDarkMode]);
 
   // Load Session State on Mount
   useEffect(() => {
@@ -305,7 +285,7 @@ const App: React.FC = () => {
 
   // Main UI Parts
   const Header = () => (
-    <header className="px-4 sm:px-6 lg:px-10 py-6 border-b border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-[1000] shadow-sm">
+    <header className="px-4 sm:px-6 lg:px-10 py-6 border-b border-slate-300 bg-white sticky top-0 z-[1000] shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex flex-col cursor-pointer group" onClick={reset}>
           <JobRadarLogo className="h-12 md:h-16 w-auto transition-all hover:scale-105" />
@@ -325,44 +305,31 @@ const App: React.FC = () => {
         <div className="flex items-center gap-2 sm:gap-4 justify-end">
           <button 
             onClick={() => setIsHowItWorksOpen(true)} 
-            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
           >
             {t.howItWorks}
           </button>
           <button 
             onClick={() => setShowPricing(true)} 
-            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
           >
             {t.pricing}
           </button>
           <div className="flex items-center gap-2">
-            <TooltipWrapper text={isMobile ? t.tooltips.mobileDarkModeDisabled : t.tooltips.toggleTheme}>
-              <button 
-                onClick={toggleDarkMode}
-                disabled={isMobile}
-                className={`w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400 ${isMobile ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {userPrefersDark ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                )}
-              </button>
-            </TooltipWrapper>
             <button 
               onClick={() => {
                 const nextLang = lang === 'hu' ? 'en' : 'hu';
                 setLang(nextLang);
                 localStorage.setItem('userLang', nextLang);
               }} 
-              className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400 font-black text-[10px]"
+              className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 font-black text-[10px]"
             >
               {lang === 'hu' ? 'EN' : 'HU'}
             </button>
             <TooltipWrapper text={t.tooltips.resetAll}>
               <button 
                 onClick={reset} 
-                className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-rose-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-400"
+                className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-rose-600 hover:text-rose-600"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -393,14 +360,14 @@ const App: React.FC = () => {
                 }
               }}
             >
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black transition-all ${currentStep >= step.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'bg-slate-300 text-slate-500 dark:bg-slate-800'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black transition-all ${currentStep >= step.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30' : 'bg-slate-300 text-slate-500'}`}>
                 {currentStep > step.id ? '✓' : step.id}
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest text-center ${currentStep >= step.id ? 'text-slate-950 dark:text-white' : 'text-slate-500'}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest text-center ${currentStep >= step.id ? 'text-slate-950' : 'text-slate-500'}`}>
                 {step.label}
               </span>
             </div>
-            {idx < steps.length - 1 && <div className={`h-[2px] flex-grow mx-2 rounded-full ${currentStep > step.id ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'}`}></div>}
+            {idx < steps.length - 1 && <div className={`h-[2px] flex-grow mx-2 rounded-full ${currentStep > step.id ? 'bg-blue-600' : 'bg-slate-200'}`}></div>}
           </React.Fragment>
         ))}
       </div>
@@ -409,9 +376,9 @@ const App: React.FC = () => {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-100 dark:bg-slate-950 transition-colors duration-500">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-100 transition-colors duration-500">
         <div
-          className="max-w-xl w-full bg-white dark:bg-slate-900 rounded-[32px] p-6 md:p-8 border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center relative overflow-hidden transition-all duration-500"
+          className="max-w-xl w-full bg-white rounded-[32px] p-6 md:p-8 border-2 border-slate-300 shadow-2xl text-center relative overflow-hidden transition-all duration-500"
         >
           <button
             onClick={() => {
@@ -430,10 +397,10 @@ const App: React.FC = () => {
                 <div className="flex justify-center mb-8">
                     <JobRadarLogo className="h-[67px] w-auto" />
                 </div>
-                <h2 className="text-xl font-black uppercase tracking-tight text-slate-950 dark:text-white">
+                <h2 className="text-xl font-black uppercase tracking-tight text-slate-950">
                     {t.welcome}
                 </h2>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed px-4 text-justify whitespace-pre-wrap">
+                <p className="text-sm font-bold text-slate-700 leading-relaxed px-4 text-justify whitespace-pre-wrap">
                     {t.welcomeBody}
                 </p>
                 <div className="px-8 pt-4">
@@ -450,15 +417,15 @@ const App: React.FC = () => {
           {introStep === 'disclaimer' && (
             <div className="space-y-4 animate-in slide-in-from-right-6 duration-500 py-2">
               <div className="space-y-3">
-                <h2 className="text-xl font-black uppercase tracking-tight text-slate-950 dark:text-white">
+                <h2 className="text-xl font-black uppercase tracking-tight text-slate-950">
                   {t.aiActTitle}
                 </h2>
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-relaxed italic text-justify px-2">
+                <p className="text-sm font-bold text-slate-800 leading-relaxed italic text-justify px-2">
                   {t.aiActBody}
                 </p>
               </div>
 
-              <div className="px-4 py-4 rounded-[20px] bg-[#f8fbff] dark:bg-slate-800/50 text-xs font-bold text-slate-600 dark:text-slate-400 leading-relaxed text-justify border border-blue-100 dark:border-slate-700/50">
+              <div className="px-4 py-4 rounded-[20px] bg-[#f8fbff] text-xs font-bold text-slate-600 leading-relaxed text-justify border border-blue-100">
                 {t.globalDisclaimer}
               </div>
 
@@ -478,11 +445,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${effectiveDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f1f5f9] text-slate-950'} font-sans`}>
+    <div className="min-h-screen transition-colors duration-300 bg-[#f1f5f9] text-slate-950 font-sans">
       {showPricing && (
-        <div className="fixed inset-0 z-[10500] bg-white dark:bg-slate-950 overflow-y-auto pt-24 pb-12">
-          <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors z-[10600] text-slate-900 dark:text-white">✕</button>
-          <PricingPage t={t} lang={lang} darkMode={effectiveDarkMode} />
+        <div className="fixed inset-0 z-[10500] bg-white overflow-y-auto pt-24 pb-12">
+          <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 flex items-center justify-center text-2xl hover:bg-slate-50 transition-colors z-[10600] text-slate-900">✕</button>
+          <PricingPage t={t} lang={lang} />
         </div>
       )}
 
@@ -493,11 +460,11 @@ const App: React.FC = () => {
 
         {currentStep === 1 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-            <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
-               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 dark:border-slate-800 pb-8 gap-6">
+            <div className="bg-white rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 shadow-sm space-y-12">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 pb-8 gap-6">
                  <div className="space-y-2">
-                   <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">1. {t.profileAssets}</h2>
-                   <p className="text-sm font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
+                   <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900">1. {t.profileAssets}</h2>
+                   <p className="text-sm font-bold text-slate-700 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
                  </div>
                  <PrimaryButton 
                     className="w-full md:w-auto px-10 shadow-xl" 
@@ -510,15 +477,15 @@ const App: React.FC = () => {
 
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
                     <TooltipWrapper text={t.tooltips.cvUpload}>
                       <div 
                         onClick={() => fileInputRef.current?.click()}
                         className={`border-2 rounded-[32px] text-center transition-all flex flex-col items-center justify-center min-h-[350px] sm:min-h-[400px] cursor-pointer group relative overflow-hidden ${
-                          fileUploadStatus === 'success' ? 'bg-blue-50 dark:bg-slate-900 border-blue-500/50' : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500'
+                          fileUploadStatus === 'success' ? 'bg-blue-50 border-blue-500/50' : 'bg-slate-50 border-slate-300 hover:border-blue-500'
                         }`}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.02] pointer-events-none select-none">
+                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
                           <span className="text-[140px] font-black tracking-tighter">PDF</span>
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
@@ -526,12 +493,12 @@ const App: React.FC = () => {
                           <div className="flex flex-col items-center justify-center p-6 text-center animate-in zoom-in-95 duration-500 relative z-10 w-full h-full">
                               <div className="relative w-24 h-24 mb-6 text-blue-600">
                                   <div className="absolute inset-0 bg-blue-500 rounded-full animate-pulse opacity-10 blur-lg"></div>
-                                  <div className="relative w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 rounded-full border-4 border-white dark:border-slate-800 shadow-lg">
+                                  <div className="relative w-full h-full flex items-center justify-center bg-blue-100 rounded-full border-4 border-white shadow-lg">
                                       <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                       </svg>
                                   </div>
-                                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-md">
+                                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center border-4 border-white shadow-md">
                                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                       </svg>
@@ -539,11 +506,11 @@ const App: React.FC = () => {
                               </div>
                               
                               <div className="max-w-full px-4">
-                                  <p className="text-lg font-black text-slate-900 dark:text-white break-all truncate" title={cvFile?.name}>
+                                  <p className="text-lg font-black text-slate-900 break-all truncate" title={cvFile?.name}>
                                       {cvFile?.name}
                                   </p>
                                   {cvFile?.size && (
-                                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">
+                                      <p className="text-sm font-bold text-slate-500 mt-1">
                                           {(cvFile.size / 1024 / 1024).toFixed(2)} MB
                                       </p>
                                   )}
@@ -555,7 +522,7 @@ const App: React.FC = () => {
                                       setCvFile(null); 
                                       setFileUploadStatus('idle'); 
                                   }} 
-                                  className="mt-8 px-6 py-3 bg-white dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 rounded-full text-xs font-black uppercase tracking-widest border-2 border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:border-blue-500 transition-all group flex items-center gap-2 active:scale-95 shadow-sm"
+                                  className="mt-8 px-6 py-3 bg-white text-slate-700 rounded-full text-xs font-black uppercase tracking-widest border-2 border-slate-200 hover:border-blue-500 hover:text-blue-600 transition-all group flex items-center gap-2 active:scale-95 shadow-sm"
                               >
                                   <svg className="w-4 h-4 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5" />
@@ -567,7 +534,7 @@ const App: React.FC = () => {
                         ) : (
                           <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10 p-8">
                              <div className="w-24 h-24 mx-auto mb-2 relative flex items-center justify-center">
-                                <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/5 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                                <div className="absolute inset-0 bg-blue-500/10 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
                                 <svg className="w-16 h-16 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                   <polyline points="14 2 14 8 20 8"></polyline>
@@ -576,7 +543,7 @@ const App: React.FC = () => {
                                   <path d="M4 16v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" opacity="0.3"></path>
                                 </svg>
                              </div>
-                             <p className="text-sm font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 px-4">{t.dragDropText}</p>
+                             <p className="text-sm font-black uppercase tracking-widest text-slate-700 px-4">{t.dragDropText}</p>
                              <span className="inline-block px-6 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 group-hover:bg-blue-700 transition-all">{t.browseText}</span>
                           </div>
                         )}
@@ -584,7 +551,7 @@ const App: React.FC = () => {
                     </TooltipWrapper>
                  </div>
                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 ml-1">{t.linkedinLabel}</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.linkedinLabel}</label>
                     <TooltipWrapper text={t.tooltips.linkedinPaste}>
                       <FormTextarea
                         rows={14}
@@ -594,18 +561,18 @@ const App: React.FC = () => {
                         onChange={(e) => setLinkedinText(e.target.value)}
                       />
                     </TooltipWrapper>
-                    <p className="text-[11px] font-bold text-slate-700 dark:text-slate-400 px-1 leading-relaxed italic">
+                    <p className="text-[11px] font-bold text-slate-700 px-1 leading-relaxed italic">
                       {t.linkedinHelperNote}
                     </p>
                     <div className="flex justify-end">
                        <div className="group relative">
-                          <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
-                          <div className="absolute right-0 bottom-full mb-4 w-80 p-8 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-[32px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-200 dark:border-slate-700">
-                             <p className="font-black mb-4 uppercase text-blue-600 dark:text-blue-400 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
+                          <button className="text-[10px] font-black text-blue-600 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
+                          <div className="absolute right-0 bottom-full mb-4 w-80 p-8 bg-white text-slate-800 text-[11px] rounded-[32px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-200">
+                             <p className="font-black mb-4 uppercase text-blue-600 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
                              <ul className="space-y-2 font-bold mb-6">
                                 {t.linkedinPdfInstructions.split('\n').map((s: string, i: number) => <li key={i} className="flex gap-2"><span>{i+1}.</span>{s.replace(/^\d+\.\s*/, '')}</li>)}
                              </ul>
-                             <div className="absolute top-full right-8 border-8 border-transparent border-t-white dark:border-t-slate-800"></div>
+                             <div className="absolute top-full right-8 border-8 border-transparent border-t-white"></div>
                           </div>
                        </div>
                     </div>
@@ -626,11 +593,11 @@ const App: React.FC = () => {
 
         {currentStep === 2 && (
           <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-             <div className="bg-white dark:bg-slate-900 rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-12">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 dark:border-slate-800 pb-8 gap-6">
+             <div className="bg-white rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 shadow-sm space-y-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 pb-8 gap-6">
                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 dark:text-white">2. {t.missionParams}</h2>
-                      <p className="text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest">{lang === 'en' ? 'Enter position details for precise domain alignment.' : 'Add meg a pozíció részleteit a pontos domén-illeszkedéshez.'}</p>
+                      <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950">2. {t.missionParams}</h2>
+                      <p className="text-xs font-bold text-slate-700 uppercase tracking-widest">{lang === 'en' ? 'Enter position details for precise domain alignment.' : 'Add meg a pozíció részleteit a pontos domén-illeszkedéshez.'}</p>
                    </div>
                    <PrimaryButton className="w-full md:w-auto px-10 shadow-2xl" onClick={verifyCompany} disabled={!companyNameInput || (!jdText && !jdUrl)}>{lang === 'en' ? 'Start Analysis' : 'Elemzés indítása'}</PrimaryButton>
                 </div>
@@ -645,8 +612,8 @@ const App: React.FC = () => {
                    </div>
                    <div className="space-y-3">
                       <div className="flex justify-between items-center px-1">
-                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">{lang === 'en' ? 'Job Description Text' : 'Álláshirdetés Szövege'}</label>
-                         <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">{lang === 'en' ? 'Critical field' : 'Kritikus mező'}</span>
+                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-900">{lang === 'en' ? 'Job Description Text' : 'Álláshirdetés Szövege'}</label>
+                         <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{lang === 'en' ? 'Critical field' : 'Kritikus mező'}</span>
                       </div>
                       <TooltipWrapper text={t.tooltips.jdText}>
                         <FormTextarea rows={12} className="min-h-[300px] leading-relaxed shadow-inner" placeholder={lang === 'en' ? 'Paste the full job description here...' : 'Ide másold be a teljes hirdetés szövegét (feladatok, elvárások, juttatások)...'} value={jdText} onChange={(e) => setJdText(e.target.value)} />
@@ -659,9 +626,9 @@ const App: React.FC = () => {
                             <FormInput label={lang === 'en' ? "Interviewer's LinkedIn Profile (Optional)" : "Interjúztató LinkedIn Profilja (Opcionális)"} placeholder="https://www.linkedin.com/in/..." value={interviewerLinkedin} onChange={(e) => setInterviewerLinkedin(e.target.value)} />
                           </TooltipWrapper>
                          </div>
-                         <button onClick={() => setCurrentStep(1)} className="px-6 py-4 rounded-2xl border-2 border-slate-300 font-black text-[10px] uppercase tracking-widest text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800 transition-all mb-1 shrink-0">{lang === 'en' ? 'Back' : 'Vissza'}</button>
+                         <button onClick={() => setCurrentStep(1)} className="px-6 py-4 rounded-2xl border-2 border-slate-300 font-black text-[10px] uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-all mb-1 shrink-0">{lang === 'en' ? 'Back' : 'Vissza'}</button>
                       </div>
-                      <p className="text-[10px] font-bold text-slate-700 dark:text-slate-400 px-1 italic">{lang === 'en' ? 'Helps predict interview style and focus points.' : 'Segít megjósolni az interjúztató stílusát és a fókuszpontokat.'}</p>
+                      <p className="text-[10px] font-bold text-slate-700 px-1 italic">{lang === 'en' ? 'Helps predict interview style and focus points.' : 'Segít megjósolni az interjúztató stílusát és a fókuszpontokat.'}</p>
                    </div>
                 </div>
              </div>
@@ -677,7 +644,7 @@ const App: React.FC = () => {
                   className={`px-3 sm:px-6 md:px-8 py-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'overview' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
-                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
+                    : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400'
                   }`}
                  >
                    DASHBOARD
@@ -689,7 +656,7 @@ const App: React.FC = () => {
                   className={`px-3 sm:px-6 md:px-8 py-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'preparation' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
-                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
+                    : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400'
                   }`}
                  >
                    {lang === 'en' ? 'STRATEGY' : 'STRATÉGIA'}
@@ -701,7 +668,7 @@ const App: React.FC = () => {
                   className={`px-3 sm:px-6 md:px-8 py-4 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-all ${
                     activeTab === 'coach' 
                     ? 'bg-blue-600 text-white shadow-2xl shadow-blue-500/40 scale-105' 
-                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-400 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-400'
+                    : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400'
                   }`}
                  >
                    {lang === 'en' ? 'INTERVIEW COACH' : 'INTERJÚ COACH'}
@@ -711,7 +678,7 @@ const App: React.FC = () => {
 
             {activeTab === 'overview' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <div className="bg-white dark:bg-slate-900 rounded-[48px] p-6 sm:p-8 md:p-12 lg:p-16 border-2 border-slate-300 dark:border-slate-800 shadow-xl">
+                <div className="bg-white rounded-[48px] p-6 sm:p-8 md:p-12 lg:p-16 border-2 border-slate-300 shadow-xl">
                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                       <div className="lg:col-span-5">
                          <NeuralScoreRadar result={result} scoreTheme={scoreTheme} t={t} />
@@ -723,43 +690,43 @@ const App: React.FC = () => {
                                {result.companyWebsite && <a href={result.companyWebsite} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-xl text-[9px] font-black uppercase border-2 border-blue-500 text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2">{t.visitWebsite} 🔗</a>}
                             </div>
                          </div>
-                         <p className="text-xl font-semibold leading-relaxed text-justify whitespace-pre-wrap text-slate-950 dark:text-white">{result.executiveSummary}</p>
+                         <p className="text-xl font-semibold leading-relaxed text-justify whitespace-pre-wrap text-slate-950">{result.executiveSummary}</p>
                       </div>
                    </div>
                 </div>
 
                 {jobHeuristicsAnalysis && (
-                  <SectionWrapper title={lang === 'hu' ? "Hirdetés Gyorselemzés" : "Job Ad Quick Scan"} icon={<LightningIcon />} darkMode={effectiveDarkMode} defaultOpen>
+                  <SectionWrapper title={lang === 'hu' ? "Hirdetés Gyorselemzés" : "Job Ad Quick Scan"} icon={<LightningIcon />} defaultOpen>
                     <AnalysisConclusion conclusion={jobHeuristicsAnalysis.conclusion} />
                   </SectionWrapper>
                 )}
 
-                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.professionalAlignment}>
+                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} tooltipText={t.tooltips.professionalAlignment}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                     <div className="bg-white dark:bg-slate-900 rounded-[32px] border-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                        <div className="px-8 py-4 bg-emerald-50 dark:bg-emerald-900/10 border-b-2 border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                     <div className="bg-white rounded-[32px] border-2 border-slate-200 shadow-sm overflow-hidden">
+                        <div className="px-8 py-4 bg-emerald-50 border-b-2 border-slate-100 flex items-center gap-3">
                            <span className="text-lg">✅</span>
-                           <h4 className="text-[10px] font-black uppercase text-emerald-800 dark:text-emerald-400 tracking-[0.2em]">{t.fits}</h4>
+                           <h4 className="text-[10px] font-black uppercase text-emerald-800 tracking-[0.2em]">{t.fits}</h4>
                         </div>
                         <div className="p-8 space-y-6">
                            {result.pros.map((p, i) => (
                               <div key={i} className="flex gap-4 group">
                                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold transition-transform group-hover:scale-110">✓</div>
-                                 <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-relaxed text-justify">{p}</p>
+                                 <p className="text-sm font-bold text-slate-900 leading-relaxed text-justify">{p}</p>
                               </div>
                            ))}
                         </div>
                      </div>
-                     <div className="bg-white dark:bg-slate-900 rounded-[32px] border-2 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                        <div className="px-8 py-4 bg-rose-50 dark:bg-rose-900/10 border-b-2 border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                     <div className="bg-white rounded-[32px] border-2 border-slate-200 shadow-sm overflow-hidden">
+                        <div className="px-8 py-4 bg-rose-50 border-b-2 border-slate-100 flex items-center gap-3">
                            <span className="text-lg">⚠️</span>
-                           <h4 className="text-[10px] font-black uppercase text-rose-800 dark:text-rose-400 tracking-[0.2em]">{t.gaps}</h4>
+                           <h4 className="text-[10px] font-black uppercase text-rose-800 tracking-[0.2em]">{t.gaps}</h4>
                         </div>
                         <div className="p-8 space-y-6">
                            {result.cons.map((c, i) => (
                               <div key={i} className="flex gap-4 group">
                                  <div className="w-6 h-6 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 text-xs font-bold transition-transform group-hover:scale-110">!</div>
-                                 <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-relaxed text-justify">{c}</p>
+                                 <p className="text-sm font-bold text-slate-900 leading-relaxed text-justify">{c}</p>
                               </div>
                            ))}
                         </div>
@@ -767,94 +734,94 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={t.auditTitle} icon={<UserIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.linkedinAudit}>
+                <SectionWrapper title={t.auditTitle} icon={<UserIcon />} tooltipText={t.tooltips.linkedinAudit}>
                   {linkedinText && result.linkedinAudit ? (
-                    <LinkedInAuditSection audit={result.linkedinAudit} t={t} darkMode={effectiveDarkMode} />
+                    <LinkedInAuditSection audit={result.linkedinAudit} t={t} />
                   ) : (
-                    <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-slate-200 dark:border-slate-800">
-                      <p className="font-bold text-slate-600 dark:text-slate-400 italic">{t.auditNotAvailable}</p>
+                    <div className="p-8 text-center bg-slate-50 rounded-2xl border-2 border-slate-200">
+                      <p className="font-bold text-slate-600 italic">{t.auditNotAvailable}</p>
                     </div>
                   )}
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon={<ChartBarIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.competitorAnalysis}>
+                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon={<ChartBarIcon />} tooltipText={t.tooltips.competitorAnalysis}>
                   <div className="space-y-4 mb-6 px-1">
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed italic">
+                    <p className="text-sm font-bold text-slate-700 leading-relaxed italic">
                       {lang === 'hu' ? "A valószínűsíthető jelölti kör elemzése és az Ön megkülönböztető előnyeinek (USP) meghatározása a kiemelkedés érdekében." : "Analysis of the likely candidate pool and identifying your Unique Selling Points (USP) to stand out."}
                     </p>
                   </div>
-                  <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={effectiveDarkMode} />
+                  <CompetitorSection analysis={result.competitorAnalysis!} t={t} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.preMortemTitle} icon={<WarningIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.preMortem}>
-                  <RedFlagSection analysis={result.preMortemAnalysis!} t={t} darkMode={effectiveDarkMode} />
+                <SectionWrapper title={t.preMortemTitle} icon={<WarningIcon />} tooltipText={t.tooltips.preMortem}>
+                  <RedFlagSection analysis={result.preMortemAnalysis!} t={t} />
                 </SectionWrapper>
-                <SectionWrapper title={t.cvSuggestionsTitle} icon={<PencilIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.cvSuggestions}>
-                  <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} darkMode={effectiveDarkMode} />
+                <SectionWrapper title={t.cvSuggestionsTitle} icon={<PencilIcon />} tooltipText={t.tooltips.cvSuggestions}>
+                  <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} />
                 </SectionWrapper>
-                <SectionWrapper title={t.rewriteTitle} icon={<SparklesIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.cvRewrite}>
-                  <RewriterSection rewrite={result.cvRewrite!} t={t} darkMode={effectiveDarkMode} />
+                <SectionWrapper title={t.rewriteTitle} icon={<SparklesIcon />} tooltipText={t.tooltips.cvRewrite}>
+                  <RewriterSection rewrite={result.cvRewrite!} t={t} />
                 </SectionWrapper>
               </div>
             )}
 
             {activeTab === 'preparation' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} darkMode={effectiveDarkMode} defaultOpen tooltipText={t.tooltips.interviewPrep}>
-                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={effectiveDarkMode} />
+                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} defaultOpen tooltipText={t.tooltips.interviewPrep}>
+                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.salaryTitle} icon={<CashIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.salaryNegotiation}>
-                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} darkMode={effectiveDarkMode} />
+                <SectionWrapper title={t.salaryTitle} icon={<CashIcon />} tooltipText={t.tooltips.salaryNegotiation}>
+                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.interviewerTitle} icon={<RadarIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.interviewerProfile}>
-                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} darkMode={effectiveDarkMode} />
+                <SectionWrapper title={t.interviewerTitle} icon={<RadarIcon />} tooltipText={t.tooltips.interviewerProfile}>
+                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} />
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon={<BuildingIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.corporateEcosystem}>
+                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon={<BuildingIcon />} tooltipText={t.tooltips.corporateEcosystem}>
                    <div className="space-y-12">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                         <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon={<TrendingUpIcon />} darkMode={effectiveDarkMode} />
-                         <IntelligenceCard title={lang === 'en' ? "Presence in HU" : "HU Jelenlét"} content={result.hungarianPresence} icon={<LocationMarkerIcon />} darkMode={effectiveDarkMode} />
-                         <IntelligenceCard title={lang === 'en' ? "Culture & SWOT" : "Kultúra & SWOT"} content={result.companyDeepDive} icon={<DnaIcon />} darkMode={effectiveDarkMode} />
-                         <IntelligenceCard title={lang === 'en' ? "Value Proposition" : "Értékajánlat"} content={result.whyWorkHere} icon={<LightBulbIcon />} darkMode={effectiveDarkMode} />
+                         <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon={<TrendingUpIcon />} />
+                         <IntelligenceCard title={lang === 'en' ? "Presence in HU" : "HU Jelenlét"} content={result.hungarianPresence} icon={<LocationMarkerIcon />} />
+                         <IntelligenceCard title={lang === 'en' ? "Culture & SWOT" : "Kultúra & SWOT"} content={result.companyDeepDive} icon={<DnaIcon />} />
+                         <IntelligenceCard title={lang === 'en' ? "Value Proposition" : "Értékajánlat"} content={result.whyWorkHere} icon={<LightBulbIcon />} />
                       </div>
-                      <div className="pt-8 border-t border-slate-300 dark:border-slate-800">
-                        <CompetitorSection analysis={result.competitorAnalysis!} t={t} darkMode={effectiveDarkMode} />
+                      <div className="pt-8 border-t border-slate-300">
+                        <CompetitorSection analysis={result.competitorAnalysis!} t={t} />
                       </div>
                    </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.coverLetter}>
-                  <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] border-2 border-slate-300 dark:border-slate-800 shadow-sm">
+                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} tooltipText={t.tooltips.coverLetter}>
+                  <div className="bg-white p-8 rounded-[32px] border-2 border-slate-300 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
-                       <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
-                       <button onClick={() => exportCoverLetter(companyNameInput, result.coverLetter, t.coverLetterTitle)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
+                       <h3 className="text-sm font-black uppercase tracking-tight text-slate-700">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
+                       <button onClick={() => exportCoverLetter(companyNameInput, result.coverLetter, t.coverLetterTitle)} className="text-[10px] font-black uppercase text-blue-600 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
                     </div>
-                    <div className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed whitespace-pre-wrap">{result.coverLetter}</div>
+                    <div className="text-sm font-bold text-slate-900 leading-relaxed whitespace-pre-wrap">{result.coverLetter}</div>
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon={<CalendarIcon />} darkMode={effectiveDarkMode} tooltipText={t.tooltips.plan90Day}>
+                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon={<CalendarIcon />} tooltipText={t.tooltips.plan90Day}>
                   <div className="flex justify-between items-center mb-8 px-2">
-                      <h3 className="text-sm font-black uppercase tracking-tight text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
-                      <button onClick={() => exportActionPlan(companyNameInput, result.plan90Day, t.attackPlanTitle)} className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
+                      <h3 className="text-sm font-black uppercase tracking-tight text-slate-700">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
+                      <button onClick={() => exportActionPlan(companyNameInput, result.plan90Day, t.attackPlanTitle)} className="text-[10px] font-black uppercase text-blue-600 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
                   </div>
-                  <Plan90DaySection plan={result.plan90Day} t={t} darkMode={effectiveDarkMode} />
+                  <Plan90DaySection plan={result.plan90Day} t={t} />
                 </SectionWrapper>
               </div>
             )}
 
             {activeTab === 'coach' && (
               <div className="max-w-4xl mx-auto h-[80vh] min-h-[600px] animate-in slide-in-from-bottom-6 duration-500">
-                 <JobCoachChat result={result} t={t} darkMode={effectiveDarkMode} lang={lang} />
+                 <JobCoachChat result={result} t={t} lang={lang} />
               </div>
             )}
 
             <div className="flex justify-center pt-12">
                <TooltipWrapper text={t.tooltips.scrollToTop}>
-                 <button onClick={handleScrollToTop} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 dark:text-slate-400 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.scrollToTop}</button>
+                 <button onClick={handleScrollToTop} className="px-12 py-5 rounded-full border-2 border-slate-300 text-slate-700 font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-100 transition-all active:scale-95">{t.scrollToTop}</button>
                </TooltipWrapper>
             </div>
           </div>
@@ -862,7 +829,7 @@ const App: React.FC = () => {
       </main>
 
       {(state === AppState.LOADING || state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD) && (
-        <div className="fixed inset-0 z-[12000] flex items-center justify-center p-6 bg-slate-50/95 dark:bg-slate-950/90 backdrop-blur-xl text-center">
+        <div className="fixed inset-0 z-[12000] flex items-center justify-center p-6 bg-slate-50/95 backdrop-blur-xl text-center">
            <div className="space-y-12 max-w-2xl">
               <div className="w-64 h-64 mx-auto relative group">
                  <div className="absolute inset-2 rounded-full border border-blue-500/10"></div>
@@ -881,7 +848,7 @@ const App: React.FC = () => {
                     <div className="absolute top-0 left-1/2 w-[1px] h-full bg-blue-500/40"></div>
                  </div>
                  <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" className="text-slate-200 dark:text-slate-900" strokeWidth="1.5" />
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" className="text-slate-200" strokeWidth="1.5" />
                     <circle 
                       cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="4" 
                       strokeDasharray="283" 
@@ -893,21 +860,21 @@ const App: React.FC = () => {
                  <div className="absolute inset-0 flex flex-col items-center justify-center">
                     {state === AppState.LOADING ? (
                       <>
-                        <span className="font-black text-5xl text-slate-950 dark:text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] tracking-tighter">{Math.round(progress)}%</span>
-                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)]">SCANNING</span>
+                        <span className="font-black text-5xl text-slate-950 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] tracking-tighter">{Math.round(progress)}%</span>
+                        <span className="text-[10px] font-black text-blue-600 tracking-[0.4em] mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)]">SCANNING</span>
                       </>
                     ) : (
-                      <span className="text-center font-black text-blue-600 dark:text-blue-400 tracking-widest mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase text-base px-4">
+                      <span className="text-center font-black text-blue-600 tracking-widest mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase text-base px-4">
                         {t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás...' : 'Identifying...')}
                       </span>
                     )}
                  </div>
               </div>
               <div className="space-y-4">
-                 <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 dark:text-blue-500 animate-pulse">
+                 <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 animate-pulse">
                    {state === AppState.LOADING ? t.synthesizing : (t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás és Validálás...' : 'Identification & Validation...'))}
                  </h3>
-                 <p className="text-sm font-bold text-slate-600 dark:text-white/50 uppercase tracking-widest">
+                 <p className="text-sm font-bold text-slate-600 uppercase tracking-widest">
                    {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (t.preAnalysisSubStatus || (lang === 'hu' ? 'Vállalati adatok és álláshirdetés ellenőrzése...' : 'Verifying company data and job description...'))}
                  </p>
               </div>
@@ -917,13 +884,13 @@ const App: React.FC = () => {
 
       {state === AppState.ERROR && (
         <div className="fixed inset-0 z-[13000] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl">
-           <div className="bg-white dark:bg-slate-900 p-6 md:p-12 rounded-[32px] md:rounded-[48px] max-w-lg w-full text-center border-2 border-rose-500/30">
+           <div className="bg-white p-6 md:p-12 rounded-[32px] md:rounded-[48px] max-w-lg w-full text-center border-2 border-rose-500/30">
               <div className="w-20 h-20 bg-rose-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-8 shadow-2xl">!</div>
-              <h2 className="text-2xl font-black uppercase mb-4 text-slate-950 dark:text-white">{t.errorTitle}</h2>
-              <p className="text-slate-800 dark:text-slate-300 font-bold mb-10 leading-relaxed">{errorInfo?.message || t.errorBody}</p>
+              <h2 className="text-2xl font-black uppercase mb-4 text-slate-950">{t.errorTitle}</h2>
+              <p className="text-slate-800 font-bold mb-10 leading-relaxed">{errorInfo?.message || t.errorBody}</p>
               <div className="flex flex-col gap-4">
                  <PrimaryButton onClick={() => startAnalysis(userNote)}>{t.errorRetry}</PrimaryButton>
-                 <button onClick={reset} className="text-xs font-black uppercase text-slate-500 dark:text-slate-400">{t.reset}</button>
+                 <button onClick={reset} className="text-xs font-black uppercase text-slate-500">{t.reset}</button>
               </div>
            </div>
         </div>
@@ -931,10 +898,10 @@ const App: React.FC = () => {
 
       {showInvalidJdModal && (
         <div className="fixed inset-0 z-[13000] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl">
-           <div className="bg-white dark:bg-slate-900 p-6 md:p-12 rounded-[32px] md:rounded-[48px] max-w-lg w-full text-center border-2 border-amber-500/30">
+           <div className="bg-white p-6 md:p-12 rounded-[32px] md:rounded-[48px] max-w-lg w-full text-center border-2 border-amber-500/30">
               <div className="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl">🤔</div>
-              <h2 className="text-2xl font-black uppercase mb-4 text-slate-950 dark:text-white">{t.invalidJdTitle}</h2>
-              <p className="text-slate-800 dark:text-slate-300 font-bold mb-10 leading-relaxed text-justify">{t.invalidJdBody}</p>
+              <h2 className="text-2xl font-black uppercase mb-4 text-slate-950">{t.invalidJdTitle}</h2>
+              <p className="text-slate-800 font-bold mb-10 leading-relaxed text-justify">{t.invalidJdBody}</p>
               <PrimaryButton onClick={() => setShowInvalidJdModal(false)}>{t.invalidJdButton}</PrimaryButton>
            </div>
         </div>
@@ -942,15 +909,15 @@ const App: React.FC = () => {
 
       {showConfirmCompany && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full text-center shadow-2xl border-2 border-slate-300 dark:border-slate-800">
-            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">{t.companyConfirmTitle}</h2>
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mb-8">{t.companyConfirmBody}</p>
+          <div className="bg-white rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full text-center shadow-2xl border-2 border-slate-300">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950">{t.companyConfirmTitle}</h2>
+            <p className="text-sm font-bold text-slate-800 mb-8">{t.companyConfirmBody}</p>
             <div className="mb-8 space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
               {allFoundCompanies.map((comp, idx) => (
-                <div key={idx} onClick={() => setFoundCompany(comp)} className={`p-5 rounded-2xl border-2 transition-all cursor-pointer text-left flex items-center justify-between gap-4 ${foundCompany?.url === comp.url ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-800 hover:border-blue-300'}`}>
+                <div key={idx} onClick={() => setFoundCompany(comp)} className={`p-5 rounded-2xl border-2 transition-all cursor-pointer text-left flex items-center justify-between gap-4 ${foundCompany?.url === comp.url ? 'border-blue-600 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}>
                   <div className="overflow-hidden">
-                    <div className={`text-sm font-black truncate ${foundCompany?.url === comp.url ? 'text-blue-600' : 'text-slate-950 dark:text-white'}`}>{comp.title}</div>
-                    <div className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate">{comp.url}</div>
+                    <div className={`text-sm font-black truncate ${foundCompany?.url === comp.url ? 'text-blue-600' : 'text-slate-950'}`}>{comp.title}</div>
+                    <div className="text-[10px] font-bold text-slate-600 truncate">{comp.url}</div>
                   </div>
                   <div className="flex items-center shrink-0 gap-2">
                     <a
@@ -958,7 +925,7 @@ const App: React.FC = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors group"
+                      className="p-2 rounded-full hover:bg-slate-200 transition-colors group"
                       aria-label={`Visit ${comp.title} website`}
                     >
                       <ExternalLinkIcon className="w-5 h-5 text-slate-500 group-hover:text-blue-500 transition-colors" />
@@ -970,7 +937,7 @@ const App: React.FC = () => {
             </div>
             <div className="flex flex-col gap-4">
               <PrimaryButton onClick={() => { setshowConfirmCompany(false); setShowInputModal(true); }}>{t.companyConfirmYes}</PrimaryButton>
-              <button onClick={() => setshowConfirmCompany(false)} className="w-full bg-slate-100 dark:bg-slate-800 py-5 rounded-full font-black uppercase text-xs tracking-widest text-slate-700 dark:text-slate-400">{lang === 'en' ? 'Back' : 'Vissza'}</button>
+              <button onClick={() => setshowConfirmCompany(false)} className="w-full bg-slate-100 py-5 rounded-full font-black uppercase text-xs tracking-widest text-slate-700">{lang === 'en' ? 'Back' : 'Vissza'}</button>
             </div>
           </div>
         </div>
@@ -978,11 +945,11 @@ const App: React.FC = () => {
 
       {showChoiceModal && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full text-center border-2 border-slate-300 dark:border-slate-800 shadow-2xl">
-            <h2 className="text-2xl font-black mb-8 uppercase tracking-tight text-slate-950 dark:text-white">{t.strategyTitle}</h2>
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-300 mb-10 leading-relaxed">{t.strategyBody}</p>
+          <div className="bg-white rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full text-center border-2 border-slate-300 shadow-2xl">
+            <h2 className="text-2xl font-black mb-8 uppercase tracking-tight text-slate-950">{t.strategyTitle}</h2>
+            <p className="text-sm font-bold text-slate-800 mb-10 leading-relaxed">{t.strategyBody}</p>
             <div className="flex flex-col gap-4">
-              <button onClick={() => { setShowChoiceModal(false); setShowInputModal(true); }} className="w-full py-5 rounded-full font-black uppercase tracking-widest border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition-all text-xs">{t.strategyOwn}</button>
+              <button onClick={() => { setShowChoiceModal(false); setShowInputModal(true); }} className="w-full py-5 rounded-full font-black uppercase tracking-widest border-2 border-slate-300 text-slate-700 hover:bg-slate-50 transition-all text-xs">{t.strategyOwn}</button>
               <PrimaryButton onClick={() => startAnalysis('')} className="shadow-2xl shadow-blue-500/40">{t.strategyAi}</PrimaryButton>
             </div>
           </div>
@@ -991,19 +958,19 @@ const App: React.FC = () => {
 
       {showInputModal && (
         <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
-          <div className="bg-white dark:bg-slate-900 rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full border-2 border-slate-300 dark:border-slate-800 shadow-2xl text-center">
-            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950 dark:text-white">{t.noteTitle}</h2>
-            <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">{t.noteBody}</p>
+          <div className="bg-white rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-lg w-full border-2 border-slate-300 shadow-2xl text-center">
+            <h2 className="text-2xl font-black mb-4 uppercase tracking-tight text-slate-950">{t.noteTitle}</h2>
+            <p className="text-sm font-bold text-slate-700 mb-8 leading-relaxed">{t.noteBody}</p>
             <textarea 
               maxLength={200} 
               placeholder={t.notePlaceholder} 
-              className="w-full rounded-2xl border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white h-40 resize-none shadow-inner" 
+              className="w-full rounded-2xl border-2 border-slate-300 bg-slate-50 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 h-40 resize-none shadow-inner" 
               value={userNote} 
               onChange={(e) => setUserNote(e.target.value)} 
             />
             <div className="flex flex-col gap-4 mt-8">
               <PrimaryButton className="shadow-2xl shadow-blue-500/40" onClick={() => startAnalysis(userNote)}>{t.noteStart}</PrimaryButton>
-              <button onClick={() => { setShowInputModal(false); setshowConfirmCompany(true); }} className="text-xs font-black uppercase text-slate-600 dark:text-slate-400">{lang === 'en' ? 'Back' : 'Vissza'}</button>
+              <button onClick={() => { setShowInputModal(false); setshowConfirmCompany(true); }} className="text-xs font-black uppercase text-slate-600">{lang === 'en' ? 'Back' : 'Vissza'}</button>
             </div>
           </div>
         </div>
@@ -1012,15 +979,15 @@ const App: React.FC = () => {
       {/* BOTTOM DEMO LABEL */}
       <div className="fixed bottom-4 right-4 z-[1000]">
         <TooltipWrapper text={t.demoVersionTooltip}>
-          <div className="px-4 py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-full border-2 border-slate-200 dark:border-slate-800 shadow-md">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+          <div className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border-2 border-slate-200 shadow-md">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
               {t.demoVersionLabel}
             </span>
           </div>
         </TooltipWrapper>
       </div>
 
-      <footer className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+      <footer className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-slate-500">
         <p className="mb-2 font-semibold">JobRadar AI © {new Date().getFullYear()}</p>
         <button onClick={() => setIsTosOpen(true)} className="font-bold text-blue-600 hover:underline">
           {t.terms.linkText}

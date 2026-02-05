@@ -1,26 +1,23 @@
-
 import React, { useState } from 'react';
 import { PreMortemAnalysis, RiskFactor } from '../types';
 
 interface RedFlagSectionProps {
   analysis: PreMortemAnalysis;
   t: any;
-  darkMode: boolean;
 }
 
 const RiskCard: React.FC<{
   risk: string;
   severity: RiskFactor['severity'];
   defense: string;
-  darkMode: boolean;
   t: any;
-}> = ({ risk, severity, defense, darkMode, t }) => {
+}> = ({ risk, severity, defense, t }) => {
   const [isRevealed, setIsRevealed] = useState(false);
 
   const severityColors = {
-    High: darkMode ? 'bg-rose-950/30 border-rose-900/50 text-rose-200' : 'bg-rose-50 border-rose-200 text-rose-900',
-    Medium: darkMode ? 'bg-orange-950/30 border-orange-900/50 text-orange-200' : 'bg-orange-50 border-orange-200 text-orange-900',
-    Low: darkMode ? 'bg-amber-950/30 border-amber-900/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-900',
+    High: 'bg-rose-50 border-rose-200 text-rose-900',
+    Medium: 'bg-orange-50 border-orange-200 text-orange-900',
+    Low: 'bg-amber-50 border-amber-200 text-amber-900',
   };
 
   const badgeStyles = {
@@ -38,9 +35,7 @@ const RiskCard: React.FC<{
   return (
     <div 
       onClick={() => setIsRevealed(!isRevealed)}
-      className={`p-6 sm:p-8 rounded-[32px] border-2 shadow-lg transition-all duration-500 hover:scale-[1.02] flex flex-col h-full group cursor-pointer ${
-      darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-    }`}>
+      className="p-6 sm:p-8 rounded-[32px] border-2 shadow-lg transition-all duration-500 hover:scale-[1.02] flex flex-col h-full group cursor-pointer bg-white border-slate-200">
       {/* Header: Severity Badge */}
       <div className="flex justify-between items-start mb-6">
         <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${badgeStyles[severity]}`}>
@@ -53,7 +48,7 @@ const RiskCard: React.FC<{
         {/* Top: Risk Factor */}
         <div>
           <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">{t.riskLabel}</h5>
-          <p className="text-base font-black text-slate-950 dark:text-white leading-tight">
+          <p className="text-base font-black text-slate-950 leading-tight">
             {risk}
           </p>
         </div>
@@ -71,7 +66,7 @@ const RiskCard: React.FC<{
             </div>
           ) : (
             <div className="text-center py-2">
-              <span className="px-5 py-3 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-700 text-xs font-black uppercase tracking-widest text-slate-500 group-hover:border-solid group-hover:border-blue-500 group-hover:text-blue-600 transition-all">
+              <span className="px-5 py-3 rounded-full border-2 border-dashed border-slate-300 text-xs font-black uppercase tracking-widest text-slate-500 group-hover:border-solid group-hover:border-blue-500 group-hover:text-blue-600 transition-all">
                 Stratégia Felfedése
               </span>
             </div>
@@ -83,7 +78,7 @@ const RiskCard: React.FC<{
 };
 
 
-const RedFlagSection: React.FC<RedFlagSectionProps> = ({ analysis, t, darkMode }) => {
+const RedFlagSection: React.FC<RedFlagSectionProps> = ({ analysis, t }) => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center justify-between px-4">
@@ -92,10 +87,10 @@ const RedFlagSection: React.FC<RedFlagSectionProps> = ({ analysis, t, darkMode }
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Employability Score</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="h-2 w-32 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2 w-32 bg-slate-200 rounded-full overflow-hidden">
             <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${analysis.overallEmployabilityScore}%` }}></div>
           </div>
-          <span className="text-xs font-black text-slate-900 dark:text-white">{analysis.overallEmployabilityScore}%</span>
+          <span className="text-xs font-black text-slate-900">{analysis.overallEmployabilityScore}%</span>
         </div>
       </div>
 
@@ -106,7 +101,6 @@ const RedFlagSection: React.FC<RedFlagSectionProps> = ({ analysis, t, darkMode }
             risk={item.risk}
             severity={item.severity}
             defense={item.defenseScript}
-            darkMode={darkMode}
             t={t}
           />
         ))}

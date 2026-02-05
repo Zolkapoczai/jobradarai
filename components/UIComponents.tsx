@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 
 // Icon components
@@ -116,9 +115,9 @@ export const InfoTooltip: React.FC<{ text: string }> = ({ text }) => {
             onMouseLeave={handleMouseLeave}
             className="relative inline-block ml-2 align-middle z-[150]"
         >
-            <div className="cursor-help w-5 h-5 rounded-full border-2 border-slate-900 dark:border-slate-300 flex items-center justify-center text-[11px] text-slate-950 dark:text-white font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">i</div>
-            <div className={`absolute ${position === 'top' ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 w-72 max-w-[90vw] sm:max-w-sm p-5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-2xl shadow-xl pointer-events-none transition-all duration-300 transform ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'} border border-slate-200 dark:border-slate-700 z-[3000]`}>
-                <div className={`absolute ${position === 'top' ? 'top-full border-t-white dark:border-t-slate-800' : 'bottom-full border-b-white dark:border-b-slate-800'} left-1/2 -translate-x-1/2 border-8 border-transparent`}></div>
+            <div className="cursor-help w-5 h-5 rounded-full border-2 border-slate-900 flex items-center justify-center text-[11px] text-slate-950 font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">i</div>
+            <div className={`absolute ${position === 'top' ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 w-72 max-w-[90vw] sm:max-w-sm p-5 bg-white text-slate-800 text-[11px] rounded-2xl shadow-xl pointer-events-none transition-all duration-300 transform ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'} border border-slate-200 z-[3000]`}>
+                <div className={`absolute ${position === 'top' ? 'top-full border-t-white' : 'bottom-full border-b-white'} left-1/2 -translate-x-1/2 border-8 border-transparent`}></div>
                 <p className="font-bold leading-relaxed text-justify">{text}</p>
             </div>
         </div>
@@ -157,10 +156,10 @@ export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode;
     right: 'left-full ml-3 top-1/2 -translate-y-1/2',
   };
   const arrowClasses = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-t-white dark:border-t-slate-800',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-white dark:border-b-slate-800',
-    left: 'left-full top-1/2 -translate-y-1/2 border-l-white dark:border-l-slate-800',
-    right: 'right-full top-1/2 -translate-y-1/2 border-r-white dark:border-r-slate-800',
+    top: 'top-full left-1/2 -translate-x-1/2 border-t-white',
+    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-white',
+    left: 'left-full top-1/2 -translate-y-1/2 border-l-white',
+    right: 'right-full top-1/2 -translate-y-1/2 border-r-white',
   };
   
   return (
@@ -171,7 +170,7 @@ export const TooltipWrapper: React.FC<{ text: string; children: React.ReactNode;
       className="relative"
     >
       {children}
-      <div className={`absolute ${positionClasses[position]} w-64 max-w-[90vw] sm:max-w-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs p-4 rounded-xl shadow-xl z-[2000] pointer-events-none transition-all duration-300 transform ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+      <div className={`absolute ${positionClasses[position]} w-64 max-w-[90vw] sm:max-w-xs bg-white text-slate-800 border border-slate-200 text-xs p-4 rounded-xl shadow-xl z-[2000] pointer-events-none transition-all duration-300 transform ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
         <div className={`absolute border-8 border-transparent ${arrowClasses[position]}`}></div>
         <p className="font-bold leading-relaxed text-justify">{text}</p>
       </div>
@@ -190,18 +189,18 @@ export const FactorBar: React.FC<{ label: string; value: number; color: string; 
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex justify-between items-center mb-2">
-        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isHighlighted ? 'text-slate-950 dark:text-white' : 'text-slate-800 dark:text-slate-300'}`}>{label}</span>
-        <span className="text-xs font-black text-slate-950 dark:text-white">{value}%</span>
+        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isHighlighted ? 'text-slate-950' : 'text-slate-800'}`}>{label}</span>
+        <span className="text-xs font-black text-slate-950">{value}%</span>
       </div>
-      <div className={`h-2.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border transition-all duration-500 ${isHighlighted ? 'border-blue-400 dark:border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'border-slate-300 dark:border-slate-600'}`}>
+      <div className={`h-2.5 w-full bg-slate-200 rounded-full overflow-hidden border transition-all duration-500 ${isHighlighted ? 'border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'border-slate-300'}`}>
         <div 
           className="h-full rounded-full transition-all duration-[2000ms] ease-out shadow-[0_0_8px_rgba(0,0,0,0.1)]" 
           style={{ width: `${value}%`, backgroundColor: color }}
         ></div>
       </div>
       {isHovered && (
-        <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] p-5 rounded-2xl shadow-xl z-[2000] animate-in fade-in zoom-in-95 duration-200 pointer-events-none border border-slate-200 dark:border-slate-700">
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-slate-800"></div>
+        <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-white text-slate-800 text-[11px] p-5 rounded-2xl shadow-xl z-[2000] animate-in fade-in zoom-in-95 duration-200 pointer-events-none border border-slate-200">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white"></div>
           <p className="font-bold leading-relaxed text-justify">{tooltip}</p>
         </div>
       )}
@@ -210,22 +209,22 @@ export const FactorBar: React.FC<{ label: string; value: number; color: string; 
 };
 
 // Intelligence content card
-export const IntelligenceCard: React.FC<{ title: string; content: string; icon: React.ReactNode; darkMode: boolean }> = ({ title, content, icon, darkMode }) => (
-  <div className={`group flex flex-col p-8 rounded-3xl border-2 transition-all duration-500 hover:scale-[1.02] hover:shadow-xl ${darkMode ? 'bg-slate-950/40 border-slate-800 hover:border-blue-500/50' : 'bg-white border-slate-300 hover:border-blue-400 shadow-sm'}`}>
+export const IntelligenceCard: React.FC<{ title: string; content: string; icon: React.ReactNode; }> = ({ title, content, icon }) => (
+  <div className="group flex flex-col p-8 rounded-3xl border-2 transition-all duration-500 hover:scale-[1.02] hover:shadow-xl bg-white border-slate-300 hover:border-blue-400 shadow-sm">
     <div className="flex items-center gap-4 mb-6">
-      <div className={`w-12 h-12 flex items-center justify-center rounded-2xl text-slate-500 dark:text-blue-400 shadow-inner transition-transform group-hover:rotate-6 ${darkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-slate-50 border border-slate-300 shadow-sm'}`}>
+      <div className="w-12 h-12 flex items-center justify-center rounded-2xl text-slate-500 shadow-inner transition-transform group-hover:rotate-6 bg-slate-50 border border-slate-300 shadow-sm">
         {icon}
       </div>
       <div className="flex flex-col">
-        <h4 className="text-[10px] font-black uppercase text-blue-900 dark:text-blue-300 tracking-[0.2em]">{title}</h4>
+        <h4 className="text-[10px] font-black uppercase text-blue-900 tracking-[0.2em]">{title}</h4>
         <div className="flex items-center gap-1 mt-0.5">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[8px] font-black text-slate-800 dark:text-slate-400 uppercase tracking-widest">Verified Intelligence</span>
+          <span className="text-[8px] font-black text-slate-800 uppercase tracking-widest">Verified Intelligence</span>
         </div>
       </div>
     </div>
     <div className="flex-grow">
-      <p className="text-sm font-bold text-slate-950 dark:text-slate-100 leading-relaxed text-justify group-hover:text-black dark:group-hover:text-white transition-colors">
+      <p className="text-sm font-bold text-slate-950 leading-relaxed text-justify group-hover:text-black transition-colors">
         {content}
       </p>
     </div>
@@ -237,10 +236,10 @@ export const IntelligenceCard: React.FC<{ title: string; content: string; icon: 
  */
 export const FormInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label?: string }> = ({ label, className, ...props }) => (
   <div className="w-full space-y-2">
-    {label && <label className="block text-sm font-black text-slate-950 dark:text-slate-100 ml-1">{label}</label>}
+    {label && <label className="block text-sm font-black text-slate-950 ml-1">{label}</label>}
     <input
       {...props}
-      className={`w-full rounded-[32px] border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white ${className}`}
+      className={`w-full rounded-[32px] border-2 border-slate-300 bg-slate-50 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 ${className}`}
     />
   </div>
 );
@@ -250,10 +249,10 @@ export const FormInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & {
  */
 export const FormTextarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string }> = ({ label, className, ...props }) => (
   <div className="w-full space-y-2">
-    {label && <label className="block text-sm font-black text-slate-950 dark:text-slate-100 ml-1">{label}</label>}
+    {label && <label className="block text-sm font-black text-slate-950 ml-1">{label}</label>}
     <textarea
       {...props}
-      className={`w-full rounded-[32px] border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 dark:text-white resize-none ${className}`}
+      className={`w-full rounded-[32px] border-2 border-slate-300 bg-slate-50 px-6 py-4 font-bold transition-all duration-300 hover:border-blue-500 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 placeholder:font-normal text-slate-900 resize-none ${className}`}
     />
   </div>
 );

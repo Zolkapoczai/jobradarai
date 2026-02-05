@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AnalysisResult } from '../types';
 import { FactorBar, TooltipWrapper } from './UIComponents';
@@ -34,15 +33,15 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
         <div className={`absolute inset-0 rounded-full overflow-hidden transition-opacity duration-700 ${radarHovered ? 'opacity-100' : 'opacity-0'}`}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1)_0%,transparent_80%)]"></div>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-full h-[1px] bg-slate-300 dark:bg-slate-600 absolute rotate-45 opacity-50"></div>
-            <div className="w-full h-[1px] bg-slate-300 dark:bg-slate-600 absolute -rotate-45 opacity-50"></div>
-            <div className="w-48 h-48 rounded-full border border-slate-300 dark:border-slate-600 absolute opacity-30"></div>
-            <div className="w-32 h-32 rounded-full border border-slate-300 dark:border-slate-600 absolute opacity-30"></div>
+            <div className="w-full h-[1px] bg-slate-300 absolute rotate-45 opacity-50"></div>
+            <div className="w-full h-[1px] bg-slate-300 absolute -rotate-45 opacity-50"></div>
+            <div className="w-48 h-48 rounded-full border border-slate-300 absolute opacity-30"></div>
+            <div className="w-32 h-32 rounded-full border border-slate-300 absolute opacity-30"></div>
           </div>
         </div>
 
         <svg className="absolute inset-0 w-full h-full -rotate-90 p-2" viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="85" className="stroke-slate-200 dark:stroke-slate-800 fill-none" strokeWidth="10" />
+          <circle cx="100" cy="100" r="85" className="stroke-slate-200 fill-none" strokeWidth="10" />
           <circle 
             cx="100" cy="100" r="85" fill="none" 
             stroke={scoreTheme.stroke} strokeWidth="12" 
@@ -64,7 +63,7 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
             <div className={`relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mb-2 transition-all duration-300 ${activeFactor === i ? 'scale-125 shadow-2xl' : 'scale-100'}`}>
               <div className="absolute inset-0 rounded-full blur-md opacity-20" style={{ backgroundColor: f.color }}></div>
               <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 40 40">
-                <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" className="text-slate-200 dark:text-slate-800" strokeWidth="3" />
+                <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" className="text-slate-200" strokeWidth="3" />
                 <circle 
                     cx="20" cy="20" r="18" fill="none" stroke={f.color} 
                     strokeWidth="4" strokeDasharray={113} 
@@ -75,10 +74,10 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
               </svg>
               <span className="text-[11px] font-black" style={{ color: f.color }}>{f.value}%</span>
             </div>
-            <span className="text-[9px] font-black uppercase text-slate-800 dark:text-white tracking-tighter text-center leading-none px-2 drop-shadow-sm">{f.label}</span>
+            <span className="text-[9px] font-black uppercase text-slate-800 tracking-tighter text-center leading-none px-2 drop-shadow-sm">{f.label}</span>
             {activeFactor === i && (
-              <div className="absolute bottom-full mb-5 w-60 p-5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-[11px] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 slide-in-from-top-2 z-[2000] border border-slate-200 dark:border-slate-700 pointer-events-none">
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-slate-800"></div>
+              <div className="absolute bottom-full mb-5 w-60 p-5 bg-white text-slate-800 text-[11px] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 slide-in-from-top-2 z-[2000] border border-slate-200 pointer-events-none">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white"></div>
                 <p className="font-bold leading-relaxed text-justify opacity-95">{f.explanation}</p>
               </div>
             )}
@@ -90,7 +89,7 @@ const NeuralScoreRadar: React.FC<NeuralScoreRadarProps> = ({ result, scoreTheme,
             <div className="flex items-center gap-2">
               <span className={`text-7xl sm:text-8xl font-black ${scoreTheme.text} tracking-tighter tabular-nums drop-shadow-sm`}>{Math.floor(result.matchScore)}%</span>
             </div>
-            <span className="text-[10px] font-black uppercase text-slate-700 dark:text-slate-100 tracking-[0.4em] mt-2">{t.matchLevel}</span>
+            <span className="text-[10px] font-black uppercase text-slate-700 tracking-[0.4em] mt-2">{t.matchLevel}</span>
           </div>
         </TooltipWrapper>
       </div>
