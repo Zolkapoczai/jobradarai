@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, JobAnalysis } from './types';
@@ -434,7 +433,7 @@ const App: React.FC = () => {
                 <h2 className="text-xl font-black uppercase tracking-tight text-slate-950 dark:text-white">
                     {t.welcome}
                 </h2>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed px-4 text-justify">
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-400 leading-relaxed px-4 text-justify whitespace-pre-wrap">
                     {t.welcomeBody}
                 </p>
                 <div className="px-8 pt-4">
@@ -480,7 +479,6 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${effectiveDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#f1f5f9] text-slate-950'} font-sans`}>
-      <Analytics />
       {showPricing && (
         <div className="fixed inset-0 z-[10500] bg-white dark:bg-slate-950 overflow-y-auto pt-24 pb-12">
           <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 dark:border-slate-800 flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors z-[10600] text-slate-900 dark:text-white">✕</button>

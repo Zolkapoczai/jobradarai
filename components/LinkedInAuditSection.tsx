@@ -94,6 +94,7 @@ const LinkedInAuditSection: React.FC<LinkedInAuditSectionProps> = ({ audit, t, d
           <div>
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-white">{t.missingKeys}</h4>
+              {/* FIX: Removed unsupported 'position' prop. The component dynamically calculates its position. */}
               <InfoTooltip text="Essential professional keywords found in your CV but missing from your LinkedIn skills or about section." />
             </div>
             <div className="flex flex-wrap gap-2">

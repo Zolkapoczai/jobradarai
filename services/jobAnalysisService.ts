@@ -1,4 +1,3 @@
-
 import { JobAnalysis, AnalysisConclusion } from '../types';
 import { Job, analyzeJobHeuristics } from '../utils/jobHeuristics';
 
