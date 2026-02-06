@@ -996,6 +996,7 @@ const App: React.FC = () => {
 
       <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
       <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
+      <Analytics />
     </div>
   );
 };
