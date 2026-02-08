@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Analytics } from '@vercel/analytics/react';
-import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, JobAnalysis } from './types';
+import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
-import { analyzeJob } from './services/jobAnalysisService';
 import { translations } from './translations';
 import { 
     GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo, TooltipWrapper, ExternalLinkIcon,
-    LightningIcon, MicroscopeIcon, UserIcon, ChartBarIcon, WarningIcon, PencilIcon, SparklesIcon, TargetIcon, CashIcon, RadarIcon, BuildingIcon,
+    MicroscopeIcon, UserIcon, ChartBarIcon, WarningIcon, PencilIcon, SparklesIcon, TargetIcon, CashIcon, RadarIcon, BuildingIcon,
     DocumentTextIcon, CalendarIcon, TrendingUpIcon, LocationMarkerIcon, DnaIcon, LightBulbIcon
 } from './components/UIComponents';
 import JobCoachChat from './components/JobCoachChat';
@@ -21,7 +20,6 @@ import SectionWrapper from './components/SectionWrapper';
 import StrategicQuestionsSection from './components/StrategicQuestionsSection';
 import SalaryNegotiationSection from './components/SalaryNegotiationSection';
 import InterviewerProfilerSection from './components/InterviewerProfilerSection';
-import AnalysisConclusion from './components/AnalysisConclusion';
 import Plan90DaySection from './components/Plan90DaySection';
 import { TermsOfServiceModal } from './components/TermsOfServiceModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
@@ -67,7 +65,6 @@ const App: React.FC = () => {
 
   // Results & Progress
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [jobHeuristicsAnalysis, setJobHeuristicsAnalysis] = useState<JobAnalysis | null>(null);
   const [progress, setProgress] = useState(0);
   const [loadingStepIdx, setLoadingStepIdx] = useState(0);
   const [errorInfo, setErrorInfo] = useState<AnalysisErrorInfo | null>(null);
@@ -105,8 +102,6 @@ const App: React.FC = () => {
         if (parsed.result && parsed.jdText) {
           setResult(parsed.result);
           setState(AppState.RESULT);
-          const quickAnalysis = analyzeJob({ description: parsed.jdText });
-          setJobHeuristicsAnalysis(quickAnalysis);
         }
         if (parsed.currentStep) setCurrentStep(parsed.currentStep);
         if (parsed.companyNameInput) setCompanyNameInput(parsed.companyNameInput);
@@ -219,9 +214,6 @@ const App: React.FC = () => {
     setShowInputModal(false);
     setProgress(0);
 
-    const quickAnalysis = analyzeJob({ description: jdText });
-    setJobHeuristicsAnalysis(quickAnalysis);
-    
     const interval = setInterval(() => {
       setProgress(prev => Math.min(prev + (prev < 50 ? Math.random() * 5 : Math.random() * 2), 98));
     }, 800);
@@ -250,7 +242,6 @@ const App: React.FC = () => {
     setResult(null);
     setErrorInfo(null);
     setActiveTab('overview');
-    setJobHeuristicsAnalysis(null);
 
     // Clear only job-specific data
     setJdText('');
@@ -446,7 +437,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen transition-colors duration-300 bg-[#f1f5f9] text-slate-950 font-sans">
-      <Analytics />
       {showPricing && (
         <div className="fixed inset-0 z-[10500] bg-white overflow-y-auto pt-24 pb-12">
           <button onClick={() => setShowPricing(false)} className="fixed top-8 right-8 w-12 h-12 rounded-full border-2 border-slate-300 flex items-center justify-center text-2xl hover:bg-slate-50 transition-colors z-[10600] text-slate-900">✕</button>
@@ -695,12 +685,6 @@ const App: React.FC = () => {
                       </div>
                    </div>
                 </div>
-
-                {jobHeuristicsAnalysis && (
-                  <SectionWrapper title={lang === 'hu' ? "Hirdetés Gyorselemzés" : "Job Ad Quick Scan"} icon={<LightningIcon />} defaultOpen>
-                    <AnalysisConclusion conclusion={jobHeuristicsAnalysis.conclusion} />
-                  </SectionWrapper>
-                )}
 
                 <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} tooltipText={t.tooltips.professionalAlignment}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

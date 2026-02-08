@@ -1,4 +1,5 @@
 
+
 export enum AnalysisErrorType {
   API_KEY = 'API_KEY',
   TRANSIENT = 'TRANSIENT',
@@ -10,6 +11,20 @@ export enum AnalysisErrorType {
 export interface AnalysisErrorInfo {
   type: AnalysisErrorType;
   message: string;
+}
+
+// FIX: Added missing JobAnalysis and AnalysisConclusion types to resolve compilation errors.
+export interface AnalysisConclusion {
+  positives: string[];
+  warnings: string[];
+  opportunities: string[];
+}
+
+export interface JobAnalysis {
+  seniorityScore: number;
+  stackFocusScore: number;
+  transparencyScore: number;
+  conclusion: AnalysisConclusion;
 }
 
 export interface FileInput {
@@ -163,16 +178,3 @@ export interface AnalysisResult {
   salaryNegotiation?: SalaryNegotiation;
   interviewerProfiler?: InterviewerProfiler;
 }
-
-export type AnalysisConclusion = {
-  positives: string[];
-  warnings: string[];
-  opportunities: string[];
-};
-
-export type JobAnalysis = {
-  seniorityScore: number;
-  stackFocusScore: number;
-  transparencyScore: number;
-  conclusion: AnalysisConclusion;
-};
