@@ -13,20 +13,6 @@ export interface AnalysisErrorInfo {
   message: string;
 }
 
-// FIX: Added missing JobAnalysis and AnalysisConclusion types to resolve compilation errors.
-export interface AnalysisConclusion {
-  positives: string[];
-  warnings: string[];
-  opportunities: string[];
-}
-
-export interface JobAnalysis {
-  seniorityScore: number;
-  stackFocusScore: number;
-  transparencyScore: number;
-  conclusion: AnalysisConclusion;
-}
-
 export interface FileInput {
   data: string;
   mimeType: string;
