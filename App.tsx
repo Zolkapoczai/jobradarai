@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Analytics } from '@vercel/analytics/react';
 import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
 import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
 import { translations } from './translations';
@@ -32,6 +31,7 @@ const App: React.FC = () => {
   // Global App States
   const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
+  const [darkMode, setDarkMode] = useState(false); // Added for prop correctness
   
   const [state, setState] = useState<AppState>(AppState.IDLE);
   
@@ -686,7 +686,7 @@ const App: React.FC = () => {
                    </div>
                 </div>
 
-                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} tooltipText={t.tooltips.professionalAlignment}>
+                <SectionWrapper title={lang === 'en' ? "Professional Alignment & Gaps" : "Szakmai Illeszkedés & Hiányosságok"} icon={<MicroscopeIcon />} tooltipText={t.tooltips.professionalAlignment} darkMode={darkMode}>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                      <div className="bg-white rounded-[32px] border-2 border-slate-200 shadow-sm overflow-hidden">
                         <div className="px-8 py-4 bg-emerald-50 border-b-2 border-slate-100 flex items-center gap-3">
@@ -719,7 +719,7 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={t.auditTitle} icon={<UserIcon />} tooltipText={t.tooltips.linkedinAudit}>
+                <SectionWrapper title={t.auditTitle} icon={<UserIcon />} tooltipText={t.tooltips.linkedinAudit} darkMode={darkMode}>
                   {linkedinText && result.linkedinAudit ? (
                     <LinkedInAuditSection audit={result.linkedinAudit} t={t} />
                   ) : (
@@ -729,7 +729,7 @@ const App: React.FC = () => {
                   )}
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon={<ChartBarIcon />} tooltipText={t.tooltips.competitorAnalysis}>
+                <SectionWrapper title={lang === 'hu' ? "VERSENYTÁRS ELEMZÉS & PIACI HELYZETKÉP" : "COMPETITOR ANALYSIS & MARKET LANDSCAPE"} icon={<ChartBarIcon />} tooltipText={t.tooltips.competitorAnalysis} darkMode={darkMode}>
                   <div className="space-y-4 mb-6 px-1">
                     <p className="text-sm font-bold text-slate-700 leading-relaxed italic">
                       {lang === 'hu' ? "A valószínűsíthető jelölti kör elemzése és az Ön megkülönböztető előnyeinek (USP) meghatározása a kiemelkedés érdekében." : "Analysis of the likely candidate pool and identifying your Unique Selling Points (USP) to stand out."}
@@ -738,33 +738,33 @@ const App: React.FC = () => {
                   <CompetitorSection analysis={result.competitorAnalysis!} t={t} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.preMortemTitle} icon={<WarningIcon />} tooltipText={t.tooltips.preMortem}>
+                <SectionWrapper title={t.preMortemTitle} icon={<WarningIcon />} tooltipText={t.tooltips.preMortem} darkMode={darkMode}>
                   <RedFlagSection analysis={result.preMortemAnalysis!} t={t} />
                 </SectionWrapper>
-                <SectionWrapper title={t.cvSuggestionsTitle} icon={<PencilIcon />} tooltipText={t.tooltips.cvSuggestions}>
+                <SectionWrapper title={t.cvSuggestionsTitle} icon={<PencilIcon />} tooltipText={t.tooltips.cvSuggestions} darkMode={darkMode}>
                   <CVSuggestionsSection suggestions={result.cvSuggestions!} t={t} />
                 </SectionWrapper>
-                <SectionWrapper title={t.rewriteTitle} icon={<SparklesIcon />} tooltipText={t.tooltips.cvRewrite}>
-                  <RewriterSection rewrite={result.cvRewrite!} t={t} />
+                <SectionWrapper title={t.rewriteTitle} icon={<SparklesIcon />} tooltipText={t.tooltips.cvRewrite} darkMode={darkMode}>
+                  <RewriterSection rewrite={result.cvRewrite!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
               </div>
             )}
 
             {activeTab === 'preparation' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} defaultOpen tooltipText={t.tooltips.interviewPrep}>
-                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} />
+                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} defaultOpen tooltipText={t.tooltips.interviewPrep} darkMode={darkMode}>
+                  <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.salaryTitle} icon={<CashIcon />} tooltipText={t.tooltips.salaryNegotiation}>
-                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} />
+                <SectionWrapper title={t.salaryTitle} icon={<CashIcon />} tooltipText={t.tooltips.salaryNegotiation} darkMode={darkMode}>
+                  <SalaryNegotiationSection data={result.salaryNegotiation!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={t.interviewerTitle} icon={<RadarIcon />} tooltipText={t.tooltips.interviewerProfile}>
-                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} />
+                <SectionWrapper title={t.interviewerTitle} icon={<RadarIcon />} tooltipText={t.tooltips.interviewerProfile} darkMode={darkMode}>
+                  <InterviewerProfilerSection data={result.interviewerProfiler!} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon={<BuildingIcon />} tooltipText={t.tooltips.corporateEcosystem}>
+                <SectionWrapper title={lang === 'en' ? "Corporate Ecosystem & Advantage" : "Vállalati Ökoszisztéma & Versenyelőny"} icon={<BuildingIcon />} tooltipText={t.tooltips.corporateEcosystem} darkMode={darkMode}>
                    <div className="space-y-12">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                          <IntelligenceCard title={lang === 'en' ? "Market Position" : "Piaci Helyzet"} content={result.companyMarketPosition} icon={<TrendingUpIcon />} />
@@ -778,7 +778,7 @@ const App: React.FC = () => {
                    </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} tooltipText={t.tooltips.coverLetter}>
+                <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} tooltipText={t.tooltips.coverLetter} darkMode={darkMode}>
                   <div className="bg-white p-8 rounded-[32px] border-2 border-slate-300 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                        <h3 className="text-sm font-black uppercase tracking-tight text-slate-700">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
@@ -788,12 +788,12 @@ const App: React.FC = () => {
                   </div>
                 </SectionWrapper>
 
-                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon={<CalendarIcon />} tooltipText={t.tooltips.plan90Day}>
+                <SectionWrapper title={lang === 'en' ? "90-Day Plan" : "90 Napos Terv"} icon={<CalendarIcon />} tooltipText={t.tooltips.plan90Day} darkMode={darkMode}>
                   <div className="flex justify-between items-center mb-8 px-2">
                       <h3 className="text-sm font-black uppercase tracking-tight text-slate-700">{lang === 'en' ? 'Tactical implementation phases' : 'Taktikai megvalósítás fázisai'}</h3>
                       <button onClick={() => exportActionPlan(companyNameInput, result.plan90Day, t.attackPlanTitle)} className="text-[10px] font-black uppercase text-blue-600 border-b-2 border-blue-600 pb-0.5">{lang === 'en' ? 'Download PDF' : 'Letöltés PDF'}</button>
                   </div>
-                  <Plan90DaySection plan={result.plan90Day} t={t} />
+                  <Plan90DaySection plan={result.plan90Day} t={t} darkMode={darkMode} />
                 </SectionWrapper>
               </div>
             )}
