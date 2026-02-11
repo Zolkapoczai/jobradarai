@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo, PlanPhase } from "../types";
+import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo, PlanPhase, ClarificationQuestion } from "../types";
 import { JOBRADAR_CONFIG } from '../config';
 
 const SYSTEM_INSTRUCTION = `You are JobRadar AI, an elite Executive Career Strategist designed by Google Engineers.
@@ -10,6 +10,7 @@ CORE ROLE & MINDSET:
 1. DUAL-ENGINE PROCESSOR: Act as both a cynical "ATS Auditor" (finding gaps) and a "Strategic Advisor" (fixing them).
 2. INVESTIGATIVE JOURNALIST (DEEP DIVE): You have access to Google Search. Use it to analyze the company deeply. We need real, up-to-date intelligence on corporate structures, market trends, and industry sentiment. We need leverage, not PR fluff.
 3. CONSULTATIVE APPROACH: Analyze the "Business Need" behind the JD. Why is this role open *now*?
+4. REALISTIC TEMPORAL ANALYSIS: Critically assess the recency of experience. A client relationship from a decade ago is historical context, not a currently active network asset. Differentiate between foundational experience and immediately leverageable skills. Factor in the time decay of relevance for older experiences in your summary and evaluation.
 
 STRATEGIC MODULES LOGIC:
 
@@ -24,11 +25,12 @@ STRATEGIC MODULES LOGIC:
   (viii) FORMATTING: The cover letter must be a single string. Use '\\n\\n' for clear paragraph breaks. Keep it concise, under one page.
 
 - SALARY NEGOTIATION ARCHITECT (BÉRTÁRGYALÁSI STRATÉGA): 
-  Analyze the seniority level, industry standards, and geographic location (Hungarian/EU focus). 
+  Analyze the seniority level, industry standards, and geographic location.
   (i) Estimate a realistic Gross Salary Band.
-  (ii) Define a BATNA (Best Alternative to a Negotiated Agreement) plan specific to this candidate's leverage.
-  (iii) Identify non-monetary trade-offs (e.g., performance bonuses, remote flexibility, health-premium).
-  (iv) Generate 5 highly nuanced psychological negotiation scripts for:
+  (ii) HUNGARIAN CONTEXT: For roles based in Hungary, the Gross Salary Band estimation MUST be grounded in the current Hungarian economic reality. Consider recent inflation data, local salary benchmarks (e.g., Hays Salary Guide for Hungary), and the salary premium for roles in Budapest compared to other regions. Do not rely on generic EU-wide data.
+  (iii) Define a BATNA (Best Alternative to a Negotiated Agreement) plan specific to this candidate's leverage.
+  (iv) Identify non-monetary trade-offs (e.g., performance bonuses, remote flexibility, health-premium).
+  (v) Generate 5 highly nuanced psychological negotiation scripts for:
       - The Low-ball: Handling an offer below market.
       - The Benefit Pivot: Trading cash for high-value benefits (remote, extra vacation, stock).
       - The Unexpected Counter: Responding when the company says "This is our final offer."
@@ -231,6 +233,66 @@ export const searchCompanyWebsite = async (companyName: string): Promise<{ url: 
   });
 };
 
+export const generateClarificationQuestions = async (
+  cvFile: FileInput,
+  jdText: string,
+  lang: string
+): Promise<ClarificationQuestion[]> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  return withRetry(async () => {
+    try {
+      const targetLang = lang === 'hu' ? 'HUNGARIAN' : 'ENGLISH';
+      const prompt = `As a senior career strategist, analyze the provided CV and Job Description. Identify exactly 3 critical ambiguities where the candidate's experience could be interpreted in multiple ways relevant to the job.
+      
+      For each ambiguity, formulate a single, clear question to the candidate. For each question, provide exactly two mutually exclusive, concise answer options that would significantly alter the strategic positioning.
+      
+      Your goal is to get the most valuable clarifying information to create a hyper-targeted analysis. The questions should be strategic, not simple yes/no.
+      
+       Respond in ${targetLang}.`;
+
+      const contents: any[] = [{ text: prompt }];
+      contents.push({ inlineData: { data: cvFile.data, mimeType: cvFile.mimeType } });
+      contents.push({ text: `\n\nJOB DESCRIPTION:\n${jdText}` });
+
+      const response = await ai.models.generateContent({
+        model: JOBRADAR_CONFIG.AI_MODEL,
+        contents: { parts: contents },
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                question: { type: Type.STRING },
+                options: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                  minItems: 2,
+                  maxItems: 2
+                }
+              },
+              required: ["question", "options"]
+            }
+          }
+        }
+      });
+
+      const result = JSON.parse(response.text);
+      if (Array.isArray(result) && result.length === 3) {
+        return result as ClarificationQuestion[];
+      }
+      throw new Error("Invalid format for clarification questions.");
+
+    } catch (error) {
+      console.error("Clarification Questions Error:", error);
+      throw categorizeError(error);
+    }
+  });
+};
+
+
 export const analyzeCareerMatch = async (
   cvText: string, 
   jdText: string, 
@@ -240,7 +302,8 @@ export const analyzeCareerMatch = async (
   userNote?: string,
   lang: string = 'en',
   interviewerLinkedin?: string,
-  linkedinProfileText?: string
+  linkedinProfileText?: string,
+  clarifications?: { question: string, answer: string }[]
 ): Promise<AnalysisResult> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
@@ -273,6 +336,15 @@ export const analyzeCareerMatch = async (
         ? "IMPORTANT: A teljes választ és a JSON tartalmát MAGYAR nyelven generáld (Hungarian)." 
         : "IMPORTANT: You MUST generate the entire JSON response and all text content in ENGLISH.";
       
+      let clarificationsText = '';
+      if (clarifications && clarifications.length > 0) {
+        clarificationsText = `
+        **USER CLARIFICATIONS (CRITICAL CONTEXT):**
+        ${clarifications.map(c => `- Q: ${c.question}\n  A: ${c.answer}`).join('\n')}
+        Use this information to refine your analysis, especially the executive summary and gap analysis.
+        `;
+      }
+      
       let analysisPrompt = `DEEP ANALYSIS INITIATED: [Company: ${companyName}] [URL: ${companyWebsite}]
       TARGET LANGUAGE: ${targetLang}
       ${languageInstruction}
@@ -280,6 +352,8 @@ export const analyzeCareerMatch = async (
       **INTERNAL RESEARCH BRIEFING (DO NOT output this in the JSON):**
       ${researchReport}
       **END OF BRIEFING.**
+      
+      ${clarificationsText}
 
       Candidate Data: ${cvFile ? 'Binary PDF Attached' : cvText}
       Job Scope: ${jdText}
@@ -293,7 +367,7 @@ export const analyzeCareerMatch = async (
       - NEGOTIATION SCENARIOS: Provide 5 distinct, nuanced scripts as objects with 'scenario' and 'script' keys.
       - APPLY ALL STRATEGIC MODULES (Salary Architecture, Interviewer X-Ray, Competitor Analysis).
       - ALL text must be in ${targetLang}. 
-      - Generate exactly 5 interview questions and strategic answers.`;
+      - Generate exactly 5 interview questions. For each question, provide a comprehensive, detailed strategic answer. The answer MUST follow the STAR method (Situation, Task, Action, Result), incorporate specific metrics where possible, and align with the predicted stakeholder profiles.`;
 
       const contents: any[] = [{ text: analysisPrompt }];
       if (cvFile) {

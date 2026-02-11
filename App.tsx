@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo } from './types';
-import { analyzeCareerMatch, searchCompanyWebsite, validateJdText } from './services/jobAgent';
+import { AppState, AnalysisResult, FileInput, AnalysisErrorInfo, ClarificationQuestion } from './types';
+import { analyzeCareerMatch, searchCompanyWebsite, validateJdText, generateClarificationQuestions } from './services/jobAgent';
 import { translations } from './translations';
 import { 
     GoogleHelloText, InfoTooltip, IntelligenceCard, FormInput, FormTextarea, PrimaryButton, JobRadarLogo, TooltipWrapper, ExternalLinkIcon,
@@ -62,6 +62,12 @@ const App: React.FC = () => {
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [showInputModal, setShowInputModal] = useState(false);
   const [showInvalidJdModal, setShowInvalidJdModal] = useState(false);
+
+  // Clarification Questions State
+  const [clarificationQuestions, setClarificationQuestions] = useState<ClarificationQuestion[] | null>(null);
+  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   // Results & Progress
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -164,9 +170,9 @@ const App: React.FC = () => {
   };
 
   const verifyCompany = async () => {
-    if (!companyNameInput || (!jdText && !jdUrl) || !cvFile) return;
+    if (!companyNameInput || !jdText || !cvFile) return;
 
-    setState(AppState.VALIDATING_JD); // Use one state for both parallel tasks.
+    setState(AppState.VALIDATING_JD);
 
     try {
         const companyCacheKey = `jobradar_company_${companyNameInput.toLowerCase()}`;
@@ -201,17 +207,57 @@ const App: React.FC = () => {
         setState(AppState.IDLE);
 
     } catch(err: any) {
-        // If one promise fails, Promise.all rejects.
         setErrorInfo(err);
         setState(AppState.ERROR);
     }
   };
-
+  
   const startAnalysis = async (customNote: string = '') => {
-    setState(AppState.LOADING);
+    if (!cvFile || !jdText) return;
+    setState(AppState.GENERATING_QUESTIONS);
     setshowConfirmCompany(false);
     setShowChoiceModal(false);
     setShowInputModal(false);
+    setUserNote(customNote); // Save user note for later
+
+    try {
+      const questions = await generateClarificationQuestions(cvFile, jdText, lang);
+      setClarificationQuestions(questions);
+      setUserAnswers(new Array(questions.length).fill(''));
+      setCurrentQuestionIndex(0);
+      setState(AppState.AWAITING_CLARIFICATION);
+    } catch (err: any) {
+      // If question generation fails, we can proceed to the final analysis.
+      // Or show an error. Let's proceed for now.
+      console.warn("Failed to generate clarification questions, proceeding with main analysis.", err);
+      triggerFinalAnalysis();
+    }
+  };
+  
+  const handleAnswerSelect = (questionIndex: number, answer: string) => {
+    setSelectedAnswer(answer);
+    
+    const newAnswers = [...userAnswers];
+    newAnswers[questionIndex] = answer;
+    setUserAnswers(newAnswers);
+
+    setTimeout(() => {
+        setSelectedAnswer(null); // Reset for next question
+        if (questionIndex < clarificationQuestions!.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+        } else {
+            // It's the last question, build final clarifications with the complete set of answers
+            const finalClarifications = clarificationQuestions!.map((q, i) => ({
+                question: q.question,
+                answer: newAnswers[i], // Use the locally updated array
+            }));
+            triggerFinalAnalysis(finalClarifications);
+        }
+    }, 300);
+  };
+
+  const triggerFinalAnalysis = async (finalClarifications?: { question: string, answer: string }[]) => {
+    setState(AppState.LOADING);
     setProgress(0);
 
     const interval = setInterval(() => {
@@ -219,9 +265,14 @@ const App: React.FC = () => {
     }, 800);
 
     try {
+       const clarifications = finalClarifications || clarificationQuestions?.map((q, i) => ({
+        question: q.question,
+        answer: userAnswers[i]
+      })) || [];
+
       const analysis = await analyzeCareerMatch(
         '', jdText, companyNameInput, foundCompany?.url || '', cvFile || undefined, 
-        customNote, lang, interviewerLinkedin, linkedinText
+        userNote, lang, interviewerLinkedin, linkedinText, clarifications
       );
       setResult(analysis);
       setProgress(100);
@@ -237,28 +288,28 @@ const App: React.FC = () => {
   };
 
   const reset = () => {
-    // Reset analysis state but keep user assets (CV, LinkedIn text)
     setState(AppState.IDLE);
     setResult(null);
     setErrorInfo(null);
     setActiveTab('overview');
 
-    // Clear only job-specific data
     setJdText('');
     setJdUrl('');
     setCompanyNameInput('');
     setInterviewerLinkedin('');
     setUserNote('');
 
-    // Reset company verification state
     setshowConfirmCompany(false);
     setAllFoundCompanies([]);
     setFoundCompany(null);
     setShowChoiceModal(false);
     setShowInputModal(false);
+    
+    setClarificationQuestions(null);
+    setUserAnswers([]);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
 
-    // If a CV is already uploaded, move to step 2 to analyze a new job.
-    // Otherwise, go back to step 1 to upload assets.
     if (cvFile) {
       setCurrentStep(2);
     } else {
@@ -590,7 +641,7 @@ const App: React.FC = () => {
                       <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950">2. {t.missionParams}</h2>
                       <p className="text-xs font-bold text-slate-700 uppercase tracking-widest">{lang === 'en' ? 'Enter position details for precise domain alignment.' : 'Add meg a pozíció részleteit a pontos domén-illeszkedéshez.'}</p>
                    </div>
-                   <PrimaryButton className="w-full md:w-auto px-10 shadow-2xl" onClick={verifyCompany} disabled={!companyNameInput || (!jdText && !jdUrl)}>{lang === 'en' ? 'Start Analysis' : 'Elemzés indítása'}</PrimaryButton>
+                   <PrimaryButton className="w-full md:w-auto px-10 shadow-2xl" onClick={verifyCompany} disabled={!companyNameInput || !jdText}>{lang === 'en' ? 'Start Analysis' : 'Elemzés indítása'}</PrimaryButton>
                 </div>
                 <div className="space-y-10">
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -813,7 +864,7 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {(state === AppState.LOADING || state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD) && (
+      {(state === AppState.LOADING || state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD || state === AppState.GENERATING_QUESTIONS) && (
         <div className="fixed inset-0 z-[12000] flex items-center justify-center p-6 bg-slate-50/95 backdrop-blur-xl text-center">
            <div className="space-y-12 max-w-2xl">
               <div className="w-64 h-64 mx-auto relative group">
@@ -837,9 +888,9 @@ const App: React.FC = () => {
                     <circle 
                       cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="4" 
                       strokeDasharray="283" 
-                      strokeDashoffset={state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD ? 70 : 283 - (283 * progress) / 100} 
+                      strokeDashoffset={state !== AppState.LOADING ? 70 : 283 - (283 * progress) / 100} 
                       strokeLinecap="round" 
-                      className={`transition-all duration-700 shadow-[0_0_10px_rgba(59,130,246,0.5)] ${state === AppState.SEARCHING_COMPANY || state === AppState.VALIDATING_JD ? 'animate-spin origin-center' : ''}`} 
+                      className={`transition-all duration-700 shadow-[0_0_10px_rgba(59,130,246,0.5)] ${state !== AppState.LOADING ? 'animate-spin origin-center' : ''}`} 
                     />
                  </svg>
                  <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -850,20 +901,76 @@ const App: React.FC = () => {
                       </>
                     ) : (
                       <span className="text-center font-black text-blue-600 tracking-widest mt-2 drop-shadow-[0_0_4px_rgba(96,165,250,0.5)] uppercase text-base px-4">
-                        {t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás...' : 'Identifying...')}
+                        {state === AppState.GENERATING_QUESTIONS ? t.generatingQuestions : t.preAnalysisStatus}
                       </span>
                     )}
                  </div>
               </div>
               <div className="space-y-4">
                  <h3 className="text-xl font-black uppercase tracking-[0.4em] text-blue-600 animate-pulse">
-                   {state === AppState.LOADING ? t.synthesizing : (t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás és Validálás...' : 'Identification & Validation...'))}
+                   {state === AppState.LOADING ? t.synthesizing : (state === AppState.GENERATING_QUESTIONS ? t.generatingQuestions : (t.preAnalysisStatus || (lang === 'hu' ? 'Azonosítás és Validálás...' : 'Identification & Validation...')))}
                  </h3>
                  <p className="text-sm font-bold text-slate-600 uppercase tracking-widest">
-                   {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (t.preAnalysisSubStatus || (lang === 'hu' ? 'Vállalati adatok és álláshirdetés ellenőrzése...' : 'Verifying company data and job description...'))}
+                   {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (state === AppState.GENERATING_QUESTIONS ? t.generatingQuestionsSub : (t.preAnalysisSubStatus || (lang === 'hu' ? 'Vállalati adatok és álláshirdetés ellenőrzése...' : 'Verifying company data and job description...')))}
                  </p>
               </div>
            </div>
+        </div>
+      )}
+
+      {state === AppState.AWAITING_CLARIFICATION && clarificationQuestions && (
+        <div className="fixed inset-0 z-[12500] flex items-center justify-center p-6 bg-slate-950/70 backdrop-blur-md">
+          <div className="bg-white rounded-[32px] md:rounded-[48px] p-6 md:p-12 max-w-2xl w-full border-2 border-slate-300 shadow-2xl text-center">
+            <div className="flex justify-center items-center gap-2 mb-4">
+                <h2 className="text-2xl font-black uppercase tracking-tight text-slate-950">{t.clarificationTitle}</h2>
+                <InfoTooltip text={t.tooltipClarification} />
+            </div>
+            <p className="text-sm font-bold text-slate-700 mb-6 leading-relaxed">{t.clarificationBody}</p>
+            
+            <div className="mb-6 px-1">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        {lang === 'hu' ? 'Haladás' : 'Progress'}
+                    </span>
+                    <span className="text-xs font-black text-blue-600">
+                        {currentQuestionIndex + 1} / {clarificationQuestions.length}
+                    </span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-500" 
+                        style={{ width: `${((currentQuestionIndex + 1) / clarificationQuestions.length) * 100}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            <div className="space-y-6">
+                {(() => {
+                    const q = clarificationQuestions[currentQuestionIndex];
+                    if (!q) return null;
+                    return (
+                        <div key={currentQuestionIndex} className="p-6 rounded-2xl border-2 border-slate-200 text-left animate-in fade-in duration-500">
+                            <p className="font-black text-slate-900 mb-4">{q.question}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {q.options.map((option, oIndex) => (
+                                <button
+                                    key={oIndex}
+                                    onClick={() => handleAnswerSelect(currentQuestionIndex, option)}
+                                    className={`w-full p-4 rounded-xl border-2 text-sm font-bold transition-all duration-300 ${
+                                        selectedAnswer === option
+                                        ? 'bg-blue-600 text-white border-blue-600 shadow-lg'
+                                        : 'bg-slate-50 hover:bg-white hover:border-blue-400 border-slate-200'
+                                    }`}
+                                >
+                                    {option}
+                                </button>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })()}
+            </div>
+          </div>
         </div>
       )}
 

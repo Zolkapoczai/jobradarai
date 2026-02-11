@@ -24,6 +24,8 @@ export enum AppState {
   IDLE = 'IDLE',
   VALIDATING_JD = 'VALIDATING_JD',
   SEARCHING_COMPANY = 'SEARCHING_COMPANY',
+  GENERATING_QUESTIONS = 'GENERATING_QUESTIONS',
+  AWAITING_CLARIFICATION = 'AWAITING_CLARIFICATION',
   LOADING = 'LOADING',
   RESULT = 'RESULT',
   ERROR = 'ERROR'
@@ -33,6 +35,11 @@ export enum AppView {
   ANALYZER = 'ANALYZER',
   PRICING = 'PRICING',
   CHAT_COACH = 'CHAT_COACH'
+}
+
+export interface ClarificationQuestion {
+  question: string;
+  options: [string, string];
 }
 
 export interface ScoreBreakdown {
