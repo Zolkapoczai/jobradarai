@@ -256,6 +256,24 @@ const App: React.FC = () => {
     }, 300);
   };
 
+  const handleSkipQuestion = (questionIndex: number) => {
+    const newAnswers = [...userAnswers];
+    newAnswers[questionIndex] = ''; // Store empty string for skipped
+    setUserAnswers(newAnswers);
+  
+    setTimeout(() => {
+      if (questionIndex < clarificationQuestions!.length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+      } else {
+        const finalClarifications = clarificationQuestions!.map((q, i) => ({
+            question: q.question,
+            answer: newAnswers[i],
+        }));
+        triggerFinalAnalysis(finalClarifications);
+      }
+    }, 150);
+  };
+
   const triggerFinalAnalysis = async (finalClarifications?: { question: string, answer: string }[]) => {
     setState(AppState.LOADING);
     setProgress(0);
@@ -965,6 +983,14 @@ const App: React.FC = () => {
                                     {option}
                                 </button>
                                 ))}
+                            </div>
+                            <div className="mt-4 text-center">
+                                <button
+                                    onClick={() => handleSkipQuestion(currentQuestionIndex)}
+                                    className="text-xs font-bold text-slate-400 hover:text-slate-800 transition-colors underline decoration-dotted"
+                                >
+                                    {t.clarificationSkip}
+                                </button>
                             </div>
                         </div>
                     );

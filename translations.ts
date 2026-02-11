@@ -8,6 +8,7 @@ export const translations = {
     clarificationBody: "A legpontosabb elemzés érdekében kérjük, válaszoljon az alábbi három kérdésre. A válaszai segítenek az MI-nak a megfelelő hangsúlyokat eltalálni.",
     clarificationContinue: "Elemzés indítása a válaszokkal",
     tooltipClarification: "A rendszer az adatok validálása után, a részletes elemzést megelőzően 3 kulcsfontosságú tisztázó kérdést generál.\nMinden kérdéshez 2 válaszlehetőség tartozik, Önnek a legmegfelelőbbet kell kiválasztania.\nAz így kapott válaszok alapján az MI pontosabb, személyre szabottabb és hatékonyabb elemzést készít, kiemelve azokat a pontokat, amelyek a legnagyobb hatást érhetik el a döntéshozóknál.",
+    clarificationSkip: "Nem válaszolok",
     welcome: "Üdvözöljük!",
     welcomeBody: "A JobRadar egy személyes karrier-stratégiai portál, amely segít értelmezni az álláshirdetéseket. Töltse fel önéletrajzát és a pozíció leírását, és a rendszer pillanatok alatt elkészíti a teljes stratégiai csomagot: valós esélyek elemzése, személyre szabott kísérőlevél, bértárgyalási taktikák és CV-javaslatok. Az interaktív AI Coach chatben pedig élesben gyakorolhatja a legkemmyebb interjúkérdéseket, hogy magabiztosan álljon a döntéshozók elé.\n\nJelenleg az alkalmazás nem mobilra optimalizált, a legjobb működés asztali környezetben garantált.",
     welcomeContinue: "Indulás",
@@ -206,7 +207,7 @@ export const translations = {
     tokenHelp3: "Kb. 60-80 interjúkérdésre elég.",
     globalDisclaimer: "Az EU AI Act irányelveivel összhangban a rendszer eredményei emberi felügyelet mellett alkalmazandók.",
     proTips: [
-      "Használja a STAR módszert a válaszaihoz.",
+      "Strukturálja válaszait konkrét példákkal és eredményekkel.",
       "Nézzen utána az interjúztató hátterének LinkedIn-en.",
       "Egy konkrét üzleti probléma megoldása többet ér.",
       "Videóhívás alatt nézzen a kamerába.",
@@ -381,6 +382,7 @@ export const translations = {
     clarificationBody: "For the most accurate analysis, please answer the following three questions. Your answers will help the AI to set the right focus.",
     clarificationContinue: "Start Analysis with Answers",
     tooltipClarification: "After validating the data and before the detailed analysis, the system generates 3 key clarification questions.\nEach question has 2 options; you must select the most appropriate one.\nBased on these answers, the AI prepares a more accurate, personalized, and effective analysis, emphasizing the points that will have the greatest impact on decision-makers.",
+    clarificationSkip: "Skip Question",
     welcome: "Welcome!",
     welcomeBody: "JobRadar is a personal career strategy portal that helps you interpret job postings. Upload your resume and the position description, and the system will instantly prepare a complete strategic package: analysis of real chances, a personalized cover letter, salary negotiation tactics, and CV suggestions. In the interactive AI Coach chat, you can practice the toughest interview questions to confidently face decision-makers.\n\nCurrently, the application is not optimized for mobile; the best performance is guaranteed in a desktop environment.",
     welcomeContinue: "Let's Start",
@@ -579,7 +581,7 @@ export const translations = {
     tokenHelp3: "Enough for approx. 60-80 interview questions.",
     globalDisclaimer: "In accordance with EU AI Act guidelines, the system's results should be used with human oversight.",
     proTips: [
-      "Use the STAR method for your answers.",
+      "Structure your answers with concrete examples and results.",
       "Research the interviewer's background on LinkedIn.",
       "Solving a specific business problem is more valuable.",
       "Look into the camera during video calls.",

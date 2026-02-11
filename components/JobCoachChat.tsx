@@ -61,6 +61,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, lang }) => {
 
       ROLE & TONE:
       - PROFESSIONAL YET TOUGH: You are supportive but strict. Do not accept weak answers.
+      - CONVERSATIONAL & LIFELIKE: Provide feedback and suggestions in a natural, human-like manner. Avoid rigid frameworks like the STAR method. Your goal is to sound like an experienced human mentor, not a robotic script.
       - LANGUAGE: ${lang === 'en' ? 'ENGLISH' : 'HUNGARIAN'}.
       - ${languageInstruction}
       - NO JSON: Speak naturally in paragraphs and bullet points. Do NOT output raw JSON structures.
@@ -77,7 +78,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, lang }) => {
         model: JOBRADAR_CONFIG.AI_MODEL,
         config: {
           systemInstruction: systemInstruction,
-          temperature: 0.8,
+          temperature: 0.4,
         }
       });
   

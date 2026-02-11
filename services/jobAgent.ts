@@ -367,7 +367,7 @@ export const analyzeCareerMatch = async (
       - NEGOTIATION SCENARIOS: Provide 5 distinct, nuanced scripts as objects with 'scenario' and 'script' keys.
       - APPLY ALL STRATEGIC MODULES (Salary Architecture, Interviewer X-Ray, Competitor Analysis).
       - ALL text must be in ${targetLang}. 
-      - Generate exactly 5 interview questions. For each question, provide a comprehensive, detailed strategic answer. The answer MUST follow the STAR method (Situation, Task, Action, Result), incorporate specific metrics where possible, and align with the predicted stakeholder profiles.`;
+      - Generate exactly 5 interview questions. For each question, provide a comprehensive and detailed strategic answer in a natural, human-like conversational tone. Avoid rigid formulas like the STAR method, but ensure the answer is well-structured, provides concrete examples with metrics where possible, and showcases strategic thinking aligned with the predicted stakeholder profiles.`;
 
       const contents: any[] = [{ text: analysisPrompt }];
       if (cvFile) {
