@@ -19,12 +19,13 @@ import SectionWrapper from './components/SectionWrapper';
 import StrategicQuestionsSection from './components/StrategicQuestionsSection';
 import SalaryNegotiationSection from './components/SalaryNegotiationSection';
 import InterviewerProfilerSection from './components/InterviewerProfilerSection';
-import Plan90DaySection from './components/Plan90DaySection';
 import { TermsOfServiceModal } from './components/TermsOfServiceModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
 import { processPdfFile, validatePdf } from './utils/fileProcessor';
 import CookieBanner from './components/CookieBanner';
+// FIX: Imported the missing Plan90DaySection component to resolve a compilation error.
+import Plan90DaySection from './components/Plan90DaySection';
 
 const App: React.FC = () => {
   const MOBILE_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
@@ -1134,7 +1135,12 @@ const App: React.FC = () => {
           />
       )}
 
-      <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
+      <TermsOfServiceModal 
+        isOpen={isTosOpen} 
+        onClose={() => setIsTosOpen(false)} 
+        onAccept={showCookieBanner ? handleAcceptCookies : undefined}
+        t={t} 
+      />
       <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
     </div>
   );

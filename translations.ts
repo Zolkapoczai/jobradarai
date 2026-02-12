@@ -1,7 +1,7 @@
 export const translations = {
   hu: {
     cookieTitle: "Adatvédelem és Működés",
-    cookieBannerText: "Alkalmazásunk a böngésző munkamenet-tárolóját (`sessionStorage`) használja a működéshez és a beállítások ideiglenes mentéséhez. Az 'Elfogadom' gombra kattintva Ön hozzájárul ehhez. Részletes tájékoztatásért olvassa el az adatvédelmi szabályzatunkat.",
+    cookieBannerText: "Alkalmazásunk a böngésző munkamenet-tárolóját (`sessionStorage`) használja az alapvető működéshez és a beállítások ideiglenes mentéséhez. Az 'Elfogadom' gombra kattintva Ön hozzájárul ennek használatához az Adatvédelmi Szabályzatunkban leírtak szerint.",
     cookieAccept: "Elfogadom",
     preAnalysisStatus: "Vállalati Adatok Validálása...",
     preAnalysisSubStatus: "Álláshirdetés és online jelenlét ellenőrzése...",
@@ -408,7 +408,7 @@ export const translations = {
   },
   en: {
     cookieTitle: "Privacy & Cookies",
-    cookieBannerText: "Our application uses the browser's session storage (`sessionStorage`) to function and temporarily save your settings. By clicking 'Accept', you agree to this. For detailed information, please read our privacy policy.",
+    cookieBannerText: "Our application uses the browser's session storage (`sessionStorage`) for essential functionality and to temporarily save your settings. By clicking 'Accept', you consent to its use as described in our Privacy Policy.",
     cookieAccept: "Accept",
     preAnalysisStatus: "Validating Company Data...",
     preAnalysisSubStatus: "Checking job posting and online presence...",

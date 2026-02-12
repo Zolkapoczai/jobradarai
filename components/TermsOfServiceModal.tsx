@@ -4,18 +4,26 @@ import { exportTermsAsPdf } from '../utils/pdfGenerator';
 interface TermsOfServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAccept?: () => void;
   t: any;
 }
 
-export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClose, t }) => {
+export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onClose, onAccept, t }) => {
   if (!isOpen) return null;
 
   const handleDownload = () => {
     exportTermsAsPdf(t);
   };
 
+  const handleAccept = () => {
+    if (onAccept) {
+      onAccept();
+    }
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-[11000] flex items-center justify-center p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[16000] flex items-center justify-center p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
       <div className="max-w-4xl w-full bg-white dark:bg-slate-900 rounded-[40px] p-6 md:p-10 border-2 border-slate-300 dark:border-slate-800 shadow-2xl relative flex flex-col h-[90vh]">
         <div className="flex-shrink-0 flex justify-between items-center pb-6 border-b-2 border-slate-100 dark:border-slate-800">
             <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-950 dark:text-white">{t.terms.title}</h2>
@@ -37,19 +45,31 @@ export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen
             </div>
         </div>
 
-        <div className="flex-shrink-0 pt-6 border-t-2 border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-4">
+        <div className="flex-shrink-0 pt-6 border-t-2 border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
             <button 
               onClick={handleDownload} 
-              className="w-full sm:w-auto py-4 px-8 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+              className="w-full sm:w-auto py-3 px-6 rounded-full border-2 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 font-black uppercase tracking-widest text-xs shadow-sm active:scale-95 transition-all hover:bg-blue-50 dark:hover:bg-blue-900/50"
             >
               {t.terms.downloadPdf}
             </button>
-            <button 
-              onClick={onClose} 
-              className="w-full sm:w-auto py-4 px-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-black uppercase tracking-widest text-xs shadow-sm active:scale-95 transition-all"
-            >
-              {t.close}
-            </button>
+          </div>
+          <div className="flex flex-col-reverse sm:flex-row w-full sm:w-auto gap-4">
+              <button 
+                onClick={onClose} 
+                className="w-full sm:w-auto py-4 px-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-black uppercase tracking-widest text-xs shadow-sm active:scale-95 transition-all"
+              >
+                {t.close}
+              </button>
+              {onAccept && (
+                  <button 
+                    onClick={handleAccept}
+                    className="w-full sm:w-auto py-4 px-8 rounded-full bg-slate-900 text-white font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-all"
+                  >
+                    {t.cookieAccept}
+                  </button>
+              )}
+          </div>
         </div>
       </div>
     </div>

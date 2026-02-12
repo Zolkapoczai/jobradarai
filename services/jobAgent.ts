@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult, FileInput, AnalysisErrorType, AnalysisErrorInfo, PlanPhase, ClarificationQuestion } from "../types";
 import { JOBRADAR_CONFIG } from '../config';
@@ -87,8 +86,9 @@ const categorizeError = (error: any): AnalysisErrorInfo => {
     return { type: AnalysisErrorType.NETWORK, message: "Nincs internetkapcsolat. Ellenőrizze a hálózatot és próbálja újra!" };
   }
   
-  const status = error?.status;
-  const message = error?.message || "";
+  const nestedError = error?.error;
+  const status = nestedError?.code || error?.status; // Gemini API often nests error details
+  const message = nestedError?.message || error?.message || "";
 
   // Handle specific Gemini API errors from the message
   if (message.includes("API key not valid")) {
@@ -169,7 +169,8 @@ export const validateJdText = async (jdText: string): Promise<boolean> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-flash-latest',
+            // FIX: Updated model to one appropriate for basic classification tasks.
+            model: 'gemini-3-flash-preview',
             contents: `Is the following text a real, detailed job description for a professional role? The user might be trying to trick you with random text like "asdfasdf" or song lyrics. Be critical. Answer with only the single word "YES" or "NO".
 
             Text: "${jdText.substring(0, 1500)}"`,
