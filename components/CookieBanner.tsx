@@ -8,21 +8,27 @@ interface CookieBannerProps {
 
 const CookieBanner: React.FC<CookieBannerProps> = ({ onAccept, onOpenPrivacy, t }) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[15000] p-4 sm:p-6 bg-white text-slate-800 border-t-2 border-slate-200 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-500">
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm font-bold text-slate-700 text-center sm:text-left flex-grow">
-          {t.cookieBannerText}{' '}
-          <button onClick={onOpenPrivacy} className="font-black underline hover:text-blue-600 transition-colors">
-            {t.privacy.title}
-          </button>
-          .
-        </p>
-        <div className="flex-shrink-0 flex items-center gap-3">
+    <div className="fixed inset-0 z-[15000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="max-w-md w-full bg-white rounded-[40px] p-8 md:p-10 border-2 border-slate-300 shadow-2xl text-center space-y-6">
+        <div className="text-5xl" aria-hidden="true">🍪</div>
+        <div className="space-y-2">
+            <h2 className="text-xl font-black uppercase tracking-tight text-slate-900">{t.cookieTitle}</h2>
+            <p className="text-sm font-bold text-slate-700">
+                {t.cookieBannerText}
+            </p>
+        </div>
+        <div className="flex flex-col gap-3 pt-4">
           <button 
             onClick={onAccept}
-            className="px-8 py-3 rounded-full bg-slate-900 text-white font-black text-xs uppercase tracking-widest transition-transform hover:scale-105 active:scale-95 shadow-lg"
+            className="w-full px-8 py-4 rounded-full bg-slate-900 text-white font-black text-xs uppercase tracking-widest transition-transform hover:scale-105 active:scale-95 shadow-lg"
           >
             {t.cookieAccept}
+          </button>
+          <button 
+            onClick={onOpenPrivacy} 
+            className="w-full text-xs font-black uppercase text-slate-500 hover:text-blue-600 transition-colors py-2"
+          >
+            {t.privacy.title}
           </button>
         </div>
       </div>

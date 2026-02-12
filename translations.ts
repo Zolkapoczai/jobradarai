@@ -1,6 +1,7 @@
 export const translations = {
   hu: {
-    cookieBannerText: "Weboldalunk a böngésző helyi tárolóját (`localStorage`) használja a munkamenet folytonosságának biztosítására és a felhasználói beállítások mentésére. A részleteket az alábbi dokumentum tartalmazza:",
+    cookieTitle: "Adatvédelem és Működés",
+    cookieBannerText: "Alkalmazásunk a böngésző munkamenet-tárolóját (`sessionStorage`) használja a működéshez és a beállítások ideiglenes mentéséhez. Az 'Elfogadom' gombra kattintva Ön hozzájárul ehhez. Részletes tájékoztatásért olvassa el az adatvédelmi szabályzatunkat.",
     cookieAccept: "Elfogadom",
     preAnalysisStatus: "Vállalati Adatok Validálása...",
     preAnalysisSubStatus: "Álláshirdetés és online jelenlét ellenőrzése...",
@@ -371,7 +372,7 @@ export const translations = {
             <p>A szolgáltatás működéséhez a következő adatokat kezeljük:</p>
             <ul>
                 <li><strong>Feltöltött dokumentumok és szövegek:</strong> Az Ön által feltöltött önéletrajz (PDF), LinkedIn profil szövege és a bemásolt álláshirdetés. Ezen adatok kezelésének célja kizárólag a kért elemzés és stratégia generálása.</li>
-                <li><strong>Funkcionális "Sütik" (LocalStorage):</strong> A weboldal a böngésző helyi tárolóját (LocalStorage) használja a munkamenet folytonosságának biztosítására (pl. az elemzés eredményének mentése az oldal újratöltése esetére) és a felhasználói beállítások (pl. cookie-hozzájárulás) tárolására. Ezek nem követési sütik és nem tartalmaznak személyes azonosítókat.</li>
+                <li><strong>Funkcionális Adatok (SessionStorage):</strong> A weboldal a böngésző munkamenet-tárolóját (\`sessionStorage\`) használja a munkamenet folytonosságának biztosítására (pl. az elemzés eredményének mentése az oldal újratöltése esetére) és a felhasználói beállítások (pl. hozzájárulás) tárolására. Ezek nem követési célúak és nem tartalmaznak személyes azonosítókat.</li>
             </ul>
             <p><strong>Jogalap:</strong> Az adatkezelés jogalapja a GDPR 6. cikk (1) bekezdés b) pontja, azaz az adatkezelés olyan szerződés teljesítéséhez szükséges, amelyben az érintett az egyik fél (a szolgáltatás igénybevétele).</p>
 
@@ -383,7 +384,7 @@ export const translations = {
             <p>Kiemelten fontosnak tartjuk az Ön adatainak biztonságát. A szolgáltatásunk egyik legfontosabb alapelve, hogy <strong>nem tárolunk szerveroldalon személyes adatokat a szükséges feldolgozási időn túl.</strong></p>
             <ul>
                 <li>A feltöltött dokumentumok és a generált elemzés csak a feldolgozás idejére, ideiglenesen kerülnek a szerver memóriájába. A folyamat végeztével azonnal törlődnek.</li>
-                <li>Az elemzés eredménye kizárólag az Ön böngészőjének <strong>LocalStorage</strong>-ében tárolódik, hogy az oldal újratöltésekor ne vesszenek el az adatok. Ezen adatok felett teljes mértékben Ön rendelkezik; a böngésző gyorsítótárának és adatainak törlésével véglegesen eltávolíthatók.</li>
+                <li>Az elemzés eredménye kizárólag az Ön böngészőjének <strong>sessionStorage</strong>-ében tárolódik. Ezen adatok felett teljes mértékben Ön rendelkezik, és a böngésző lap vagy ablak bezárásakor automatikusan törlődnek.</li>
             </ul>
 
             <h3>5. Megfelelőség az EU Mesterséges Intelligencia Rendeletével (AI Act)</h3>
@@ -399,14 +400,15 @@ export const translations = {
             <ul>
                 <li><strong>Hozzáférési jog:</strong> Kérhet tájékoztatást személyes adatai kezeléséről.</li>
                 <li><strong>Helyesbítéshez való jog:</strong> Kérheti pontatlan személyes adatainak helyesbítését.</li>
-                <li><strong>Törléshez való jog („elfeledtetéshez való jog”):</strong> Mivel az adatokat nem tároljuk véglegesen, ez a jog a böngésző adatainak törlésével gyakorolható.</li>
+                <li><strong>Törléshez való jog („elfeledtetéshez való jog”):</strong> Mivel az adatokat nem tároljuk véglegesen, ez a jog a böngésző munkamenetének bezárásával automatikusan érvényesül.</li>
             </ul>
             <p>Ezen jogok gyakorlásával kapcsolatban vegye fel velünk a kapcsolatot a megadott elérhetőségeken.</p>
         `
     }
   },
   en: {
-    cookieBannerText: "Our site uses `localStorage` for session persistence and to save user preferences. By using the site, you agree to our practices, which are detailed in our",
+    cookieTitle: "Privacy & Cookies",
+    cookieBannerText: "Our application uses the browser's session storage (`sessionStorage`) to function and temporarily save your settings. By clicking 'Accept', you agree to this. For detailed information, please read our privacy policy.",
     cookieAccept: "Accept",
     preAnalysisStatus: "Validating Company Data...",
     preAnalysisSubStatus: "Checking job posting and online presence...",
@@ -777,7 +779,7 @@ export const translations = {
             <p>For the operation of the service, we process the following data:</p>
             <ul>
                 <li><strong>Uploaded documents and texts:</strong> Your uploaded resume (PDF), LinkedIn profile text, and the pasted job description. The purpose of processing this data is solely to generate the requested analysis and strategy.</li>
-                <li><strong>Functional "Cookies" (LocalStorage):</strong> The website uses the browser's local storage to ensure session continuity (e.g., saving analysis results in case of a page reload) and to store user preferences (e.g., cookie consent). These are not tracking cookies and do not contain personal identifiers.</li>
+                <li><strong>Functional Data (SessionStorage):</strong> The website uses the browser's session storage (\`sessionStorage\`) to ensure session continuity (e.g., saving analysis results in case of a page reload) and to store user preferences (e.g., consent). These are not tracking cookies and do not contain personal identifiers.</li>
             </ul>
             <p><strong>Legal Basis:</strong> The legal basis for data processing is Article 6(1)(b) of the GDPR, i.e., processing is necessary for the performance of a contract to which the data subject is a party (the use of the service).</p>
 
@@ -789,7 +791,7 @@ export const translations = {
             <p>We place great importance on the security of your data. A key principle of our service is that <strong>we do not store personal data on the server beyond the necessary processing time.</strong></p>
             <ul>
                 <li>Uploaded documents and the generated analysis are only temporarily held in the server's memory during processing. They are deleted immediately after the process is completed.</li>
-                <li>The analysis result is stored exclusively in your browser's <strong>LocalStorage</strong> so that data is not lost upon page reload. You have full control over this data; it can be permanently deleted by clearing your browser's cache and data.</li>
+                <li>The analysis result is stored exclusively in your browser's <strong>sessionStorage</strong>. You have full control over this data, and it is automatically deleted when the browser tab or window is closed.</li>
             </ul>
 
             <h3>5. Compliance with the EU Artificial Intelligence Act (AI Act)</h3>
@@ -805,7 +807,7 @@ export const translations = {
             <ul>
                 <li><strong>Right of access:</strong> You can request information about the processing of your personal data.</li>
                 <li><strong>Right to rectification:</strong> You can request the correction of inaccurate personal data.</li>
-                <li><strong>Right to erasure (‘right to be forgotten’):</strong> As we do not permanently store your data, this right can be exercised by clearing your browser data.</li>
+                <li><strong>Right to erasure (‘right to be forgotten’):</strong> As we do not permanently store your data, this right is automatically enforced by closing your browser session.</li>
             </ul>
             <p>To exercise these rights, please contact us through the provided contact information.</p>
         `
