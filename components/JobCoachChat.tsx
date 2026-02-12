@@ -17,9 +17,9 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, lang }) => {
   ]);
   const [input, setInput] = useState('');
   
-  // Credits initialization from localStorage
+  // Credits initialization from sessionStorage
   const [credits, setCredits] = useState<number>(() => {
-    const saved = localStorage.getItem('jobradar_credits');
+    const saved = sessionStorage.getItem('jobradar_credits');
     return saved ? parseInt(saved, 10) : 25;
   });
 
@@ -37,7 +37,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, lang }) => {
 
   // Persistence effect for credits
   useEffect(() => {
-    localStorage.setItem('jobradar_credits', credits.toString());
+    sessionStorage.setItem('jobradar_credits', credits.toString());
   }, [credits]);
 
   useEffect(() => {

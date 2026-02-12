@@ -30,7 +30,7 @@ const App: React.FC = () => {
   const MOBILE_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
 
   // Global App States
-  const [lang, setLang] = useState<'hu' | 'en'>((localStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
+  const [lang, setLang] = useState<'hu' | 'en'>((sessionStorage.getItem('userLang') as 'hu' | 'en') || 'hu');
   const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BREAKPOINT);
   const [darkMode, setDarkMode] = useState(false); // Added for prop correctness
   
@@ -101,7 +101,7 @@ const App: React.FC = () => {
   }, []);
   
   useEffect(() => {
-    const consent = localStorage.getItem('jobradar_cookie_consent');
+    const consent = sessionStorage.getItem('jobradar_cookie_consent');
     if (consent !== 'true') {
         setShowCookieBanner(true);
     }
@@ -109,7 +109,7 @@ const App: React.FC = () => {
 
   // Load Session State on Mount
   useEffect(() => {
-    const savedState = localStorage.getItem('jobradar_state');
+    const savedState = sessionStorage.getItem('jobradar_state');
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
@@ -144,12 +144,12 @@ const App: React.FC = () => {
       interviewerLinkedin,
       linkedinText
     };
-    localStorage.setItem('jobradar_state', JSON.stringify(stateToSave));
+    sessionStorage.setItem('jobradar_state', JSON.stringify(stateToSave));
   }, [result, currentStep, companyNameInput, jdText, jdUrl, userNote, activeTab, interviewerLinkedin, linkedinText]);
 
   // Handlers
   const handleAcceptCookies = () => {
-    localStorage.setItem('jobradar_cookie_consent', 'true');
+    sessionStorage.setItem('jobradar_cookie_consent', 'true');
     setShowCookieBanner(false);
   };
   
@@ -160,7 +160,7 @@ const App: React.FC = () => {
 
   const handleAcknowledgeDisclaimer = () => {
     setShowIntro(false);
-    localStorage.setItem('userLang', lang);
+    sessionStorage.setItem('userLang', lang);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -394,7 +394,7 @@ const App: React.FC = () => {
               onClick={() => {
                 const nextLang = lang === 'hu' ? 'en' : 'hu';
                 setLang(nextLang);
-                localStorage.setItem('userLang', nextLang);
+                sessionStorage.setItem('userLang', nextLang);
               }} 
               className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 font-black text-[10px]"
             >
@@ -458,7 +458,7 @@ const App: React.FC = () => {
             onClick={() => {
                 const newLang = lang === 'hu' ? 'en' : 'hu';
                 setLang(newLang);
-                localStorage.setItem('userLang', newLang);
+                sessionStorage.setItem('userLang', newLang);
             }}
             className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-300 text-slate-700 hover:border-slate-500 font-black text-[10px]"
           >
