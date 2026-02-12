@@ -1,6 +1,6 @@
 export const translations = {
   hu: {
-    cookieBannerText: "Ez az oldal funkcionális sütiket (localStorage) használ a munkamenet mentéséhez és a felhasználói élmény javításához. Az oldal használatával elfogadja az",
+    cookieBannerText: "Weboldalunk a böngésző helyi tárolóját (`localStorage`) használja a munkamenet folytonosságának biztosítására és a felhasználói beállítások mentésére. A részleteket az alábbi dokumentum tartalmazza:",
     cookieAccept: "Elfogadom",
     preAnalysisStatus: "Vállalati Adatok Validálása...",
     preAnalysisSubStatus: "Álláshirdetés és online jelenlét ellenőrzése...",
@@ -160,7 +160,7 @@ export const translations = {
     planMonthlyBadge: "BAJNOK",
     analyzer: "Elemző",
     tooltipCv: "Töltse fel szakmai önéletrajzát PDF formátumban.",
-    tooltipJd: "Másolja be a teljes álláshirdetés szövegét.",
+    tooltipJd: "Másolja be a teljes álláshirdetés szövege.",
     tooltipCompany: "Adja meg a cég nevét vagy weboldalát.",
     tooltipLink: "Az álláshirdetés közvetlen linkje.",
     tooltipManager: "AI által becsült viselkedési profil.",
@@ -365,7 +365,7 @@ export const translations = {
             <p>A JobRadar AI elkötelezett az Ön személyes adatainak védelme mellett. Ez az Adatvédelmi Szabályzat leírja, hogyan gyűjtjük, használjuk és védjük az Ön által megadott információkat a szolgáltatás használata során, összhangban az Európai Unió Általános Adatvédelmi Rendeletével (GDPR) és az EU Mesterséges Intelligencia Rendeletével (AI Act).</p>
             
             <h3>1. Az Adatkezelő</h3>
-            <p>Az adatok kezelője a JobRadar AI szolgáltatás üzemeltetője. Elérhetőségi információk a weboldalon találhatók.</p>
+            <p>Az adatok kezelője a JobRadar AI szolgáltatás üzemeltetője. Adatvédelmi kérdésekkel és jogai gyakorlásával kapcsolatban írjon a <a href="mailto:jobradarai@gmail.com" style="color: #2563eb; text-decoration: underline;">jobradarai@gmail.com</a> e-mail címre.</p>
             
             <h3>2. A Kezelt Adatok Köre és Célja</h3>
             <p>A szolgáltatás működéséhez a következő adatokat kezeljük:</p>
@@ -406,7 +406,7 @@ export const translations = {
     }
   },
   en: {
-    cookieBannerText: "This site uses functional cookies (localStorage) to save your session and improve user experience. By using the site, you accept our",
+    cookieBannerText: "Our site uses `localStorage` for session persistence and to save user preferences. By using the site, you agree to our practices, which are detailed in our",
     cookieAccept: "Accept",
     preAnalysisStatus: "Validating Company Data...",
     preAnalysisSubStatus: "Checking job posting and online presence...",
@@ -771,7 +771,7 @@ export const translations = {
             <p>JobRadar AI is committed to protecting your personal data. This Privacy Policy describes how we collect, use, and protect the information you provide while using the service, in compliance with the European Union's General Data Protection Regulation (GDPR) and the EU Artificial Intelligence Act (AI Act).</p>
             
             <h3>1. Data Controller</h3>
-            <p>The data controller is the operator of the JobRadar AI service. Contact information can be found on the website.</p>
+            <p>The data controller is the operator of the JobRadar AI service. For data protection inquiries and to exercise your rights, please write to <a href="mailto:jobradarai@gmail.com" style="color: #2563eb; text-decoration: underline;">jobradarai@gmail.com</a>.</p>
             
             <h3>2. Scope and Purpose of Data Processed</h3>
             <p>For the operation of the service, we process the following data:</p>
