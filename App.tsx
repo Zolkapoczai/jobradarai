@@ -24,6 +24,7 @@ import { TermsOfServiceModal } from './components/TermsOfServiceModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
 import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
 import { processPdfFile, validatePdf } from './utils/fileProcessor';
+import CookieBanner from './components/CookieBanner';
 
 const App: React.FC = () => {
   const MOBILE_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
@@ -43,6 +44,7 @@ const App: React.FC = () => {
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [introStep, setIntroStep] = useState<'welcome' | 'lang' | 'disclaimer'>('welcome');
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
 
   // Input States
   const [jdText, setJdText] = useState('');
@@ -98,6 +100,12 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  useEffect(() => {
+    const consent = localStorage.getItem('jobradar_cookie_consent');
+    if (consent !== 'true') {
+        setShowCookieBanner(true);
+    }
+  }, []);
 
   // Load Session State on Mount
   useEffect(() => {
@@ -140,6 +148,11 @@ const App: React.FC = () => {
   }, [result, currentStep, companyNameInput, jdText, jdUrl, userNote, activeTab, interviewerLinkedin, linkedinText]);
 
   // Handlers
+  const handleAcceptCookies = () => {
+    localStorage.setItem('jobradar_cookie_consent', 'true');
+    setShowCookieBanner(false);
+  };
+  
   const handleLangSelect = (selectedLang: 'hu' | 'en') => {
     setLang(selectedLang);
     setIntroStep('disclaimer');
@@ -347,9 +360,10 @@ const App: React.FC = () => {
   const Header = () => (
     <header className="px-4 sm:px-6 lg:px-10 py-6 border-b border-slate-300 bg-white sticky top-0 z-[1000] shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex flex-col cursor-pointer group" onClick={reset}>
+        <h1 className="flex flex-col cursor-pointer group" onClick={reset}>
           <JobRadarLogo className="h-12 md:h-16 w-auto transition-all hover:scale-105" />
-        </div>
+          <span className="sr-only">JobRadar AI</span>
+        </h1>
         
         {/* CENTRALT DEMO LABEL */}
         <div className="hidden md:flex flex-grow justify-center">
@@ -1111,6 +1125,14 @@ const App: React.FC = () => {
           {t.terms.linkText}
         </button>
       </footer>
+      
+      {showCookieBanner && (
+          <CookieBanner 
+              onAccept={handleAcceptCookies}
+              onOpenPrivacy={() => setIsTosOpen(true)}
+              t={t}
+          />
+      )}
 
       <TermsOfServiceModal isOpen={isTosOpen} onClose={() => setIsTosOpen(false)} t={t} />
       <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} t={t} />
