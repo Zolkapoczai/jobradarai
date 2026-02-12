@@ -354,55 +354,55 @@ export const translations = {
       title: "Felhasználási Feltételek és Adatvédelmi Irányelvek",
       downloadPdf: "Letöltés PDF formátumban",
       contentHtml: `
-        <p><strong>1. A Szolgáltatás Meghatározása:</strong> A JobRadar AI egy mesterséges intelligencia által támogatott karrier-stratégiai eszköz, amely a felhasználó által feltöltött önéletrajz és álláshirdetés alapján generál elemzéseket, javaslatokat és egyéb tartalmakat. A szolgáltatás célja a felhasználó döntéstámogatása, nem helyettesíti a professzionális karrier-tanácsadást.</p>
-        <p><strong>2. Felelősség Kizárása:</strong> A generált tartalmak (kísérőlevél, bértárgyalási stratégiák, CV-javaslatok stb.) valószínűségi modelleken alapulnak és kizárólag javaslatként szolgálnak. A JobRadar AI nem vállal felelősséget a tartalmak pontosságáért, teljességéért, vagy a felhasználó álláskeresési folyamatának sikeréért. A felhasználó teljes felelősséggel tartozik a generált tartalmak felhasználásáért.</p>
-        <p><strong>3. Szellemi Tulajdon:</strong> A JobRadar AI platform, annak dizájnja, algoritmusa és a generált tartalmak szerkezete a szolgáltató szellemi tulajdonát képezi. A felhasználó a generált szöveges tartalmakat saját álláskeresési céljaira szabadon felhasználhatja.</p>
+        <p class="mb-4 text-slate-700 dark:text-slate-300"><strong>1. A Szolgáltatás Meghatározása:</strong> A JobRadar AI egy mesterséges intelligencia által támogatott karrier-stratégiai eszköz, amely a felhasználó által feltöltött önéletrajz és álláshirdetés alapján generál elemzéseket, javaslatokat és egyéb tartalmakat. A szolgáltatás célja a felhasználó döntéstámogatása, nem helyettesíti a professzionális karrier-tanácsadást.</p>
+        <p class="mb-4 text-slate-700 dark:text-slate-300"><strong>2. Felelősség Kizárása:</strong> A generált tartalmak (kísérőlevél, bértárgyalási stratégiák, CV-javaslatok stb.) valószínűségi modelleken alapulnak és kizárólag javaslatként szolgálnak. A JobRadar AI nem vállal felelősséget a tartalmak pontosságáért, teljességéért, vagy a felhasználó álláskeresési folyamatának sikeréért. A felhasználó teljes felelősséggel tartozik a generált tartalmak felhasználásáért.</p>
+        <p class="mb-4 text-slate-700 dark:text-slate-300"><strong>3. Szellemi Tulajdon:</strong> A JobRadar AI platform, annak dizájnja, algoritmusa és a generált tartalmak szerkezete a szolgáltató szellemi tulajdonát képezi. A felhasználó a generált szöveges tartalmakat saját álláskeresési céljaira szabadon felhasználhatja.</p>
       `
     },
     privacy: {
         title: "Adatvédelmi Szabályzat",
         contentHtml: `
-            <h3>Bevezetés</h3>
-            <p>A JobRadar AI elkötelezett az Ön személyes adatainak védelme mellett. Ez az Adatvédelmi Szabályzat leírja, hogyan gyűjtjük, használjuk és védjük az Ön által megadott információkat a szolgáltatás használata során, összhangban az Európai Unió Általános Adatvédelmi Rendeletével (GDPR) és az EU Mesterséges Intelligencia Rendeletével (AI Act).</p>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6 first:mt-0">Bevezetés</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">A JobRadar AI elkötelezett az Ön személyes adatainak védelme mellett. Ez az Adatvédelmi Szabályzat leírja, hogyan gyűjtjük, használjuk és védjük az Ön által megadott információkat a szolgáltatás használata során, összhangban az Európai Unió Általános Adatvédelmi Rendeletével (GDPR) és az EU Mesterséges Intelligencia Rendeletével (AI Act).</p>
             
-            <h3>1. Az Adatkezelő</h3>
-            <p>Az adatok kezelője a JobRadar AI szolgáltatás üzemeltetője. Adatvédelmi kérdésekkel és jogai gyakorlásával kapcsolatban írjon a <a href="mailto:jobradarai@gmail.com" style="color: #2563eb; text-decoration: underline;">jobradarai@gmail.com</a> e-mail címre.</p>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">1. Az Adatkezelő</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Az adatok kezelője a JobRadar AI szolgáltatás üzemeltetője. Adatvédelmi kérdésekkel és jogai gyakorlásával kapcsolatban írjon a <a href="mailto:jobradarai@gmail.com" class="font-bold text-blue-600 hover:underline">jobradarai@gmail.com</a> e-mail címre.</p>
             
-            <h3>2. A Kezelt Adatok Köre és Célja</h3>
-            <p>A szolgáltatás működéséhez a következő adatokat kezeljük:</p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">2. A Kezelt Adatok Köre és Célja</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">A szolgáltatás működéséhez a következő adatokat kezeljük:</p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li><strong>Feltöltött dokumentumok és szövegek:</strong> Az Ön által feltöltött önéletrajz (PDF), LinkedIn profil szövege és a bemásolt álláshirdetés. Ezen adatok kezelésének célja kizárólag a kért elemzés és stratégia generálása.</li>
                 <li><strong>Funkcionális Adatok (SessionStorage):</strong> A weboldal a böngésző munkamenet-tárolóját (\`sessionStorage\`) használja a munkamenet folytonosságának biztosítására (pl. az elemzés eredményének mentése az oldal újratöltése esetére) és a felhasználói beállítások (pl. hozzájárulás) tárolására. Ezek nem követési célúak és nem tartalmaznak személyes azonosítókat.</li>
             </ul>
-            <p><strong>Jogalap:</strong> Az adatkezelés jogalapja a GDPR 6. cikk (1) bekezdés b) pontja, azaz az adatkezelés olyan szerződés teljesítéséhez szükséges, amelyben az érintett az egyik fél (a szolgáltatás igénybevétele).</p>
+            <p class="mb-3 text-slate-700 dark:text-slate-300"><strong>Jogalap:</strong> Az adatkezelés jogalapja a GDPR 6. cikk (1) bekezdés b) pontja, azaz az adatkezelés olyan szerződés teljesítéséhez szükséges, amelyben az érintett az egyik fél (a szolgáltatás igénybevétele).</p>
 
-            <h3>3. Adatfeldolgozás és Adattovábbítás</h3>
-            <p>Az Ön által megadott adatokat (önéletrajz, álláshirdetés) a stratégia generálása céljából továbbítjuk a <strong>Google Gemini API</strong> (adatfeldolgozó) felé. A Google adatvédelmi gyakorlata szerint az API-n keresztül beküldött adatokat nem használja fel modelljei tanítására. A Google adatvédelmi irányelveiről bővebben a saját weboldalukon tájékozódhat.</p>
-            <p>Az adatok harmadik fél részére marketing vagy egyéb célból nem kerülnek továbbításra.</p>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">3. Adatfeldolgozás és Adattovábbítás</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Az Ön által megadott adatokat (önéletrajz, álláshirdetés) a stratégia generálása céljából továbbítjuk a <strong>Google Gemini API</strong> (adatfeldolgozó) felé. A Google adatvédelmi gyakorlata szerint az API-n keresztül beküldött adatokat nem használja fel modelljei tanítására. A Google adatvédelmi irányelveiről bővebben a saját weboldalukon tájékozódhat.</p>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Az adatok harmadik fél részére marketing vagy egyéb célból nem kerülnek továbbításra.</p>
 
-            <h3>4. Adatbiztonság és Tárolás Időtartama</h3>
-            <p>Kiemelten fontosnak tartjuk az Ön adatainak biztonságát. A szolgáltatásunk egyik legfontosabb alapelve, hogy <strong>nem tárolunk szerveroldalon személyes adatokat a szükséges feldolgozási időn túl.</strong></p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">4. Adatbiztonság és Tárolás Időtartama</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Kiemelten fontosnak tartjuk az Ön adatainak biztonságát. A szolgáltatásunk egyik legfontosabb alapelve, hogy <strong>nem tárolunk szerveroldalon személyes adatokat a szükséges feldolgozási időn túl.</strong></p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li>A feltöltött dokumentumok és a generált elemzés csak a feldolgozás idejére, ideiglenesen kerülnek a szerver memóriájába. A folyamat végeztével azonnal törlődnek.</li>
                 <li>Az elemzés eredménye kizárólag az Ön böngészőjének <strong>sessionStorage</strong>-ében tárolódik. Ezen adatok felett teljes mértékben Ön rendelkezik, és a böngésző lap vagy ablak bezárásakor automatikusan törlődnek.</li>
             </ul>
 
-            <h3>5. Megfelelőség az EU Mesterséges Intelligencia Rendeletével (AI Act)</h3>
-            <p>A JobRadar AI az EU AI Act értelmében „magas kockázatú” besorolású rendszerelemeket használ, mivel a foglalkoztatás területén nyújt támogatást. Ennek megfelelően a következőkről tájékoztatjuk:</p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">5. Megfelelőség az EU Mesterséges Intelligencia Rendeletével (AI Act)</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">A JobRadar AI az EU AI Act értelmében „magas kockázatú” besorolású rendszerelemeket használ, mivel a foglalkoztatás területén nyújt támogatást. Ennek megfelelően a következőkről tájékoztatjuk:</p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li><strong>Döntéstámogatás, nem döntéshozatal:</strong> A rendszer kizárólag döntéstámogató eszközként funkcionál. Az AI által generált elemzések, javaslatok és pontszámok valószínűségi becsléseken alapulnak, és nem minősülnek automatizált döntésnek.</li>
                 <li><strong>Emberi felügyelet:</strong> A generált tartalmakat (pl. kísérőlevél, CV-javaslatok) a felhasználónak minden esetben felül kell vizsgálnia, validálnia és szükség szerint módosítania. A szolgáltatás nem helyettesíti az emberi ítélőképességet.</li>
                 <li><strong>Átláthatóság és diszkrimináció-mentesség:</strong> Az algoritmusok a szakmai kompetenciákra, tapasztalatokra és a pozícióhoz való illeszkedésre fókuszálnak. A rendszer nem kezel és nem vesz figyelembe a GDPR által védett különleges kategóriájú személyes adatokat (pl. faji, etnikai származás, vallási meggyőződés).</li>
             </ul>
 
-            <h3>6. Az Ön Jogai</h3>
-            <p>A GDPR értelmében Ön a következő jogokkal rendelkezik:</p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">6. Az Ön Jogai</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">A GDPR értelmében Ön a következő jogokkal rendelkezik:</p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li><strong>Hozzáférési jog:</strong> Kérhet tájékoztatást személyes adatai kezeléséről.</li>
                 <li><strong>Helyesbítéshez való jog:</strong> Kérheti pontatlan személyes adatainak helyesbítését.</li>
                 <li><strong>Törléshez való jog („elfeledtetéshez való jog”):</strong> Mivel az adatokat nem tároljuk véglegesen, ez a jog a böngésző munkamenetének bezárásával automatikusan érvényesül.</li>
             </ul>
-            <p>Ezen jogok gyakorlásával kapcsolatban vegye fel velünk a kapcsolatot a megadott elérhetőségeken.</p>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Ezen jogok gyakorlásával kapcsolatban vegye fel velünk a kapcsolatot a megadott elérhetőségeken.</p>
         `
     }
   },
@@ -761,55 +761,55 @@ export const translations = {
       title: "Terms of Use and Privacy Policy",
       downloadPdf: "Download as PDF",
       contentHtml: `
-        <p><strong>1. Definition of Service:</strong> JobRadar AI is an artificial intelligence-supported career strategy tool that generates analyses, suggestions, and other content based on the user's uploaded resume and job description. The service's purpose is to support the user's decision-making and does not replace professional career counseling.</p>
-        <p><strong>2. Disclaimer of Liability:</strong> The generated content (cover letter, salary negotiation strategies, CV suggestions, etc.) is based on probabilistic models and serves as a suggestion only. JobRadar AI does not assume responsibility for the accuracy, completeness of the content, or the success of the user's job search process. The user is fully responsible for the use of the generated content.</p>
-        <p><strong>3. Intellectual Property:</strong> The JobRadar AI platform, its design, algorithm, and the structure of the generated content are the intellectual property of the service provider. The user may freely use the generated text content for their own job search purposes.</p>
+        <p class="mb-4 text-slate-700 dark:text-slate-300"><strong>1. Definition of Service:</strong> JobRadar AI is an artificial intelligence-supported career strategy tool that generates analyses, suggestions, and other content based on the user's uploaded resume and job description. The service's purpose is to support the user's decision-making and does not replace professional career counseling.</p>
+        <p class="mb-4 text-slate-700 dark:text-slate-300"><strong>2. Disclaimer of Liability:</strong> The generated content (cover letter, salary negotiation strategies, CV suggestions, etc.) is based on probabilistic models and serves as a suggestion only. JobRadar AI does not assume responsibility for the accuracy, completeness of the content, or the success of the user's job search process. The user is fully responsible for the use of the generated content.</p>
+        <p class="mb-4 text-slate-700 dark:text-slate-300"><strong>3. Intellectual Property:</strong> The JobRadar AI platform, its design, algorithm, and the structure of the generated content are the intellectual property of the service provider. The user may freely use the generated text content for their own job search purposes.</p>
       `
     },
     privacy: {
         title: "Privacy Policy",
         contentHtml: `
-            <h3>Introduction</h3>
-            <p>JobRadar AI is committed to protecting your personal data. This Privacy Policy describes how we collect, use, and protect the information you provide while using the service, in compliance with the European Union's General Data Protection Regulation (GDPR) and the EU Artificial Intelligence Act (AI Act).</p>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6 first:mt-0">Introduction</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">JobRadar AI is committed to protecting your personal data. This Privacy Policy describes how we collect, use, and protect the information you provide while using the service, in compliance with the European Union's General Data Protection Regulation (GDPR) and the EU Artificial Intelligence Act (AI Act).</p>
             
-            <h3>1. Data Controller</h3>
-            <p>The data controller is the operator of the JobRadar AI service. For data protection inquiries and to exercise your rights, please write to <a href="mailto:jobradarai@gmail.com" style="color: #2563eb; text-decoration: underline;">jobradarai@gmail.com</a>.</p>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">1. Data Controller</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">The data controller is the operator of the JobRadar AI service. For data protection inquiries and to exercise your rights, please write to <a href="mailto:jobradarai@gmail.com" class="font-bold text-blue-600 hover:underline">jobradarai@gmail.com</a>.</p>
             
-            <h3>2. Scope and Purpose of Data Processed</h3>
-            <p>For the operation of the service, we process the following data:</p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">2. Scope and Purpose of Data Processed</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">For the operation of the service, we process the following data:</p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li><strong>Uploaded documents and texts:</strong> Your uploaded resume (PDF), LinkedIn profile text, and the pasted job description. The purpose of processing this data is solely to generate the requested analysis and strategy.</li>
                 <li><strong>Functional Data (SessionStorage):</strong> The website uses the browser's session storage (\`sessionStorage\`) to ensure session continuity (e.g., saving analysis results in case of a page reload) and to store user preferences (e.g., consent). These are not tracking cookies and do not contain personal identifiers.</li>
             </ul>
-            <p><strong>Legal Basis:</strong> The legal basis for data processing is Article 6(1)(b) of the GDPR, i.e., processing is necessary for the performance of a contract to which the data subject is a party (the use of the service).</p>
+            <p class="mb-3 text-slate-700 dark:text-slate-300"><strong>Legal Basis:</strong> The legal basis for data processing is Article 6(1)(b) of the GDPR, i.e., processing is necessary for the performance of a contract to which the data subject is a party (the use of the service).</p>
 
-            <h3>3. Data Processing and Transfer</h3>
-            <p>The data you provide (resume, job description) is transferred to the <strong>Google Gemini API</strong> (data processor) for the purpose of generating the strategy. According to Google's data privacy practices, data submitted via the API is not used for training their models. You can find more information about Google's privacy policies on their website.</p>
-            <p>Your data is not transferred to third parties for marketing or any other purposes.</p>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">3. Data Processing and Transfer</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">The data you provide (resume, job description) is transferred to the <strong>Google Gemini API</strong> (data processor) for the purpose of generating the strategy. According to Google's data privacy practices, data submitted via the API is not used for training their models. You can find more information about Google's privacy policies on their website.</p>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Your data is not transferred to third parties for marketing or any other purposes.</p>
 
-            <h3>4. Data Security and Storage Duration</h3>
-            <p>We place great importance on the security of your data. A key principle of our service is that <strong>we do not store personal data on the server beyond the necessary processing time.</strong></p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">4. Data Security and Storage Duration</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">We place great importance on the security of your data. A key principle of our service is that <strong>we do not store personal data on the server beyond the necessary processing time.</strong></p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li>Uploaded documents and the generated analysis are only temporarily held in the server's memory during processing. They are deleted immediately after the process is completed.</li>
                 <li>The analysis result is stored exclusively in your browser's <strong>sessionStorage</strong>. You have full control over this data, and it is automatically deleted when the browser tab or window is closed.</li>
             </ul>
 
-            <h3>5. Compliance with the EU Artificial Intelligence Act (AI Act)</h3>
-            <p>JobRadar AI uses system components classified as "high-risk" under the EU AI Act, as it provides support in the field of employment. Accordingly, we inform you of the following:</p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">5. Compliance with the EU Artificial Intelligence Act (AI Act)</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">JobRadar AI uses system components classified as "high-risk" under the EU AI Act, as it provides support in the field of employment. Accordingly, we inform you of the following:</p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li><strong>Decision Support, Not Decision Making:</strong> The system functions exclusively as a decision support tool. The analyses, suggestions, and scores generated by the AI are based on probabilistic estimates and do not constitute automated decisions.</li>
                 <li><strong>Human Oversight:</strong> The user must always review, validate, and, if necessary, modify the generated content (e.g., cover letter, CV suggestions). The service does not replace human judgment.</li>
                 <li><strong>Transparency and Non-Discrimination:</strong> The algorithms focus on professional competencies, experience, and fit for the position. The system does not process or consider special categories of personal data protected by the GDPR (e.g., racial or ethnic origin, religious beliefs).</li>
             </ul>
 
-            <h3>6. Your Rights</h3>
-            <p>Under the GDPR, you have the following rights:</p>
-            <ul>
+            <h4 class="text-base font-black text-slate-950 dark:text-white mb-3 mt-6">6. Your Rights</h4>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">Under the GDPR, you have the following rights:</p>
+            <ul class="list-disc list-inside space-y-3 pl-4 mb-3 text-slate-700 dark:text-slate-300">
                 <li><strong>Right of access:</strong> You can request information about the processing of your personal data.</li>
                 <li><strong>Right to rectification:</strong> You can request the correction of inaccurate personal data.</li>
                 <li><strong>Right to erasure (‘right to be forgotten’):</strong> As we do not permanently store your data, this right is automatically enforced by closing your browser session.</li>
             </ul>
-            <p>To exercise these rights, please contact us through the provided contact information.</p>
+            <p class="mb-3 text-slate-700 dark:text-slate-300">To exercise these rights, please contact us through the provided contact information.</p>
         `
     }
   }
