@@ -281,6 +281,10 @@ export const translations = {
     contactModalPhone: "+36 70 370 59 13",
     contactModalEmail: "jobradarai@gmail.com",
     contactModalClose: "Bezárás",
+    regenerate: "Újragenerálás",
+    regenerating: "Generálás...",
+    regenerateCoverLetterTitle: "Kísérőlevél Finomhangolása",
+    regenerateCoverLetterBody: "Adjon meg új szempontokat vagy instrukciókat, amelyeket az AI-nak figyelembe kell vennie a kísérőlevél új verziójának elkészítésekor.",
     howItWorksModal: {
       title: "A JobRadar Működési Folyamata",
       close: "Bezárás",
@@ -688,6 +692,10 @@ export const translations = {
     contactModalPhone: "+36 70 370 59 13",
     contactModalEmail: "jobradarai@gmail.com",
     contactModalClose: "Close",
+    regenerate: "Regenerate",
+    regenerating: "Regenerating...",
+    regenerateCoverLetterTitle: "Fine-tune Cover Letter",
+    regenerateCoverLetterBody: "Provide new points or instructions for the AI to consider when creating the new version of the cover letter.",
     howItWorksModal: {
       title: "How JobRadar Works",
       close: "Close",

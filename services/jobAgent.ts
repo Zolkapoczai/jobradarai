@@ -599,3 +599,61 @@ export const analyzeCareerMatch = async (
     }
   });
 };
+
+export const regenerateCoverLetter = async (
+  existingResult: AnalysisResult,
+  newUserNote: string,
+  lang: string
+): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  return withRetry(async () => {
+    try {
+      const targetLang = lang === 'hu' ? 'HUNGARIAN (Magyar)' : 'ENGLISH';
+      const languageInstruction = lang === 'hu'
+        ? "IMPORTANT: Your entire response MUST be in HUNGARIAN. Use formal 'Önöző' tone."
+        : "IMPORTANT: Your entire response MUST be in ENGLISH.";
+
+      const contextPrompt = `
+        You are an expert COVER LETTER ARCHITECT. Your task is to regenerate a cover letter based on the provided context and a new user instruction.
+
+        **EXISTING CONTEXT (DO NOT RE-ANALYZE, JUST USE):**
+        - Candidate Strengths (Pros): ${existingResult.pros.join(', ')}
+        - Candidate Gaps (Cons): ${existingResult.cons.join(', ')}
+        - Job Description Summary: ${existingResult.originalJdText.substring(0, 1000)}...
+        - Company: ${existingResult.companyName}
+        - Executive Summary of Candidate Fit: ${existingResult.executiveSummary}
+
+        **NEW USER INSTRUCTION / SPECIAL HOOK:**
+        "${newUserNote}"
+
+        **TASK:**
+        Following the rules for the 'COVER LETTER ARCHITECT' from your system instructions, write a new, refined cover letter.
+        - Incorporate the 'NEW USER INSTRUCTION' as a key theme.
+        - The output MUST be a single, raw string containing only the cover letter text, with '\\n\\n' for paragraph breaks.
+        - DO NOT add any extra explanations, greetings, or formatting like "Here is the regenerated cover letter:".
+        - ${languageInstruction}
+      `;
+
+      const response = await ai.models.generateContent({
+        model: JOBRADAR_CONFIG.AI_MODEL,
+        contents: contextPrompt,
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION,
+          temperature: 0.5,
+        }
+      });
+
+      const newCoverLetter = response.text;
+      if (!newCoverLetter || newCoverLetter.trim().length < 50) {
+        throw new Error("Generated cover letter is too short or empty.");
+      }
+      
+      return newCoverLetter.trim();
+
+    } catch (error: any) {
+      console.error("Cover Letter Regeneration Error:", error);
+      throw error;
+    }
+  });
+};
