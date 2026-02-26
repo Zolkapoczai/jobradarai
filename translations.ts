@@ -13,7 +13,7 @@ export const translations = {
     tooltipClarification: "A rendszer az adatok validálása után, a részletes elemzést megelőzően 3 kulcsfontosságú tisztázó kérdést generál.\nMinden kérdéshez 2 válaszlehetőség tartozik, Önnek a legmegfelelőbbet kell kiválasztania.\nAz így kapott válaszok alapján az MI pontosabb, személyre szabottabb és hatékonyabb elemzést készít, kiemelve azokat a pontokat, amelyek a legnagyobb hatást érhetik el a döntéshozóknál.",
     clarificationSkip: "Nem válaszolok",
     welcome: "Üdvözöljük!",
-    welcomeBody: "A JobRadar egy személyes karrier-stratégiai portál, amely segít értelmezni az álláshirdetéseket. Töltse fel önéletrajzát és a pozíció leírását, és a rendszer pillanatok alatt elkészíti a teljes stratégiai csomagot: valós esélyek elemzése, személyre szabott kísérőlevél, bértárgyalási taktikák és CV-javaslatok. Az interaktív AI Coach chatben pedig élesben gyakorolhatja a legkemmyebb interjúkérdéseket, hogy magabiztosan álljon a döntéshozók elé.\n\nJelenleg az alkalmazás nem mobilra optimalizált, a legjobb működés asztali környezetben garantált.",
+    welcomeBody: "A JobRadar egy személyes karrier-stratégiai portál, amely segít értelmezni az álláshirdetéseket. Töltse fel önéletrajzát és a pozíció leírását, és a rendszer pillanatok alatt elkészíti a teljes stratégiai csomagot: valós esélyek elemzése, személyre szabott kísérőlevél, bértárgyalási taktikák és CV-javaslatok. Az interaktív AI Coach chatben pedig élesben gyakorolhatja az interjúkérdéseket, hogy magabiztosan álljon a döntéshozók elé.\n\nJelenleg az alkalmazás nem mobilra optimalizált, a legjobb működés asztali környezetben garantált.",
     welcomeContinue: "Indulás",
     selectLang: "Üdvözöljük a Jobradaron!",
     pdfTitle: "RENDSZER OPTIMALIZÁCIÓ",
