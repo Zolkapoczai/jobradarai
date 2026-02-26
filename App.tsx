@@ -416,16 +416,16 @@ const App: React.FC = () => {
           </button>
           <div className="flex items-center gap-2">
             <TooltipWrapper text={t.tooltips.tooltipLang}>
-            <button 
-              onClick={() => {
-                const nextLang = lang === 'hu' ? 'en' : 'hu';
-                setLang(nextLang);
-                sessionStorage.setItem('userLang', nextLang);
-              }} 
-              className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 font-black text-[10px]"
-            >
-              {lang === 'hu' ? 'EN' : 'HU'}
-            </button>
+              <button 
+                onClick={() => {
+                  const nextLang = lang === 'hu' ? 'en' : 'hu';
+                  setLang(nextLang);
+                  sessionStorage.setItem('userLang', nextLang);
+                }} 
+                className="w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-all border-slate-400 text-slate-900 hover:border-slate-600 font-black text-[10px]"
+              >
+                {lang === 'hu' ? 'EN' : 'HU'}
+              </button>
             </TooltipWrapper>
             <TooltipWrapper text={t.tooltips.resetAll}>
               <button 
