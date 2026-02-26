@@ -27,6 +27,7 @@ import CookieBanner from './components/CookieBanner';
 // FIX: Imported the missing Plan90DaySection component to resolve a compilation error.
 import Plan90DaySection from './components/Plan90DaySection';
 
+
 const App: React.FC = () => {
   const MOBILE_BREAKPOINT = 768; // Tailwind's 'md' breakpoint
 
@@ -678,6 +679,7 @@ const App: React.FC = () => {
                        </div>
                     </div>
                  </div>
+
                </div>
                <div className="mt-12 flex justify-center">
                 <PrimaryButton 

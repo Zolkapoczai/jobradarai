@@ -285,6 +285,16 @@ export const translations = {
     regenerating: "Generálás...",
     regenerateCoverLetterTitle: "Kísérőlevél Finomhangolása",
     regenerateCoverLetterBody: "Adjon meg új szempontokat vagy instrukciókat, amelyeket az AI-nak figyelembe kell vennie a kísérőlevél új verziójának elkészítésekor.",
+    adviceWidgetTitle: "JobRadar Tippek & Trükkök",
+    adviceNext: "Következő Tipp",
+    adviceTokenWarning: "Sajnos a tokenek nem ingyen vannak, de ne aggódj, mindjárt kész vagyunk az elemzéssel!",
+    sarcasticAdvice: [
+      "Ne feledd, az önéletrajzod nem egy regény. Senki sem akarja elolvasni az összes életed történetét. Légy tömör, mint egy tweet, de ütős, mint egy pofon.",
+      "Az interjún ne csak válaszolj, hanem adj elő! Gondolj úgy magadra, mint egy Oscar-díjas színészre, aki épp a karrierje legjobb szerepét játssza. A különbség, hogy itt te írod a forgatókönyvet.",
+      "A bértárgyalás nem egy könyörgés, hanem egy üzleti tranzakció. Tudj magadnak értéket adni, és ne félj elkérni azt, amit érsz. A cég sem fogja ingyen adni a fizetésedet.",
+      "A LinkedIn profilod nem egy digitális porgyűjtő. Frissítsd rendszeresen, mintha egy Tinder profil lenne, de itt a 'match' egy állásajánlat. Légy vonzó, de ne túlságosan.",
+      "A 'Miért szeretne nálunk dolgozni?' kérdésre ne a PR szöveget szajkózd. Mutasd meg, hogy utánanéztél a cégnek, és van egy konkrét ötleted, hogyan tehetnéd jobbá a világukat. Vagy legalábbis a profitjukat."
+    ],
     howItWorksModal: {
       title: "A JobRadar Működési Folyamata",
       close: "Bezárás",
@@ -697,6 +707,16 @@ export const translations = {
     regenerating: "Regenerating...",
     regenerateCoverLetterTitle: "Fine-tune Cover Letter",
     regenerateCoverLetterBody: "Provide new points or instructions for the AI to consider when creating the new version of the cover letter.",
+    adviceWidgetTitle: "JobRadar Tips & Tricks",
+    adviceNext: "Next Tip",
+    adviceTokenWarning: "Unfortunately, tokens aren't free, but don't worry, we're almost done with the analysis!",
+    sarcasticAdvice: [
+      "Remember, your CV isn't a novel. Nobody wants to read your life story. Be concise like a tweet, but impactful like a punch.",
+      "In an interview, don't just answer, perform! Think of yourself as an Oscar-winning actor playing the best role of their career. The difference is, you write the script here.",
+      "Salary negotiation isn't begging, it's a business transaction. Know your worth and don't be afraid to ask for what you're worth. The company won't give you your salary for free either.",
+      "Your LinkedIn profile isn't a digital dust collector. Update it regularly, like a Tinder profile, but here the 'match' is a job offer. Be attractive, but not too much.",
+      "For the question 'Why do you want to work here?', don't parrot the PR text. Show that you've researched the company and have a concrete idea how you could make their world better. Or at least their profits."
+    ],
     howItWorksModal: {
       title: "How JobRadar Works",
       close: "Close",
