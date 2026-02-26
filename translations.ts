@@ -351,7 +351,8 @@ export const translations = {
       salaryNegotiation: "Teljes körű bértárgyalási csomag: reális bérsáv becslés, BATNA terv, nem-monetáris juttatások és pszichológiai szkriptek a magabiztos tárgyaláshoz.",
       corporateEcosystem: "A cég mélyebb megértése: piaci helyzet, magyarországi jelenlét, vállalati kultúra és értékajánlat, amely segít az interjún hitelesen képviselni a cég iránti érdeklődésedet.",
       coverLetter: "Az AI által generált, a döntéshozónak címzett, testreszabott kísérőlevél tervezet, amely a te erősségeidet és a cég igényeit köti össze.",
-      plan90Day: "Részletes, 30-60-90 napos terv, amely bemutatja, hogyan teremtenél értéket az első negyedévben. Ez proaktivitást és stratégiai gondolkodást demonstrál."
+      plan90Day: "Részletes, 30-60-90 napos terv, amely bemutatja, hogyan teremtenél értéket az első negyedévben. Ez proaktivitást és stratégiai gondolkodást demonstrál.",
+      tooltipLang: "Az elemzés elindítása előtt válasszon nyelvet, mert utólag nem változtatható."
     },
     terms: {
       linkText: "Általános Szerződési Feltételek és Adatvédelem",
@@ -762,7 +763,8 @@ export const translations = {
       salaryNegotiation: "A comprehensive salary negotiation package: realistic salary band estimation, BATNA plan, non-monetary benefits, and psychological scripts for confident negotiation.",
       corporateEcosystem: "A deeper understanding of the company: market position, local presence, corporate culture, and value proposition, which helps you authentically represent your interest in the company during the interview.",
       coverLetter: "A custom-generated cover letter draft addressed to the decision-maker, connecting your strengths with the company's needs.",
-      plan90Day: "A detailed 30-60-90 day plan that shows how you would create value in the first quarter. This demonstrates proactivity and strategic thinking."
+      plan90Day: "A detailed 30-60-90 day plan that shows how you would create value in the first quarter. This demonstrates proactivity and strategic thinking.",
+      tooltipLang: "Select a language before starting the analysis, as it cannot be changed later."
     },
     terms: {
       linkText: "Terms of Service and Privacy Policy",

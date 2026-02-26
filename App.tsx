@@ -415,6 +415,7 @@ const App: React.FC = () => {
             {t.pricing}
           </button>
           <div className="flex items-center gap-2">
+            <TooltipWrapper text={t.tooltips.tooltipLang}>
             <button 
               onClick={() => {
                 const nextLang = lang === 'hu' ? 'en' : 'hu';
@@ -425,6 +426,7 @@ const App: React.FC = () => {
             >
               {lang === 'hu' ? 'EN' : 'HU'}
             </button>
+            </TooltipWrapper>
             <TooltipWrapper text={t.tooltips.resetAll}>
               <button 
                 onClick={reset} 
