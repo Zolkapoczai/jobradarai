@@ -38,7 +38,7 @@ export const translations = {
     fileReady: "PROFIL BETÖLTVE",
     cancel: "Mégse",
     delete: "Törlés",
-    changeFile: "Fájl cseréje",
+    
     errFileType: "Hiba: Csak PDF támogatott",
     errRead: "Hiba a fájl olvasásakor",
     missionParams: "Megpályázott állás",
@@ -450,7 +450,7 @@ export const translations = {
     fileReady: "PROFILE LOADED",
     cancel: "Cancel",
     delete: "Delete",
-    changeFile: "Change File",
+    
     errFileType: "Error: Only PDF is supported",
     errRead: "Error reading file",
     missionParams: "Target Position",

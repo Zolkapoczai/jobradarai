@@ -862,7 +862,7 @@ const App: React.FC = () => {
 
             {activeTab === 'preparation' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <SectionWrapper title={lang === 'en' ? "Strategic Interview Prep" : "Stratégiai Interjú Felkészítő"} icon={<TargetIcon />} defaultOpen tooltipText={t.tooltips.interviewPrep} darkMode={darkMode}>
+                <SectionWrapper title={lang === 'en' ? "Interview Prep" : "Interjú Felkészítő"} icon={<TargetIcon />} tooltipText={t.tooltips.interviewPrep} darkMode={darkMode}>
                   <StrategicQuestionsSection questions={result.interviewQuestions} answers={result.interviewAnswers} t={t} darkMode={darkMode} />
                 </SectionWrapper>
 
@@ -981,6 +981,14 @@ const App: React.FC = () => {
                  <p className="text-sm font-bold text-slate-600 uppercase tracking-widest">
                    {state === AppState.LOADING ? t.loadingSteps[loadingStepIdx] : (state === AppState.GENERATING_QUESTIONS ? t.generatingQuestionsSub : (t.preAnalysisSubStatus || (lang === 'hu' ? 'Vállalati adatok és álláshirdetés ellenőrzése...' : 'Verifying company data and job description...')))}
                  </p>
+                 <div className="mt-12">
+                   <button 
+                     onClick={reset}
+                     className="px-8 py-4 bg-white/50 backdrop-blur-sm rounded-2xl text-xs font-black uppercase tracking-widest text-slate-700 border-2 border-slate-200 hover:border-slate-400 transition-all shadow-lg"
+                   >
+                     {t.cancel}
+                   </button>
+                 </div>
               </div>
            </div>
         </div>
