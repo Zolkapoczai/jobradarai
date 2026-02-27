@@ -11,7 +11,7 @@ interface SalaryNegotiationSectionProps {
 const SalaryNegotiationSection: React.FC<SalaryNegotiationSectionProps> = ({ data, t, darkMode }) => {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className={`p-6 sm:p-8 md:p-10 rounded-[48px] border-2 shadow-2xl transition-all flex flex-col md:flex-row items-center gap-6 md:gap-10 ${
+      <div className={`p-10 rounded-[48px] border-2 shadow-2xl transition-all flex flex-col md:flex-row items-center gap-10 ${
         darkMode ? 'bg-slate-950/40 border-emerald-900/20' : 'bg-emerald-50/30 border-emerald-100'
       }`}>
         <div className={`w-20 h-20 rounded-3xl flex items-center justify-center text-4xl shadow-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600`}>
@@ -26,7 +26,7 @@ const SalaryNegotiationSection: React.FC<SalaryNegotiationSectionProps> = ({ dat
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className={`p-6 sm:p-8 md:p-10 rounded-[40px] border-2 shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+        <div className={`p-10 rounded-[40px] border-2 shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-8">
             <ChessPawnIcon className="w-6 h-6 text-slate-500" />
             <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.batnaLabel}</h4>
@@ -36,7 +36,7 @@ const SalaryNegotiationSection: React.FC<SalaryNegotiationSectionProps> = ({ dat
           </p>
         </div>
 
-        <div className={`p-6 sm:p-8 md:p-10 rounded-[40px] border-2 shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+        <div className={`p-10 rounded-[40px] border-2 shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-8">
             <GiftIcon className="w-6 h-6 text-slate-500" />
             <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.tradeOffsLabel}</h4>

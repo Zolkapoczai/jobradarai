@@ -49,7 +49,7 @@ const CompetitorSection: React.FC<CompetitorSectionProps> = ({ analysis, t }) =>
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Market Trend Banner - More Integrated */}
-      <div className="p-6 sm:p-8 md:p-10 rounded-[40px] border-2 shadow-sm transition-all flex flex-col md:flex-row items-center gap-8 bg-white border-indigo-100">
+      <div className="p-10 rounded-[40px] border-2 shadow-sm transition-all flex flex-col md:flex-row items-center gap-8 bg-white border-indigo-100">
         <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl flex-shrink-0 animate-pulse-slow shadow-lg bg-indigo-50 text-indigo-600 border border-indigo-100">
           <RadarIcon className="w-8 h-8" />
         </div>

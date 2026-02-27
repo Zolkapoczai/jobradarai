@@ -50,7 +50,7 @@ const LinkedInAuditSection: React.FC<LinkedInAuditSectionProps> = ({ audit, t })
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left Column: Consistency & Checklist */}
         <div className="lg:col-span-4 space-y-10">
           <div className="flex flex-col items-center p-8 rounded-[32px] border-2 border-slate-200 bg-white shadow-sm">

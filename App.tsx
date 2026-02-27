@@ -463,40 +463,40 @@ const App: React.FC = () => {
 
   // Main UI Parts
   const Header = () => (
-    <header className="px-4 sm:px-6 lg:px-10 py-4 sm:py-6 border-b border-slate-300 bg-white sticky top-0 z-[1000] shadow-sm overflow-x-auto custom-scrollbar">
-      <div className="max-w-7xl mx-auto flex items-center justify-between min-w-max gap-6">
-        <h1 className="flex flex-col cursor-pointer group shrink-0" onClick={reset}>
-          <JobRadarLogo className="h-10 sm:h-12 md:h-16 w-auto transition-all hover:scale-105" />
+    <header className="px-4 sm:px-6 lg:px-10 py-6 border-b border-slate-300 bg-white sticky top-0 z-[1000] shadow-sm">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <h1 className="flex flex-col cursor-pointer group" onClick={reset}>
+          <JobRadarLogo className="h-12 md:h-16 w-auto transition-all hover:scale-105" />
           <span className="sr-only">JobRadar AI</span>
         </h1>
         
         {/* CENTRALT DEMO LABEL */}
-        <div className="flex justify-center shrink-0">
+        <div className="hidden md:flex flex-grow justify-center">
             <TooltipWrapper text={t.demoVersionTooltip}>
-              <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/80 backdrop-blur-sm rounded-full border-2 border-slate-200 shadow-sm">
-                <span className="text-[10px] sm:text-sm font-black uppercase tracking-widest text-red-800">
+              <div className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border-2 border-slate-200 shadow-sm">
+                <span className="text-sm font-black uppercase tracking-widest text-red-800">
                   {t.demoVersionLabel}
                 </span>
               </div>
             </TooltipWrapper>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 justify-end">
           <button 
             onClick={() => setIsFaqOpen(true)} 
-            className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
           >
             {lang === 'hu' ? 'GY.I.K.' : 'FAQ'}
           </button>
           <button 
             onClick={() => setIsHowItWorksOpen(true)} 
-            className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
           >
             {t.howItWorks}
           </button>
           <button 
             onClick={() => setShowPricing(true)} 
-            className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-600 bg-slate-600 text-white hover:bg-slate-700 hover:border-slate-700"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-600 bg-slate-600 text-white hover:bg-slate-700 hover:border-slate-700"
           >
             {t.pricing}
           </button>
@@ -649,7 +649,7 @@ const App: React.FC = () => {
         {showValidationModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300">
-              <div className="p-6 sm:p-8 space-y-8">
+              <div className="p-8 space-y-8">
                 <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 text-center">
                   {lang === 'en' ? 'Asset Validation' : 'Adatok Ellenőrzése'}
                 </h3>
@@ -961,7 +961,7 @@ const App: React.FC = () => {
             {activeTab === 'overview' && (
               <div className="max-w-5xl mx-auto space-y-12 animate-in slide-in-from-bottom-6 duration-500">
                 <div className="bg-white rounded-[48px] p-6 sm:p-8 md:p-12 lg:p-16 border-2 border-slate-300 shadow-xl">
-                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                       <div className="lg:col-span-5">
                          <NeuralScoreRadar result={result} scoreTheme={scoreTheme} t={t} />
                       </div>
@@ -984,7 +984,7 @@ const App: React.FC = () => {
                            <span className="text-lg">✅</span>
                            <h4 className="text-[10px] font-black uppercase text-emerald-800 tracking-[0.2em]">{t.fits}</h4>
                         </div>
-                        <div className="p-6 sm:p-8 space-y-6">
+                        <div className="p-8 space-y-6">
                            {result.pros.map((p, i) => (
                               <div key={i} className="flex gap-4 group">
                                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold transition-transform group-hover:scale-110">✓</div>
@@ -998,7 +998,7 @@ const App: React.FC = () => {
                            <span className="text-lg">⚠️</span>
                            <h4 className="text-[10px] font-black uppercase text-rose-800 tracking-[0.2em]">{t.gaps}</h4>
                         </div>
-                        <div className="p-6 sm:p-8 space-y-6">
+                        <div className="p-8 space-y-6">
                            {result.cons.map((c, i) => (
                               <div key={i} className="flex gap-4 group">
                                  <div className="w-6 h-6 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0 text-xs font-bold transition-transform group-hover:scale-110">!</div>
@@ -1014,7 +1014,7 @@ const App: React.FC = () => {
                   {linkedinText && result.linkedinAudit ? (
                     <LinkedInAuditSection audit={result.linkedinAudit} t={t} />
                   ) : (
-                    <div className="p-6 sm:p-8 text-center bg-slate-50 rounded-2xl border-2 border-slate-200">
+                    <div className="p-8 text-center bg-slate-50 rounded-2xl border-2 border-slate-200">
                       <p className="font-bold text-slate-600 italic">{t.auditNotAvailable}</p>
                     </div>
                   )}
@@ -1070,7 +1070,7 @@ const App: React.FC = () => {
                 </SectionWrapper>
 
                 <SectionWrapper title={lang === 'en' ? "Cover Letter Draft" : "Kísérőlevél Tervezet"} icon={<DocumentTextIcon />} tooltipText={t.tooltips.coverLetter} darkMode={darkMode}>
-                  <div className="bg-white p-6 sm:p-8 rounded-[32px] border-2 border-slate-300 shadow-sm">
+                  <div className="bg-white p-8 rounded-[32px] border-2 border-slate-300 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                        <h3 className="text-sm font-black uppercase tracking-tight text-slate-700">{lang === 'en' ? 'Addressed to Predicted Decision Maker' : 'Címzett a becsült döntéshozó'}</h3>
                         <div className="flex items-center gap-4">
