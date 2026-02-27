@@ -296,42 +296,45 @@ export const translations = {
       "A 'Miért szeretne nálunk dolgozni?' kérdésre ne a PR szöveget szajkózd. Mutasd meg, hogy utánanéztél a cégnek, és van egy konkrét ötleted, hogyan tehetnéd jobbá a világukat. Vagy legalábbis a profitjukat."
     ],
     howItWorksModal: {
-      title: "A JobRadar Működési Folyamata",
+      title: "A JobRadar AI Működése és Funkciói",
       close: "Bezárás",
       slides: [
         {
-          title: "1. Lépés: Adatmélység - A Bemenet Minősége",
+          title: "1. Adatbevitel és Mélyelemzés",
           points: [
-            { icon: "📄", title: "Önéletrajz (Vektoros PDF Elemzés)", text: "Míg a legtöbb rendszer csak a szöveget olvassa ki (OCR), a JobRadar a PDF natív, vektoros szerkezetét elemzi. Ez azt jelenti, hogy nem csak a szavakat értjük, hanem a teljes vizuális kontextust is: az oszlopokat, a betűméreteket és a rejtett formázási elemeket. Így pontosan azt látjuk, amit egy modern vállalati szűrőrendszer (ATS), és azonosítjuk azokat a strukturális hibákat, amik miatt a legjobb profilok is fennakadhatnak." },
-            { icon: "🔗", title: "LinkedIn & Álláshirdetés (Nyers Szöveg)", text: "Miért a szöveg bemásolása és nem egy link? A válasz az adatintegritás. A weboldalak dinamikusan változnak, a linkek elavulhatnak, a web-scraperek pedig gyakran blokkolva vannak vagy tévesen értelmezik a tartalmat. A nyers szöveg bemásolásával garantáljuk, hogy az AI pontosan ugyanazt az információt elemzi, amit Ön is lát, kizárva a hibákat és a 'gépi hallucinációt'." },
+            { icon: "📄", title: "Vektoros PDF Elemzés", text: "A hagyományos kulcsszó-keresőkkel (OCR) ellentétben a JobRadar a PDF natív, vektoros szerkezetét olvassa. Érti a vizuális kontextust, az oszlopokat és a formázást, így pontosan azt látja, amit egy modern ATS (Applicant Tracking System) szűrőrendszer." },
+            { icon: "🔗", title: "Nyers Szöveg (LinkedIn & JD)", text: "A linkek helyett nyers szöveget kérünk a maximális adatintegritás érdekében. A weboldalak változnak, a scrapereket blokkolják. A szöveg bemásolásával garantáljuk, hogy az AI pontosan azt elemzi, amit Ön is lát, kizárva a gépi hallucinációt." },
+            { icon: "🕵️", title: "Valós idejű Cégkutatás", text: "A megadott cégnév alapján az AI a Google Search segítségével valós idejű kutatást végez. Elemzi a cég piaci helyzetét, versenytársait, legfrissebb híreit és vállalati kultúráját, hogy a stratégiát a cég aktuális üzleti kihívásaihoz igazítsa." }
           ],
           columns: 1,
         },
         {
-          title: "2. Lépés: Célpont Definíció - A Stratégiai Kontextus",
+          title: "2. Értékelés és Diagnosztika",
           points: [
-            { icon: "🎯", title: "Cégnév & Hirdetés (Mikro & Makro Környezet)", text: "A rendszer kettős kontextusban dolgozik. Az álláshirdetés (JD) adja a 'MIKRO' kontextust: a konkrét szerepkörhöz szükséges technikai és soft skilleket. A cégnév adja a 'MAKRO' kontextust: az AI a Google Search segítségével valós idejű kutatást végez a cég piaci helyzetéről, versenytársairól, kultúrájáról és stratégiai céljairól. A kettő kombinációja teszi lehetővé a valódi stratégiai illeszkedés elemzését." },
-            { icon: "🕵️", title: "Interjúztató Profilozása (Opcionális)", text: "Ha megadja a döntéshozó LinkedIn profilját, az AI pszichometriai elemzést végez. A nyelvezet, a karrierút és a szakmai hálózat alapján megbecsüli a személyiségtípusát (DISC modell), a valószínűsíthető szakmai félelmeit ('miért ne venne fel') és a 'Yes-Triggereit' ('milyen bizonyíték győzi meg'). Ezzel a kommunikációját célzottan az ő nyelvezetére hangolhatja." },
+            { icon: "🎯", title: "Dinamikus Match Score", text: "Nem egy egyszerű százalék, hanem egy 4 pilléren nyugvó stratégiai index: Hard Skills (technikai tudás), Soft Skills (kommunikáció, vezetés), Experience (tapasztalat mélysége és időbeli avulása), valamint Domain Fit (iparági illeszkedés)." },
+            { icon: "⚠️", title: "Red Flags & Kockázatelemzés", text: "Azonosítja azokat a kritikus hiányosságokat (pl. hiányzó kötelező nyelvtudás, tapasztalati rések), amelyek miatt a HR azonnal elutasíthatja a pályázatot, és stratégiát ad ezek kommunikációs áthidalására." },
+            { icon: "✨", title: "CV Audit és Újraírás", text: "Cinikus ATS auditorként feltárja az önéletrajz gyenge pontjait, majd a beépített 'Rewriter' funkcióval azonnal, az adott pozícióra optimalizálva, vezetői (executive) stílusban át is írja a kritikus részeket." }
           ],
           columns: 1,
         },
         {
-            title: "3. Lépés: Multi-Agent AI Elemzés",
-            steps: [
-                { title: "Fit/Gap Analízis", text: "A neurális háló összeveti a CV-t a JD-vel, és pontozza az illeszkedést négy fő dimenzió mentén: Hard Skillek (technológiák), Soft Skillek (vezetés, kommunikáció), Tapasztalat (projektek mérete, évek) és Iparági Illeszkedés (pl. FinTech vs. Telco)." },
-                { title: "Stratégiai Modulok", text: "Nem egy, hanem több, specializált AI 'ügynök' dolgozik a riporton: egy 'ATS Auditor' a CV-javaslatokat, egy 'Executive Headhunter' a kísérőlevelet, és egy 'Piaci Elemző' a versenytárs-intelligenciát készíti el." },
-                { title: "Vezetői Eszköztár", text: "A kimenet egy azonnal bevethető stratégiai csomag ('deployment kit'): testreszabott kísérőlevél, bértárgyalási szkriptek, 90 napos terv, és a feltárt gyengeségeire célzott interjúkérdések." }
-            ],
-            note: "A rendszer a Gemini 2.5 Flash modellt használja, amely képes a komplex, több-lépcsős érvelési láncok és a mély szakmai kontextus megértésére, valós idejű webes adatokkal kiegészítve."
+          title: "3. Stratégiai Felkészülés",
+          points: [
+            { icon: "✉️", title: "Kísérőlevél Stratéga", text: "Nem egy sablonos motivációs levél. Egy modern, döntéshozónak címzett, üzleti fókuszú dokumentumot generál, amely a cég fájdalompontjaira (pain points) fókuszál, és Önt, mint a 'Low-risk, High-reward' megoldást pozicionálja." },
+            { icon: "💰", title: "Bértárgyalási Stratéga", text: "Megbecsüli a reális bruttó bérsávot, meghatároz egy BATNA-t (legjobb alternatíva), és 5 különböző pszichológiai tárgyalási forgatókönyvet ad (pl. 'Low-ball' ajánlat kezelése, vagy bónuszok kialkudása)." },
+            { icon: "📅", title: "90 Napos Akcióterv", text: "Egy konkrét, 3 fázisból álló (1-30, 31-60, 61-90 nap) stratégiai tervet készít, amely megmutatja a döntéshozóknak, hogy Ön már az első naptól kezdve hogyan teremt értéket a pozícióban." }
+          ],
+          columns: 1,
         },
         {
-            title: "4. Lépés: Interaktív Felkészülés az AI Coach-csal",
-            points: [
-                { icon: "🎙️", title: "Célzott Gyakorlás", text: "Az AI Coach nem véletlenszerű kérdéseket tesz fel. A riportban azonosított 'Red Flag'-ekre és hiányosságokra (Gap Analízis) építi a kérdéseit, hogy célzottan az Ön gyenge pontjait tesztelje és erősítse. A hangfelismerő funkcióval valós interjúhelyzetet szimulálhat." },
-                { icon: "📈", title: "Azonnali, Mély Visszajelzés", text: "Minden válaszára három szintű visszajelzést kap: Struktúra (pl. Használta-e a STAR-módszert?), Megfogalmazás (pl. 'Túl passív volt, próbálja ezzel az erősebb, aktívabb mondattal...'), és Stratégiai Tartalom (pl. 'Itt elmulasztott egy lehetőséget, hogy összekösse a tapasztalatát a cég negyedéves céljaival.')." },
-            ],
-            columns: 1,
-            note: "Ez a modul interaktív és kredit alapú, így a fókusz a minőségi, hatékony felkészülésen van. A cél, hogy ne csak tudja a helyes választ, hanem magabiztosan elő is tudja adni azt."
+          title: "4. Emberi Tényező és Piac",
+          points: [
+            { icon: "🧠", title: "Interjúztató Profilozása", text: "A döntéshozók LinkedIn profilja alapján DISC személyiségelemzést végez. Feltárja a legnagyobb félelmeiket és a 'Yes-Trigger'-eiket, valamint testreszabott jégtörő kérdéseket javasol a gyors bizalomépítéshez." },
+            { icon: "🏢", title: "Versenytárs Elemzés", text: "Akcióképes stratégiai előnyt fogalmaz meg, amellyel a megcélzott cég legyőzheti a versenytársait. Ezt az interjún bedobva azonnal stratégiai partnerként, nem csak egy egyszerű jelöltként fognak Önre tekinteni." },
+            { icon: "🎙️", title: "AI Coach (Interjú Szimulátor)", text: "Egy interaktív, 'tough love' mentor, aki a feltárt gyengeségeire fókuszálva tesz fel kérdéseket. 1-10-ig pontozza a válaszait, és profi B2B értékesítési módszertanok alapján ad javaslatokat a meggyőzőbb kommunikációra." }
+          ],
+          columns: 1,
+          note: "A rendszer a legfejlettebb Gemini AI modelleket használja, hogy Ön ne csak egy jelölt legyen a sok közül, hanem a legfelkészültebb szakember a piacon."
         }
       ],
     },
@@ -718,42 +721,45 @@ export const translations = {
       "For the question 'Why do you want to work here?', don't parrot the PR text. Show that you've researched the company and have a concrete idea how you could make their world better. Or at least their profits."
     ],
     howItWorksModal: {
-      title: "How JobRadar Works",
+      title: "How JobRadar AI Works & Features",
       close: "Close",
       slides: [
         {
-          title: "Step 1: Data Depth - The Quality of Input",
+          title: "1. Data Input & Deep Analysis",
           points: [
-            { icon: "📄", title: "Resume (Vector PDF Analysis)", text: "While most systems just read the text (OCR), JobRadar analyzes the native vector structure of the PDF. This means we understand not just the words, but the full visual context: columns, font sizes, and hidden formatting. We see exactly what a modern Applicant Tracking System (ATS) sees, identifying structural errors that cause even the best profiles to get stuck." },
-            { icon: "🔗", title: "LinkedIn & Job Ad (Raw Text)", text: "Why copy-paste the text and not a link? The answer is data integrity. Websites change dynamically, links become obsolete, and web scrapers are often blocked or misinterpret content. By pasting the raw text, we guarantee the AI analyzes the exact same information you see, eliminating errors and 'machine hallucination'." },
+            { icon: "📄", title: "Vector PDF Analysis", text: "Unlike traditional keyword scanners (OCR), JobRadar reads the native vector structure of the PDF. It understands visual context, columns, and formatting, seeing exactly what a modern ATS (Applicant Tracking System) sees." },
+            { icon: "🔗", title: "Raw Text (LinkedIn & JD)", text: "Instead of links, we ask for raw text for maximum data integrity. Websites change, scrapers get blocked. By pasting the text, we guarantee the AI analyzes exactly what you see, eliminating machine hallucination." },
+            { icon: "🕵️", title: "Real-time Company Research", text: "Based on the company name, the AI conducts real-time research using Google Search. It analyzes the company's market position, competitors, latest news, and culture to align your strategy with their current business challenges." }
           ],
           columns: 1,
         },
         {
-          title: "Step 2: Target Definition - The Strategic Context",
+          title: "2. Evaluation & Diagnostics",
           points: [
-            { icon: "🎯", title: "Company & Ad (Micro & Macro Environment)", text: "The system works in a dual context. The job description (JD) provides the 'MICRO' context: the technical and soft skills required for the specific role. The company name provides the 'MACRO' context: the AI conducts real-time research using Google Search on the company's market position, competitors, culture, and strategic goals. The combination of the two allows for a true strategic fit analysis." },
-            { icon: "🕵️", title: "Interviewer Profiling (Optional)", text: "If you provide the decision-maker's LinkedIn profile, the AI performs a psychometric analysis. Based on language, career path, and professional network, it estimates their personality type (DISC model), likely professional fears ('why they wouldn't hire you'), and 'Yes-Triggers' ('what proof convinces them'). This allows you to tailor your communication to their language." },
+            { icon: "🎯", title: "Dynamic Match Score", text: "Not just a simple percentage, but a strategic index based on 4 pillars: Hard Skills (technical knowledge), Soft Skills (communication, leadership), Experience (depth and temporal relevance), and Domain Fit (industry alignment)." },
+            { icon: "⚠️", title: "Red Flags & Risk Analysis", text: "Identifies critical gaps (e.g., missing mandatory language skills, experience gaps) that could cause HR to immediately reject your application, and provides a strategy to bridge them in communication." },
+            { icon: "✨", title: "CV Audit & Rewriter", text: "Acting as a cynical ATS auditor, it exposes the weak points of your resume, then uses the built-in 'Rewriter' to instantly rewrite critical sections in an executive style, optimized for the specific role." }
           ],
           columns: 1,
         },
         {
-            title: "Step 3: Multi-Agent AI Analysis",
-            steps: [
-                { title: "Fit/Gap Analysis", text: "The neural network compares the CV with the JD and scores the fit across four main dimensions: Hard Skills (technologies), Soft Skills (leadership, communication), Experience (project size, years), and Industry Fit (e.g., FinTech vs. Telco)." },
-                { title: "Strategic Modules", text: "Not one, but several specialized AI 'agents' work on the report: an 'ATS Auditor' for CV suggestions, an 'Executive Headhunter' for the cover letter, and a 'Market Analyst' for competitor intelligence." },
-                { title: "Executive Toolkit", text: "The output is a ready-to-deploy strategic package ('deployment kit'): a customized cover letter, salary negotiation scripts, a 90-day plan, and interview questions targeted at your identified weaknesses." }
-            ],
-            note: "The system uses the Gemini 2.5 Flash model, capable of understanding complex, multi-step reasoning chains and deep professional context, supplemented with real-time web data."
+          title: "3. Strategic Preparation",
+          points: [
+            { icon: "✉️", title: "Cover Letter Strategist", text: "Not a generic template. Generates a modern, business-focused document addressed to the decision-maker, focusing on the company's pain points and positioning you as the 'Low-risk, High-reward' solution." },
+            { icon: "💰", title: "Salary Negotiation Strategist", text: "Estimates a realistic gross salary band, defines a BATNA (Best Alternative to a Negotiated Agreement), and provides 5 different psychological negotiation scripts (e.g., handling a 'Low-ball' offer or negotiating bonuses)." },
+            { icon: "📅", title: "90-Day Action Plan", text: "Creates a concrete, 3-phase strategic plan (Days 1-30, 31-60, 61-90) showing decision-makers exactly how you will create value in the role from day one." }
+          ],
+          columns: 1,
         },
         {
-            title: "Step 4: Interactive Preparation with the AI Coach",
-            points: [
-                { icon: "🎙️", title: "Targeted Practice", text: "The AI Coach doesn't ask random questions. It builds its questions on the 'Red Flags' and gaps identified in the report (Gap Analysis) to specifically test and strengthen your weak points. The voice recognition feature allows you to simulate a real interview situation." },
-                { icon: "📈", title: "Instant, Deep Feedback", text: "For every answer, you receive three levels of feedback: Structure (e.g., 'Did you use the STAR method?'), Phrasing (e.g., 'Too passive, try this stronger, more active sentence...'), and Strategic Content (e.g., 'You missed an opportunity here to connect your experience with the company's quarterly goals.')." },
-            ],
-            columns: 1,
-            note: "This module is interactive and credit-based, focusing on quality, effective preparation. The goal is not just to know the right answer, but to be able to deliver it confidently."
+          title: "4. Human Factor & Market",
+          points: [
+            { icon: "🧠", title: "Interviewer Profiling", text: "Performs a DISC personality analysis based on the decision-makers' LinkedIn profiles. Uncovers their biggest fears and 'Yes-Triggers', and suggests tailored ice-breaker questions for rapid trust-building." },
+            { icon: "🏢", title: "Competitor Analysis", text: "Formulates an actionable strategic advantage that the target company can use to beat its competitors. Dropping this in an interview instantly positions you as a strategic partner, not just a candidate." },
+            { icon: "🎙️", title: "AI Coach (Interview Simulator)", text: "An interactive, 'tough love' mentor that asks questions focusing on your identified weaknesses. It scores your answers 1-10 and provides suggestions for more persuasive communication based on pro B2B sales methodologies." }
+          ],
+          columns: 1,
+          note: "The system uses the most advanced Gemini AI models to ensure you are not just another candidate, but the most prepared professional on the market."
         }
       ],
     },

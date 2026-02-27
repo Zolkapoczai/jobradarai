@@ -21,6 +21,7 @@ import SalaryNegotiationSection from './components/SalaryNegotiationSection';
 import InterviewerProfilerSection from './components/InterviewerProfilerSection';
 import { TermsOfServiceModal } from './components/TermsOfServiceModal';
 import { HowItWorksModal } from './components/HowItWorksModal';
+import { FAQModal } from './components/FAQModal';
 import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
 import { processPdfFile, validatePdf } from './utils/fileProcessor';
 import CookieBanner from './components/CookieBanner';
@@ -44,6 +45,7 @@ const App: React.FC = () => {
   const [showPricing, setShowPricing] = useState(false);
   const [isTosOpen, setIsTosOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [introStep, setIntroStep] = useState<'welcome' | 'lang' | 'disclaimer'>('welcome');
   const [showCookieBanner, setShowCookieBanner] = useState(false);
@@ -404,6 +406,12 @@ const App: React.FC = () => {
 
         <div className="flex items-center gap-2 sm:gap-4 justify-end">
           <button 
+            onClick={() => setIsFaqOpen(true)} 
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
+          >
+            {lang === 'hu' ? 'GY.I.K.' : 'FAQ'}
+          </button>
+          <button 
             onClick={() => setIsHowItWorksOpen(true)} 
             className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
           >
@@ -411,7 +419,7 @@ const App: React.FC = () => {
           </button>
           <button 
             onClick={() => setShowPricing(true)} 
-            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-400 text-slate-700 hover:border-blue-600 hover:text-blue-700"
+            className="hidden lg:block px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-colors border-slate-600 bg-slate-600 text-white hover:bg-slate-700 hover:border-slate-700"
           >
             {t.pricing}
           </button>
@@ -555,6 +563,7 @@ const App: React.FC = () => {
         </div>
       )}
 
+      <FAQModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} lang={lang} />
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
