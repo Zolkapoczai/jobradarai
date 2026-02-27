@@ -26,7 +26,7 @@ const RewriterSection: React.FC<RewriterSectionProps> = ({ rewrite, t, darkMode 
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Section Intelligence Overview</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
         {/* Before / Original */}
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-2 mb-4 opacity-50 px-2">
@@ -59,7 +59,7 @@ const RewriterSection: React.FC<RewriterSectionProps> = ({ rewrite, t, darkMode 
               {copied ? t.copiedText : t.copyToClipboard}
             </button>
           </div>
-          <div className={`flex-grow p-10 rounded-[40px] border-2 shadow-2xl relative transition-all group ${
+          <div className={`flex-grow p-6 sm:p-8 md:p-10 rounded-[40px] border-2 shadow-2xl relative transition-all group ${
             darkMode ? 'bg-blue-900/10 border-blue-800 text-slate-100' : 'bg-blue-50/30 border-blue-100 text-slate-950'
           }`}>
             <p className="text-base md:text-lg font-bold leading-[1.8] text-justify relative z-10 tracking-tight">

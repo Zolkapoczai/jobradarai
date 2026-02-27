@@ -183,7 +183,7 @@ const JobCoachChat: React.FC<JobCoachChatProps> = ({ result, t, lang }) => {
       {/* Token Store Modal */}
       {isStoreOpen && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in zoom-in-95 duration-300">
-          <div className="max-w-sm md:max-w-4xl w-full p-6 md:p-12 rounded-[32px] md:rounded-[48px] border-2 shadow-2xl relative bg-white border-slate-100">
+          <div className="max-w-4xl w-full p-6 md:p-12 rounded-[32px] md:rounded-[48px] border-2 shadow-2xl relative bg-white border-slate-100">
             <button onClick={() => setIsStoreOpen(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 hover:bg-rose-500 hover:text-white transition-all text-slate-900 font-black">✕</button>
 
             <div className="mb-10 text-center">

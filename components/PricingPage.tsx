@@ -103,7 +103,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* 3-Day Plan (Action / Free Trial) */}
-          <div className="relative p-10 rounded-[48px] border-2 border-emerald-500/30 flex flex-col transition-all hover:scale-[1.02] shadow-xl bg-white border-slate-200">
+          <div className="relative p-6 sm:p-8 md:p-10 rounded-[48px] border-2 border-emerald-500/30 flex flex-col transition-all hover:scale-[1.02] shadow-xl bg-white border-slate-200">
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
               {t.planFreeBadge}
             </div>
@@ -131,7 +131,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang }) => {
           </div>
 
           {/* Weekly Plan (Active Seeker) */}
-          <div className="relative p-10 rounded-[48px] border-2 border-blue-600/40 flex flex-col transition-all hover:scale-[1.05] shadow-2xl bg-white">
+          <div className="relative p-6 sm:p-8 md:p-10 rounded-[48px] border-2 border-blue-600/40 flex flex-col transition-all hover:scale-[1.05] shadow-2xl bg-white">
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-700 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
               MOST POPULAR
             </div>
@@ -157,7 +157,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ t, lang }) => {
           </div>
 
           {/* Monthly Plan (Career Builder) */}
-          <div className="relative p-10 rounded-[48px] border-2 border-violet-600/40 flex flex-col transition-all hover:scale-[1.05] shadow-2xl bg-white">
+          <div className="relative p-6 sm:p-8 md:p-10 rounded-[48px] border-2 border-violet-600/40 flex flex-col transition-all hover:scale-[1.05] shadow-2xl bg-white">
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-violet-700 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
               {t.planMonthlyBadge}
             </div>

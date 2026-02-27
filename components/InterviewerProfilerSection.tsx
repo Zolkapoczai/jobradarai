@@ -44,7 +44,7 @@ const InterviewerProfilerSection: React.FC<InterviewerProfilerSectionProps> = ({
         ))}
       </div>
 
-      <div className={`p-10 rounded-[40px] border-2 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+      <div className={`p-6 sm:p-8 md:p-10 rounded-[40px] border-2 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-8 px-2">{t.iceBreakers}</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {data.iceBreakerQuestions.map((q, idx) => (
