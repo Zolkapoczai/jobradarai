@@ -24,6 +24,7 @@ import { HowItWorksModal } from './components/HowItWorksModal';
 import { FAQModal } from './components/FAQModal';
 import { exportCoverLetter, exportActionPlan } from './utils/pdfGenerator';
 import { processPdfFile, validatePdf } from './utils/fileProcessor';
+import { extractTextFromPdf } from './utils/pdfExtractor';
 import CookieBanner from './components/CookieBanner';
 // FIX: Imported the missing Plan90DaySection component to resolve a compilation error.
 import Plan90DaySection from './components/Plan90DaySection';
@@ -62,6 +63,14 @@ const App: React.FC = () => {
   const [cvFile, setCvFile] = useState<FileInput | null>(null);
   const [fileUploadStatus, setFileUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [fileUploadProgress, setFileUploadProgress] = useState(0);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [validationState, setValidationState] = useState<{
+    cv: 'loading' | 'success' | 'error' | 'idle';
+    linkedin: 'loading' | 'success' | 'error' | 'idle';
+    cvError?: string;
+    linkedinError?: string;
+  }>({ cv: 'idle', linkedin: 'idle' });
+  const [isCheckingCv, setIsCheckingCv] = useState(false);
   const [showConfirmCompany, setshowConfirmCompany] = useState(false);
   const [allFoundCompanies, setAllFoundCompanies] = useState<{ url: string; title: string }[]>([]);
   const [foundCompany, setFoundCompany] = useState<{ url: string; title: string } | null>(null);
@@ -188,6 +197,74 @@ const App: React.FC = () => {
       setFileUploadStatus('success');
     } catch {
       setFileUploadStatus('error');
+    }
+  };
+
+  const handleContinueToJobDetails = async () => {
+    if (!cvFile) return;
+    
+    setShowValidationModal(true);
+    setValidationState({ cv: 'loading', linkedin: 'loading' });
+
+    try {
+      const extractedText = await extractTextFromPdf(cvFile.data);
+      
+      let cvStatus: 'success' | 'error' = 'success';
+      let cvErrorMsg = '';
+
+      // Check if text is too short (likely a scanned image or empty)
+      if (extractedText.length < 150) {
+        cvStatus = 'error';
+        cvErrorMsg = lang === 'hu' 
+            ? "Hoppá! Úgy tűnik, ez egy beszkennelt kép vagy üres dokumentum. A tokenek drágák, mi pedig vektoros PDF-eket eszünk reggelire. Kérlek, tölts fel egy valódi, szöveges PDF önéletrajzot!"
+            : "Oops! Looks like a scanned image or an empty document. Tokens are expensive, and we eat vector PDFs for breakfast. Please upload a real, text-based PDF resume!";
+      } else {
+        // Basic check for common CV keywords (can be expanded)
+        const lowerText = extractedText.toLowerCase();
+        const hasCvKeywords = ['experience', 'tapasztalat', 'education', 'tanulmányok', 'skills', 'készségek', 'work', 'munka', 'university', 'egyetem'].some(kw => lowerText.includes(kw));
+        
+        if (!hasCvKeywords) {
+          cvStatus = 'error';
+          cvErrorMsg = lang === 'hu'
+            ? "Biztos, hogy ez egy önéletrajz? Nem találtunk benne tipikus CV kulcsszavakat. Ne pazaroljuk az értékes AI tokeneket a nagymama receptjére. Kérlek, tölts fel egy igazi önéletrajzot!"
+            : "Are you sure this is a resume? We couldn't find typical CV keywords. Let's not waste precious AI tokens on your grandma's recipe. Please upload a real resume!";
+        }
+      }
+
+      let liStatus: 'success' | 'error' = 'success';
+      let liErrorMsg = '';
+
+      if (!linkedinText || linkedinText.trim().length < 50) {
+        liStatus = 'error';
+        liErrorMsg = lang === 'hu'
+          ? "Nem töltöttél fel LinkedIn profilt, vagy túl rövid. Ennek hiányában a rendszer nem tudja elemezni a személyes márkádat és a hálózati tőkédet, ami csökkentheti a kulturális illeszkedés pontosságát és a béralku pozíciódat."
+          : "You haven't uploaded a LinkedIn profile, or it's too short. Without it, the system cannot analyze your personal brand and network capital, which may reduce the accuracy of cultural fit and your salary negotiation position.";
+      }
+
+      setValidationState({
+        cv: cvStatus,
+        linkedin: liStatus,
+        cvError: cvErrorMsg,
+        linkedinError: liErrorMsg
+      });
+
+      if (cvStatus === 'success' && liStatus === 'success') {
+        setTimeout(() => {
+          setShowValidationModal(false);
+          setCurrentStep(2);
+        }, 1500);
+      }
+
+    } catch (error) {
+      console.error("Error validating CV:", error);
+      setValidationState({
+        cv: 'error',
+        linkedin: 'error',
+        cvError: lang === 'hu'
+          ? "Hiba történt a PDF olvasása közben. Lehet, hogy jelszóval védett vagy sérült? Kérlek, próbálj meg egy tiszta, vektoros PDF-et feltölteni."
+          : "Error reading the PDF. Is it password protected or corrupted? Please try uploading a clean, vector PDF.",
+        linkedinError: ''
+      });
     }
   };
 
@@ -569,59 +646,158 @@ const App: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <Stepper />
 
+        {showValidationModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300">
+              <div className="p-8 space-y-8">
+                <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 text-center">
+                  {lang === 'en' ? 'Asset Validation' : 'Adatok Ellenőrzése'}
+                </h3>
+                
+                <div className="space-y-6">
+                  {/* CV Validation */}
+                  <div className="flex items-start gap-4">
+                    <div className="mt-1">
+                      {validationState.cv === 'loading' && (
+                        <div className="w-8 h-8 rounded-full border-4 border-slate-200 border-t-blue-600 animate-spin"></div>
+                      )}
+                      {validationState.cv === 'success' && (
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 animate-in zoom-in">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                      )}
+                      {validationState.cv === 'error' && (
+                        <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 animate-in zoom-in">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">
+                        {lang === 'en' ? 'CV Analysis' : 'Önéletrajz Elemzés'}
+                      </h4>
+                      {validationState.cv === 'error' && (
+                        <p className="text-xs font-bold text-rose-600 mt-1 leading-relaxed">{validationState.cvError}</p>
+                      )}
+                      {validationState.cv === 'success' && (
+                        <p className="text-xs font-bold text-emerald-600 mt-1 leading-relaxed">
+                          {lang === 'en' ? 'Vector PDF successfully parsed.' : 'Vektoros PDF sikeresen értelmezve.'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* LinkedIn Validation */}
+                  {validationState.cv !== 'loading' && (
+                    <div className="flex items-start gap-4 animate-in slide-in-from-bottom-4 fade-in duration-500">
+                      <div className="mt-1">
+                        {validationState.linkedin === 'loading' && (
+                          <div className="w-8 h-8 rounded-full border-4 border-slate-200 border-t-blue-600 animate-spin"></div>
+                        )}
+                        {validationState.linkedin === 'success' && (
+                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 animate-in zoom-in">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          </div>
+                        )}
+                        {validationState.linkedin === 'error' && (
+                          <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 animate-in zoom-in">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">
+                          {lang === 'en' ? 'LinkedIn Profile' : 'LinkedIn Profil'}
+                        </h4>
+                        {validationState.linkedin === 'error' && (
+                          <p className="text-xs font-bold text-rose-600 mt-1 leading-relaxed">{validationState.linkedinError}</p>
+                        )}
+                        {validationState.linkedin === 'success' && (
+                          <p className="text-xs font-bold text-emerald-600 mt-1 leading-relaxed">
+                            {lang === 'en' ? 'Profile data detected.' : 'Profil adatok érzékelve.'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t-2 border-slate-100">
+                  <button 
+                    onClick={() => setShowValidationModal(false)}
+                    className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-all"
+                  >
+                    {lang === 'en' ? 'Cancel' : 'Mégse'}
+                  </button>
+                  <PrimaryButton 
+                    onClick={() => {
+                      setShowValidationModal(false);
+                      setCurrentStep(2);
+                    }}
+                    disabled={validationState.cv === 'loading' || validationState.cv === 'error'}
+                    className="px-8 py-3 text-xs"
+                  >
+                    {lang === 'en' ? 'Proceed Anyway' : (validationState.linkedin === 'error' ? 'Tovább Így Is' : 'Tovább')}
+                  </PrimaryButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {currentStep === 1 && (
-          <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-            <div className="bg-white rounded-[40px] p-6 sm:p-8 md:p-12 border-2 border-slate-300 shadow-sm space-y-12">
-               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 pb-8 gap-6">
-                 <div className="space-y-2">
-                   <h2 className="text-3xl font-black uppercase tracking-tight text-slate-900">1. {t.profileAssets}</h2>
-                   <p className="text-sm font-bold text-slate-700 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
+          <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
+            <div className="bg-white rounded-[32px] p-6 sm:p-8 border-2 border-slate-300 shadow-sm space-y-8">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-slate-100 pb-6 gap-4">
+                 <div className="space-y-1">
+                   <h2 className="text-2xl font-black uppercase tracking-tight text-slate-900">1. {t.profileAssets}</h2>
+                   <p className="text-xs font-bold text-slate-700 uppercase tracking-widest">{lang === 'en' ? 'Upload your assets for neural analysis.' : 'Töltsd fel az anyagaidat a neurális elemzéshez.'}</p>
                  </div>
                  <PrimaryButton 
-                    className="w-full md:w-auto px-10 shadow-xl" 
-                    onClick={() => setCurrentStep(2)} 
+                    className="w-full md:w-auto px-8 py-2 text-[10px] shadow-xl relative" 
+                    onClick={handleContinueToJobDetails} 
                     disabled={!cvFile}
                  >
                     {t.continueToJobDetails}
                  </PrimaryButton>
                </div>
 
-               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                 <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                 <div className="space-y-3">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-900 ml-1">{lang === 'en' ? 'Professional CV (PDF)' : 'Szakmai Önéletrajz (PDF)'}</label>
                     <TooltipWrapper text={t.tooltips.cvUpload}>
                       <div 
                         onClick={() => fileInputRef.current?.click()}
-                        className={`border-2 rounded-[32px] text-center transition-all flex flex-col items-center justify-center min-h-[350px] sm:min-h-[400px] cursor-pointer group relative overflow-hidden ${
+                        className={`border-2 rounded-[24px] text-center transition-all flex flex-col items-center justify-center min-h-[200px] sm:min-h-[240px] cursor-pointer group relative overflow-hidden ${
                           fileUploadStatus === 'success' ? 'bg-blue-50 border-blue-500/50' : 'bg-slate-50 border-slate-300 hover:border-blue-500'
                         }`}
                       >
                         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
-                          <span className="text-[140px] font-black tracking-tighter">PDF</span>
+                          <span className="text-[100px] font-black tracking-tighter">PDF</span>
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
                         {fileUploadStatus === 'success' ? (
-                          <div className="flex flex-col items-center justify-center p-6 text-center animate-in zoom-in-95 duration-500 relative z-10 w-full h-full">
-                              <div className="relative w-24 h-24 mb-6 text-blue-600">
+                          <div className="flex flex-col items-center justify-center p-4 text-center animate-in zoom-in-95 duration-500 relative z-10 w-full h-full">
+                              <div className="relative w-20 h-20 mb-4 text-blue-600">
                                   <div className="absolute inset-0 bg-blue-500 rounded-full animate-pulse opacity-10 blur-lg"></div>
                                   <div className="relative w-full h-full flex items-center justify-center bg-blue-100 rounded-full border-4 border-white shadow-lg">
-                                      <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                       </svg>
                                   </div>
-                                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center border-4 border-white shadow-md">
-                                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-md">
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                       </svg>
                                   </div>
                               </div>
                               
                               <div className="max-w-full px-4">
-                                  <p className="text-lg font-black text-slate-900 break-all truncate" title={cvFile?.name}>
+                                  <p className="text-base font-black text-slate-900 break-all truncate" title={cvFile?.name}>
                                       {cvFile?.name}
                                   </p>
                                   {cvFile?.size && (
-                                      <p className="text-sm font-bold text-slate-500 mt-1">
+                                      <p className="text-xs font-bold text-slate-500 mt-1">
                                           {(cvFile.size / 1024 / 1024).toFixed(2)} MB
                                       </p>
                                   )}
@@ -632,8 +808,11 @@ const App: React.FC = () => {
                                       e.stopPropagation(); 
                                       setCvFile(null); 
                                       setFileUploadStatus('idle'); 
+                                      if (fileInputRef.current) {
+                                          fileInputRef.current.value = '';
+                                      }
                                   }} 
-                                  className="mt-8 px-6 py-3 bg-white text-slate-700 rounded-full text-xs font-black uppercase tracking-widest border-2 border-slate-200 hover:border-blue-500 hover:text-blue-600 transition-all group flex items-center gap-2 active:scale-95 shadow-sm"
+                                  className="mt-6 px-5 py-2.5 bg-white text-slate-700 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-slate-200 hover:border-blue-500 hover:text-blue-600 transition-all group flex items-center gap-2 active:scale-95 shadow-sm"
                               >
                                   <svg className="w-4 h-4 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5" />
@@ -643,10 +822,10 @@ const App: React.FC = () => {
                               </button>
                           </div>
                         ) : (
-                          <div className="space-y-6 group-hover:opacity-100 transition-opacity relative z-10 p-8">
-                             <div className="w-24 h-24 mx-auto mb-2 relative flex items-center justify-center">
-                                <div className="absolute inset-0 bg-blue-500/10 rounded-[2rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
-                                <svg className="w-16 h-16 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <div className="space-y-4 group-hover:opacity-100 transition-opacity relative z-10 p-6">
+                             <div className="w-20 h-20 mx-auto mb-2 relative flex items-center justify-center">
+                                <div className="absolute inset-0 bg-blue-500/10 rounded-[1.5rem] blur-xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                                <svg className="w-12 h-12 text-slate-400 group-hover:text-blue-500 transition-all duration-500 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                   <polyline points="14 2 14 8 20 8"></polyline>
                                   <line x1="12" y1="18" x2="12" y2="12"></line>
@@ -654,33 +833,33 @@ const App: React.FC = () => {
                                   <path d="M4 16v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" opacity="0.3"></path>
                                 </svg>
                              </div>
-                             <p className="text-sm font-black uppercase tracking-widest text-slate-700 px-4">{t.dragDropText}</p>
-                             <span className="inline-block px-6 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 group-hover:bg-blue-700 transition-all">{t.browseText}</span>
+                             <p className="text-xs font-black uppercase tracking-widest text-slate-700 px-4">{t.dragDropText}</p>
+                             <span className="inline-block px-5 py-2 bg-blue-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 group-hover:bg-blue-700 transition-all">{t.browseText}</span>
                           </div>
                         )}
                       </div>
                     </TooltipWrapper>
                  </div>
-                 <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.linkedinLabel}</label>
+                 <div className="space-y-3">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.linkedinLabel}</label>
                     <TooltipWrapper text={t.tooltips.linkedinPaste}>
                       <FormTextarea
-                        rows={14}
-                        className="min-h-[350px] sm:min-h-[400px]"
+                        rows={8}
+                        className="min-h-[200px] sm:min-h-[240px]"
                         placeholder={t.linkedinInputPlaceholder}
                         value={linkedinText}
                         onChange={(e) => setLinkedinText(e.target.value)}
                       />
                     </TooltipWrapper>
-                    <p className="text-[11px] font-bold text-slate-700 px-1 leading-relaxed italic">
+                    <p className="text-[10px] font-bold text-slate-700 px-1 leading-relaxed italic">
                       {t.linkedinHelperNote}
                     </p>
                     <div className="flex justify-end">
                        <div className="group relative">
-                          <button className="text-[10px] font-black text-blue-600 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
-                          <div className="absolute right-0 bottom-full mb-4 w-80 p-8 bg-white text-slate-800 text-[11px] rounded-[32px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-200">
-                             <p className="font-black mb-4 uppercase text-blue-600 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
-                             <ul className="space-y-2 font-bold mb-6">
+                          <button className="text-[9px] font-black text-blue-600 uppercase border-b border-blue-600 pb-0.5">{t.linkedinPdfHelp}</button>
+                          <div className="absolute right-0 bottom-full mb-4 w-72 p-6 bg-white text-slate-800 text-[10px] rounded-[24px] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 z-[2000] border border-slate-200">
+                             <p className="font-black mb-3 uppercase text-blue-600 tracking-[0.2em]">{lang === 'en' ? 'PDF Export Guide:' : 'PDF Mentési Útmutató:'}</p>
+                             <ul className="space-y-2 font-bold mb-4">
                                 {t.linkedinPdfInstructions.split('\n').map((s: string, i: number) => <li key={i} className="flex gap-2"><span>{i+1}.</span>{s.replace(/^\d+\.\s*/, '')}</li>)}
                              </ul>
                              <div className="absolute top-full right-8 border-8 border-transparent border-t-white"></div>
@@ -689,15 +868,6 @@ const App: React.FC = () => {
                     </div>
                  </div>
 
-               </div>
-               <div className="mt-12 flex justify-center">
-                <PrimaryButton 
-                    className="w-full md:w-auto px-16 shadow-2xl" 
-                    onClick={() => setCurrentStep(2)} 
-                    disabled={!cvFile}
-                 >
-                    {t.continueToJobDetails}
-                 </PrimaryButton>
                </div>
             </div>
           </div>
